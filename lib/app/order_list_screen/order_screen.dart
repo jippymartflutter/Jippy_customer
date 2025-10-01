@@ -1,8 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:customer/app/auth_screen/login_screen.dart';
 import 'package:customer/app/order_list_screen/live_tracking_screen.dart';
 import 'package:customer/app/order_list_screen/order_details_screen.dart';
 import 'package:customer/constant/constant.dart';
-import 'package:customer/widgets/app_loading_widget.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
 import 'package:customer/controllers/order_controller.dart';
 import 'package:customer/models/order_model.dart';
@@ -12,10 +12,10 @@ import 'package:customer/themes/round_button_fill.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
 import 'package:customer/utils/network_image_widget.dart';
 import 'package:customer/widget/my_separator.dart';
+import 'package:customer/widgets/app_loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class OrderScreen extends StatelessWidget {
   const OrderScreen({super.key});
@@ -264,7 +264,8 @@ class OrderScreen extends StatelessWidget {
                                                           (context, index) {
                                                         OrderModel orderModel =
                                                             controller
-                                                                .newOrderList[index];
+                                                                    .newOrderList[
+                                                                index];
                                                         return itemView(
                                                             themeChange,
                                                             context,
@@ -416,7 +417,8 @@ class OrderScreen extends StatelessWidget {
                     borderRadius: const BorderRadius.all(Radius.circular(16)),
                     child: Stack(
                       children: [
-                        orderModel.vendor?.photo != null && orderModel.vendor!.photo!.isNotEmpty
+                        orderModel.vendor?.photo != null &&
+                                orderModel.vendor!.photo!.isNotEmpty
                             ? NetworkImageWidget(
                                 imageUrl: orderModel.vendor!.photo!,
                                 fit: BoxFit.cover,
@@ -489,8 +491,9 @@ class OrderScreen extends StatelessWidget {
                           height: 5,
                         ),
                         Text(
-                          orderModel.createdAt != null 
-                              ? Constant.timestampToDateTime(orderModel.createdAt!)
+                          orderModel.createdAt != null
+                              ? Constant.timestampToDateTime(
+                                  orderModel.createdAt!)
                               : "Order placed",
                           style: TextStyle(
                             color: themeChange.getThem()
@@ -515,8 +518,7 @@ class OrderScreen extends StatelessWidget {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return CircularProgressIndicator(); // or shimmer
                   } else if (snapshot.hasData) {
-                    return
-                      Row(
+                    return Row(
                       children: [
                         Expanded(
                           child: Text(
@@ -532,7 +534,8 @@ class OrderScreen extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          Constant.amountShow(amount: snapshot.data!.toString()),
+                          Constant.amountShow(
+                              amount: snapshot.data!.toString()),
                           style: TextStyle(
                             color: themeChange.getThem()
                                 ? AppThemeData.primary300
@@ -613,7 +616,8 @@ class OrderScreen extends StatelessWidget {
                             onTap: () {
                               if (orderModel.products != null) {
                                 for (var element in orderModel.products!) {
-                                  controller.addToCart(cartProductModel: element);
+                                  controller.addToCart(
+                                      cartProductModel: element);
                                   ShowToastDialog.showToast(
                                       "Item Added In a cart".tr);
                                 }
@@ -656,8 +660,13 @@ class OrderScreen extends StatelessWidget {
                           : const SizedBox(),
                   Expanded(
                     child: InkWell(
-                      onTap: () {
-                        Get.to(const OrderDetailsScreen(),
+                      onTap: () async {
+                        double? surgeFee =
+                            await fetchOrderSergeFee(orderModel.id ?? '');
+                        Get.to(
+                            OrderDetailsScreen(
+                              surgeFee: surgeFee,
+                            ),
                             arguments: {"orderModel": orderModel});
                         // Get.off(const OrderPlacingScreen(), arguments: {"orderModel": orderModel});
                       },
@@ -694,7 +703,8 @@ class OrderScreen extends StatelessWidget {
     double totalAmount = 0.0;
 
     print('DEBUG: Order Screen - Starting calculation for order: ${order.id}');
-    print('DEBUG: Order Screen - Total products: ${order.products?.length ?? 0}');
+    print(
+        'DEBUG: Order Screen - Total products: ${order.products?.length ?? 0}');
 
     // Calculate subtotal using promotional prices if available
     if (order.products != null) {
@@ -704,11 +714,11 @@ class OrderScreen extends StatelessWidget {
         print('DEBUG: Order Screen - Price: ${element.price}');
         print('DEBUG: Order Screen - DiscountPrice: ${element.discountPrice}');
         print('DEBUG: Order Screen - PromoId: ${element.promoId}');
-        
+
         // Check if this item has a promotional price
         final hasPromo = element.promoId != null && element.promoId!.isNotEmpty;
         print('DEBUG: Order Screen - Has promo: $hasPromo');
-        
+
         double itemPrice;
         if (hasPromo) {
           // Use promotional price for calculations
@@ -723,21 +733,25 @@ class OrderScreen extends StatelessWidget {
           itemPrice = double.parse(element.discountPrice.toString());
           print('DEBUG: Order Screen - Using discount price: $itemPrice');
         }
-        
+
         final quantity = double.parse(element.quantity.toString());
         final extrasPrice = double.parse(element.extrasPrice.toString());
-        
+
         final itemTotal = (itemPrice * quantity) + (extrasPrice * quantity);
         subTotal += itemTotal;
-        
-        print('DEBUG: Order Screen - Item total: $itemTotal, Running subtotal: $subTotal');
+
+        print(
+            'DEBUG: Order Screen - Item total: $itemTotal, Running subtotal: $subTotal');
       }
     }
 
-    if (order.specialDiscount != null && order.specialDiscount!['special_discount'] != null) {
+    if (order.specialDiscount != null &&
+        order.specialDiscount!['special_discount'] != null) {
       try {
-        specialDiscountAmount = double.parse(order.specialDiscount!['special_discount'].toString());
-        print('DEBUG: Order Screen - Special discount: ₹$specialDiscountAmount');
+        specialDiscountAmount =
+            double.parse(order.specialDiscount!['special_discount'].toString());
+        print(
+            'DEBUG: Order Screen - Special discount: ₹$specialDiscountAmount');
       } catch (e) {
         print('DEBUG: Order Screen - Error parsing special discount: $e');
         specialDiscountAmount = 0.0;
@@ -745,9 +759,10 @@ class OrderScreen extends StatelessWidget {
     }
 
     // Check if order has promotional items for tax calculation
-    final hasPromotionalItems = order.products?.any((item) => 
-        item.promoId != null && item.promoId!.isNotEmpty) ?? false;
-    
+    final hasPromotionalItems = order.products
+            ?.any((item) => item.promoId != null && item.promoId!.isNotEmpty) ??
+        false;
+
     print('DEBUG: Order Screen - Has promotional items: $hasPromotionalItems');
     print('DEBUG: Order Screen - Final subtotal: ₹$subTotal');
 
@@ -758,11 +773,15 @@ class OrderScreen extends StatelessWidget {
         try {
           if ((element.title?.toLowerCase() ?? '').contains('sgst')) {
             // Calculate SGST on subtotal (which includes promotional prices)
-            sgst = Constant.calculateTax(amount: subTotal.toString(), taxModel: element);
+            sgst = Constant.calculateTax(
+                amount: subTotal.toString(), taxModel: element);
             print('DEBUG: Order Screen - SGST (5%) on item total: ₹$sgst');
           } else if ((element.title?.toLowerCase() ?? '').contains('gst')) {
             // Calculate GST on delivery charge
-            gst = Constant.calculateTax(amount: double.parse(order.deliveryCharge.toString()).toString(), taxModel: element);
+            gst = Constant.calculateTax(
+                amount:
+                    double.parse(order.deliveryCharge.toString()).toString(),
+                taxModel: element);
             print('DEBUG: Order Screen - GST (18%) on delivery fee: ₹$gst');
           }
         } catch (e) {
@@ -774,7 +793,9 @@ class OrderScreen extends StatelessWidget {
     print('DEBUG: Order Screen - Total tax: ₹$taxAmount');
 
     try {
-      totalAmount = (subTotal - (order.discount ?? 0.0) - specialDiscountAmount) +
+      totalAmount = (subTotal -
+              (order.discount ?? 0.0) -
+              specialDiscountAmount) +
           taxAmount +
           (double.tryParse(order.deliveryCharge?.toString() ?? '0.0') ?? 0.0) +
           (double.tryParse(order.tipAmount?.toString() ?? '0.0') ?? 0.0);
@@ -795,51 +816,52 @@ class OrderScreen extends StatelessWidget {
     return totalAmount;
   }
 }
- // Helper function to calculate the 'To Pay' value for an order
-  // double calculateOrderTotal(OrderModel order) {
-  //   double subTotal = 0.0;
-  //   double specialDiscountAmount = 0.0;
-  //   double taxAmount = 0.0;
-  //   double totalAmount = 0.0;
-  //
-  //   if (order.products != null) {
-  //     for (var element in order.products!) {
-  //       if (double.parse(element.discountPrice.toString()) <= 0) {
-  //         subTotal = subTotal +
-  //             double.parse(element.price.toString()) * double.parse(element.quantity.toString()) +
-  //             (double.parse(element.extrasPrice.toString()) * double.parse(element.quantity.toString()));
-  //       } else {
-  //         subTotal = subTotal +
-  //             double.parse(element.discountPrice.toString()) * double.parse(element.quantity.toString()) +
-  //             (double.parse(element.extrasPrice.toString()) * double.parse(element.quantity.toString()));
-  //       }
-  //     }
-  //   }
-  //
-  //   if (order.specialDiscount != null && order.specialDiscount!['special_discount'] != null) {
-  //     specialDiscountAmount = double.parse(order.specialDiscount!['special_discount'].toString());
-  //   }
-  //
-  //   double sgst = 0.0;
-  //   double gst = 0.0;
-  //   if (order.taxSetting != null) {
-  //     for (var element in order.taxSetting!) {
-  //       if ((element.title?.toLowerCase() ?? '').contains('sgst')) {
-  //         sgst = Constant.calculateTax(amount: subTotal.toString(), taxModel: element);
-  //       } else if ((element.title?.toLowerCase() ?? '').contains('gst')) {
-  //         gst = Constant.calculateTax(amount: double.parse(order.deliveryCharge.toString()).toString(), taxModel: element);
-  //       }
-  //     }
-  //   }
-  //   taxAmount = sgst + gst;
-  //
-  //   totalAmount = (subTotal - double.parse(order.discount.toString()) - specialDiscountAmount) +
-  //       taxAmount +
+
+// Helper function to calculate the 'To Pay' value for an order
+// double calculateOrderTotal(OrderModel order) {
+//   double subTotal = 0.0;
+//   double specialDiscountAmount = 0.0;
+//   double taxAmount = 0.0;
+//   double totalAmount = 0.0;
+//
+//   if (order.products != null) {
+//     for (var element in order.products!) {
+//       if (double.parse(element.discountPrice.toString()) <= 0) {
+//         subTotal = subTotal +
+//             double.parse(element.price.toString()) * double.parse(element.quantity.toString()) +
+//             (double.parse(element.extrasPrice.toString()) * double.parse(element.quantity.toString()));
+//       } else {
+//         subTotal = subTotal +
+//             double.parse(element.discountPrice.toString()) * double.parse(element.quantity.toString()) +
+//             (double.parse(element.extrasPrice.toString()) * double.parse(element.quantity.toString()));
+//       }
+//     }
+//   }
+//
+//   if (order.specialDiscount != null && order.specialDiscount!['special_discount'] != null) {
+//     specialDiscountAmount = double.parse(order.specialDiscount!['special_discount'].toString());
+//   }
+//
+//   double sgst = 0.0;
+//   double gst = 0.0;
+//   if (order.taxSetting != null) {
+//     for (var element in order.taxSetting!) {
+//       if ((element.title?.toLowerCase() ?? '').contains('sgst')) {
+//         sgst = Constant.calculateTax(amount: subTotal.toString(), taxModel: element);
+//       } else if ((element.title?.toLowerCase() ?? '').contains('gst')) {
+//         gst = Constant.calculateTax(amount: double.parse(order.deliveryCharge.toString()).toString(), taxModel: element);
+//       }
+//     }
+//   }
+//   taxAmount = sgst + gst;
+//
+//   totalAmount = (subTotal - double.parse(order.discount.toString()) - specialDiscountAmount) +
+//       taxAmount +
 //       double.parse(order.deliveryCharge.toString()) +
-  //       double.parse(order.tipAmount.toString());
-  //
-  //   return totalAmount;
-  // }
+//       double.parse(order.tipAmount.toString());
+//
+//   return totalAmount;
+// }
 // Fetch the 'ToPay' value from the 'order_Billing' collection for a given order ID
 Future<double?> fetchOrderToPay(String orderId) async {
   final doc = await FirebaseFirestore.instance
@@ -848,6 +870,17 @@ Future<double?> fetchOrderToPay(String orderId) async {
       .get();
   if (doc.exists && doc.data() != null && doc.data()!['ToPay'] != null) {
     return double.tryParse(doc.data()!['ToPay'].toString());
+  }
+  return null;
+}
+
+Future<double?> fetchOrderSergeFee(String orderId) async {
+  final doc = await FirebaseFirestore.instance
+      .collection('order_Billing')
+      .doc(orderId)
+      .get();
+  if (doc.exists && doc.data() != null && doc.data()!['serge_fee'] != null) {
+    return double.tryParse(doc.data()!['serge_fee'].toString());
   }
   return null;
 }
