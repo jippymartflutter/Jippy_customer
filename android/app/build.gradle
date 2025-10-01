@@ -57,7 +57,7 @@ android {
 
     defaultConfig {
         applicationId = "com.jippymart.customer"
-        minSdkVersion = 23
+        minSdkVersion = flutter.minSdkVersion
         targetSdk = 36  // Android 16 - Required for plugin compatibility
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
