@@ -1,0 +1,2 @@
+C:/Users/venky/StudioProjects/Jippy_customer/android/app/.cxx/RelWithDebInfo/6o4z2oxw/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/Users/venky/StudioProjects/Jippy_customer/android/app/.cxx/RelWithDebInfo/6o4z2oxw/arm64-v8a/CMakeFiles/rebuild_cache.dir

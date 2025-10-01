@@ -1,0 +1,17 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.jippymart.customer",
+      "sha256_cert_fingerprints": [
+        "EE:94:D8:FA:46:DD:AC:D3:D8:25:24:FB:14:DE:77:01:F2:2F:32:F8:B1:70:F8:FA:50:9F:AE:82:1C:19:2D:04",
+        "6E:DE:83:44:96:45:6F:B1:11:1D:A1:53:AF:7C:AA:41:0F:28:70:21:C2:F9:9E:12:2E:57:9E:54:54:4A:B0:70",
+        "00:86:CD:F8:85:87:81:3A:D5:EA:32:12:F0:FD:91:98:4E:D5:2A:B0:6F:36:C3:D1:CB:EC:7E:B5:B2:D9:23:83"
+      ]
+    }
+  }
+]

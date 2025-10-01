@@ -1,0 +1,2 @@
+C:/Users/LENOVO/Desktop/Foodie-Apps-8.3/customer/android/app/.cxx/RelWithDebInfo/2l2a1c68/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/LENOVO/Desktop/Foodie-Apps-8.3/customer/android/app/.cxx/RelWithDebInfo/2l2a1c68/x86_64/CMakeFiles/rebuild_cache.dir

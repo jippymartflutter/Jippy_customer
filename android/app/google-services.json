@@ -1,0 +1,176 @@
+{
+  "project_info": {
+    "project_number": "592427852800",
+    "firebase_url": "https://jippymart-27c08-default-rtdb.firebaseio.com",
+    "project_id": "jippymart-27c08",
+    "storage_bucket": "jippymart-27c08.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:592427852800:android:2b3bdce60d524d02d1a4e5",
+        "android_client_info": {
+          "package_name": "com.jippymart.customer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "592427852800-8a25j4o1449g71bm6lhrnamfcis3ud1v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jippymart.customer",
+            "certificate_hash": "025a96a59c4466c7e2bc344703a3855982572b99"
+          }
+        },
+        {
+          "client_id": "592427852800-ihpg7e9ajfmpkp656abg3grt02ne760d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jippymart.customer",
+            "certificate_hash": "6ef655b8ba29f9853af212c39f710f87c721c91b"
+          }
+        },
+        {
+          "client_id": "592427852800-oift2du3ol97ivabfjom0ut1n51jksbs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jippymart.customer",
+            "certificate_hash": "aa28ea468b5175380c694ca9c3966ec8de43c96b"
+          }
+        },
+        {
+          "client_id": "592427852800-g14719r8ejten85kqpasqmpqnhetce2q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRdk2BoUowc2FgvAwI0oDF_0fhbazoTQs"
+        },
+        {
+          "current_key": "AIzaSyASZwyooi_hX0vIvY8HZJ4SdfaFWLFVvyo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "592427852800-g14719r8ejten85kqpasqmpqnhetce2q.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "592427852800-g5n5pd4to75i8lq6l22o37bsbq8jfir3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.foodies.customer.ios"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:592427852800:android:57cd1bc03d1e1c77d1a4e5",
+        "android_client_info": {
+          "package_name": "com.jippymart.driver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "592427852800-g14719r8ejten85kqpasqmpqnhetce2q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRdk2BoUowc2FgvAwI0oDF_0fhbazoTQs"
+        },
+        {
+          "current_key": "AIzaSyASZwyooi_hX0vIvY8HZJ4SdfaFWLFVvyo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "592427852800-g14719r8ejten85kqpasqmpqnhetce2q.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "592427852800-g5n5pd4to75i8lq6l22o37bsbq8jfir3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.foodies.customer.ios"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:592427852800:android:406ac6af6733caddd1a4e5",
+        "android_client_info": {
+          "package_name": "com.jippymart.restaurant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "592427852800-29li09mheom9s2imv5764r2gpupl5c4t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jippymart.restaurant",
+            "certificate_hash": "f946d7e3a528135a78a7bddd84736b86f4db3e95"
+          }
+        },
+        {
+          "client_id": "592427852800-m93qmfuiqprs8m1f73rbpgu7npsj9e9r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jippymart.restaurant",
+            "certificate_hash": "6ef655b8ba29f9853af212c39f710f87c721c91b"
+          }
+        },
+        {
+          "client_id": "592427852800-obq0chn8h26cqd20vtrt6be7co48bltd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jippymart.restaurant",
+            "certificate_hash": "075dbedf4fd1254271b641ef30317d870a0d632b"
+          }
+        },
+        {
+          "client_id": "592427852800-g14719r8ejten85kqpasqmpqnhetce2q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRdk2BoUowc2FgvAwI0oDF_0fhbazoTQs"
+        },
+        {
+          "current_key": "AIzaSyASZwyooi_hX0vIvY8HZJ4SdfaFWLFVvyo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "592427852800-g14719r8ejten85kqpasqmpqnhetce2q.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "592427852800-g5n5pd4to75i8lq6l22o37bsbq8jfir3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.foodies.customer.ios"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
