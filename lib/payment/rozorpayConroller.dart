@@ -7,7 +7,8 @@ import 'package:http/http.dart' as http;
 import '../constant/constant.dart';
 
 class RazorPayController {
-  Future<CreateRazorPayOrderModel?> createOrderRazorPay({required double amount, required RazorPayModel? razorpayModel}) async {
+  Future<CreateRazorPayOrderModel?> createOrderRazorPay(
+      {required double amount, required RazorPayModel? razorpayModel}) async {
     final String orderId = DateTime.now().millisecondsSinceEpoch.toString();
     RazorPayModel razorPayData = razorpayModel!;
     print(razorPayData.razorpayKey);
@@ -25,7 +26,6 @@ class RazorPayController {
         "isSandBoxEnabled": razorPayData.isSandboxEnabled.toString(),
       },
     );
-
     if (response.statusCode == 500) {
       return null;
     } else {

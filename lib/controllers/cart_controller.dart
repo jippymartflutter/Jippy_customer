@@ -4653,6 +4653,7 @@ class CartController extends GetxController
     var options = {
       'key': razorPayModel.value.razorpayKey,
       'amount': amount * 100,
+      // 'amount': (amount * 100).round(), // ensures int paise value
       'name': 'GoRide',
       'order_id': orderId,
       "currency": "INR",
@@ -4673,6 +4674,9 @@ class CartController extends GetxController
     try {
       print('🔑 Opening Razorpay payment gateway with crash prevention...');
       final success = await _razorpayCrashPrevention.safeOpenPayment(options);
+      print("Razorpay key: ${options['key']}");
+      print("Razorpay order_id: ${options['order_id']}");
+      print("Razorpay amount: ${options['amount']}");
 
       if (success) {
         print('🔑 Razorpay payment gateway opened successfully');

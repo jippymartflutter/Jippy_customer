@@ -2631,6 +2631,8 @@ class _CartScreenState extends State<CartScreen> {
                   ],
                 ),
               ),
+
+        //changed here
         bottomNavigationBar: cartItem.isEmpty
             ? null
             : Container(
@@ -2977,6 +2979,7 @@ class _CartScreenState extends State<CartScreen> {
                                   controller.totalAmount.value.toString());
                             } else if (controller.selectedPaymentMethod.value ==
                                 PaymentGateway.razorpay.name) {
+                              print(" rozer pay started ");
                               // 🔑 BULLETPROOF VALIDATION ALREADY COMPLETED - Proceed with Razorpay
                               RazorPayController()
                                   .createOrderRazorPay(
@@ -2985,7 +2988,7 @@ class _CartScreenState extends State<CartScreen> {
                                           .toString()),
                                       razorpayModel:
                                           controller.razorPayModel.value)
-                                  .then((value) {
+                                  .then((value) async {
                                 if (value == null) {
                                   Get.back();
                                   ShowToastDialog.showToast(
@@ -2993,13 +2996,14 @@ class _CartScreenState extends State<CartScreen> {
                                           .tr);
                                 } else {
                                   CreateRazorPayOrderModel result = value;
+                                  print(
+                                      "${controller.totalAmount.value.toString()} totalamount rozer pay");
+                                  print(
+                                      "${value.amount.toString()} totalamount rozer pay new ");
                                   controller.openCheckout(
-                                      amount: controller.totalAmount.value
-                                          .toString(),
-                                      orderId: result.id);
+                                      amount: value.amount, orderId: result.id);
                                 }
                               });
-
                               /*
                                   // OLD RAZORPAY VALIDATION CODE - COMMENTED OUT FOR REFERENCE
                                   // Comprehensive address validation for Razorpay
