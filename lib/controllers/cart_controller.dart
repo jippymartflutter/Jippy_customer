@@ -4650,10 +4650,28 @@ class CartController extends GetxController
     isPaymentInProgress.value = true;
     print('🔑 Payment state set to in progress');
 
+    // 🔑 CRITICAL FIX: Validate Razorpay configuration before creating options
+    if (razorPayModel.value.razorpayKey == null || razorPayModel.value.razorpayKey!.isEmpty) {
+      print('🔑 ERROR: Razorpay key is null or empty');
+      isPaymentInProgress.value = false;
+      ShowToastDialog.showToast("Payment configuration error. Please contact support.".tr);
+      return;
+    }
+
+    if (!razorPayModel.value.razorpayKey!.startsWith('rzp_')) {
+      print('🔑 ERROR: Invalid Razorpay key format: ${razorPayModel.value.razorpayKey}');
+      isPaymentInProgress.value = false;
+      ShowToastDialog.showToast("Payment configuration error. Please contact support.".tr);
+      return;
+    }
+
+    // 🔑 CRITICAL FIX: Convert amount to int to pass validation
+    final int amountInPaise = (double.parse(amount.toString()) * 100).round();
+    print('🔑 DEBUG: Amount in paise: $amountInPaise');
+
     var options = {
       'key': razorPayModel.value.razorpayKey,
-      'amount': amount * 100,
-      // 'amount': (amount * 100).round(), // ensures int paise value
+      'amount': amountInPaise,  // ✅ FIXED: Now using int instead of double
       'name': 'GoRide',
       'order_id': orderId,
       "currency": "INR",
@@ -4701,13 +4719,28 @@ class CartController extends GetxController
   void handlePaymentSuccess(PaymentSuccessResponse response) {
     try {
       print('🔑 RAZORPAY SUCCESS - Processing payment success');
+      print('🔑 RAZORPAY SUCCESS - Handler called at: ${DateTime.now()}');
       print('DEBUG: Payment response: ${response.data}');
+      print('DEBUG: Payment ID: ${response.paymentId}');
+      print('DEBUG: Payment signature: ${response.signature}');
+      print('DEBUG: Payment order ID: ${response.orderId}');
+
+      // 🔑 CRITICAL: Store payment details for verification
+      _lastPaymentId = response.paymentId;
+      _lastPaymentSignature = response.signature;
+      _lastPaymentTime = DateTime.now();
+      isPaymentCompleted.value = true;
+
+      print('🔑 RAZORPAY SUCCESS - Payment details stored');
+      print('🔑 RAZORPAY SUCCESS - Payment ID stored: $_lastPaymentId');
+      print('🔑 RAZORPAY SUCCESS - Payment signature stored: $_lastPaymentSignature');
 
       // Show loading immediately to prevent user interaction
       ShowToastDialog.showLoader("Processing payment and placing order...".tr);
 
       // Add a small delay to ensure payment is fully processed
       Future.delayed(const Duration(milliseconds: 500), () {
+        print('🔑 RAZORPAY SUCCESS - Starting order placement after delay');
         placeOrderAfterPayment();
       });
     } catch (e) {

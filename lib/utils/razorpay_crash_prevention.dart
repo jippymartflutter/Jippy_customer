@@ -42,6 +42,9 @@ class RazorpayCrashPrevention {
       _razorpay!.on(Razorpay.EVENT_PAYMENT_SUCCESS, (PaymentSuccessResponse response) {
         try {
           log('RAZORPAY_CRASH_PREVENTION: Payment success received');
+          log('RAZORPAY_CRASH_PREVENTION: Payment ID: ${response.paymentId}');
+          log('RAZORPAY_CRASH_PREVENTION: Payment signature: ${response.signature}');
+          log('RAZORPAY_CRASH_PREVENTION: Payment data: ${response.data}');
           onSuccess(response);
         } catch (e) {
           log('RAZORPAY_CRASH_PREVENTION: Error in payment success handler: $e');
@@ -181,6 +184,8 @@ class RazorpayCrashPrevention {
   /// Ensures payment options are valid before opening payment
   bool _validatePaymentOptions(Map<String, dynamic> options) {
     try {
+      log('RAZORPAY_CRASH_PREVENTION: Validating payment options: $options');
+      
       // Check required fields
       final requiredFields = ['key', 'amount', 'name', 'order_id'];
       for (String field in requiredFields) {
@@ -190,21 +195,37 @@ class RazorpayCrashPrevention {
         }
       }
 
-      // Validate amount
+      // Validate amount - handle both int and double
       final amount = options['amount'];
-      if (amount is! int || amount <= 0) {
-        log('RAZORPAY_CRASH_PREVENTION: Invalid amount: $amount');
+      int amountValue;
+      if (amount is int) {
+        amountValue = amount;
+      } else if (amount is double) {
+        amountValue = amount.round();
+        log('RAZORPAY_CRASH_PREVENTION: Converted double amount to int: $amountValue');
+      } else {
+        log('RAZORPAY_CRASH_PREVENTION: Invalid amount type: ${amount.runtimeType}, value: $amount');
+        return false;
+      }
+      
+      if (amountValue <= 0) {
+        log('RAZORPAY_CRASH_PREVENTION: Invalid amount: $amountValue (must be > 0)');
         return false;
       }
 
       // Validate key format
       final key = options['key'] as String;
+      if (key.isEmpty) {
+        log('RAZORPAY_CRASH_PREVENTION: Razorpay key is empty');
+        return false;
+      }
+      
       if (!key.startsWith('rzp_')) {
-        log('RAZORPAY_CRASH_PREVENTION: Invalid Razorpay key format: $key');
+        log('RAZORPAY_CRASH_PREVENTION: Invalid Razorpay key format: $key (should start with rzp_)');
         return false;
       }
 
-      log('RAZORPAY_CRASH_PREVENTION: ✅ Payment options validated');
+      log('RAZORPAY_CRASH_PREVENTION: ✅ Payment options validated successfully');
       return true;
 
     } catch (e) {
