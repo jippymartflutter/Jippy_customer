@@ -1,10 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:customer/app/mart/widgets/mart_product_card.dart';
-
 import 'package:customer/controllers/category_detail_controller.dart';
 import 'package:customer/models/mart_item_model.dart';
 import 'package:customer/models/mart_subcategory_model.dart';
+import 'package:flutter/material.dart';
 
 class TestMartProductCardScreen extends StatelessWidget {
   const TestMartProductCardScreen({super.key});
@@ -88,20 +86,24 @@ class TestMartProductCardScreen extends StatelessWidget {
 
             // Row with 2 products side by side - FIXED HEIGHT 275px
             SizedBox(
-              height: 275, // Fixed height container - reduced to prevent overflow
+              height:
+                  275, // Fixed height container - reduced to prevent overflow
               child: Row(
                 children: [
                   // Product 1 - Simple Product (BALANCED CONTENT)
                   Expanded(
                     child: Container(
-                      height: 275, // Fixed height for consistent card sizing - reduced to prevent overflow
+                      height:
+                          275, // Fixed height for consistent card sizing - reduced to prevent overflow
                       child: _buildTestProductCard(
                         context,
                         MartItemModel(
                           id: 'test_product_001',
                           name: 'Fresh Organic Apples',
-                          description: 'Sweet organic apples from local farms with premium quality and amazing taste profile',
-                          photo: 'https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=400&h=300&fit=crop',
+                          description:
+                              'Sweet organic apples from local farms with premium quality and amazing taste profile',
+                          photo:
+                              'https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=400&h=300&fit=crop',
                           price: 120.0,
                           disPrice: 99.0, // Discounted price
                           categoryID: 'fruits',
@@ -122,20 +124,23 @@ class TestMartProductCardScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(width: 16),
-                  
+
                   // Product 2 - Product with Options (BALANCED CONTENT)
                   Expanded(
                     child: Container(
-                      height: 275, // Fixed height for consistent card sizing - reduced to prevent overflow
+                      height:
+                          275, // Fixed height for consistent card sizing - reduced to prevent overflow
                       child: _buildTestProductCard(
                         context,
                         MartItemModel(
                           id: 'test_product_002',
                           name: 'Coffee Beans',
-                          description: 'Quality coffee beans with multiple roasting levels and premium taste experience',
-                          photo: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=300&fit=crop',
+                          description:
+                              'Quality coffee beans with multiple roasting levels and premium taste experience',
+                          photo:
+                              'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=300&fit=crop',
                           price: 450.0,
                           disPrice: 399.0, // Discounted price
                           categoryID: 'beverages',
@@ -159,7 +164,8 @@ class TestMartProductCardScreen extends StatelessWidget {
                               'unit_price': 399.0,
                               'unit_measure': 250,
                               'unit_measure_type': 'g',
-                              'image': 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=300&h=300&fit=crop',
+                              'image':
+                                  'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=300&h=300&fit=crop',
                             },
                             {
                               'id': 'option_2',
@@ -169,7 +175,8 @@ class TestMartProductCardScreen extends StatelessWidget {
                               'unit_price': 450.0,
                               'unit_measure': 250,
                               'unit_measure_type': 'g',
-                              'image': 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=300&h=300&fit=crop',
+                              'image':
+                                  'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=300&h=300&fit=crop',
                             },
                             {
                               'id': 'option_3',
@@ -179,7 +186,8 @@ class TestMartProductCardScreen extends StatelessWidget {
                               'unit_price': 500.0,
                               'unit_measure': 250,
                               'unit_measure_type': 'g',
-                              'image': 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=300&h=300&fit=crop',
+                              'image':
+                                  'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=300&h=300&fit=crop',
                             },
                           ],
                         ),
@@ -193,11 +201,6 @@ class TestMartProductCardScreen extends StatelessWidget {
             ),
 
             const SizedBox(height: 32),
-
-
-
-
-
           ],
         ),
       ),
@@ -226,6 +229,4 @@ class TestMartProductCardScreen extends StatelessWidget {
       screenWidth: MediaQuery.of(context).size.width,
     );
   }
-
-
 }

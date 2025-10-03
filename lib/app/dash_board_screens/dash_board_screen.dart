@@ -1,4 +1,3 @@
-import 'package:customer/constant/constant.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
 import 'package:customer/controllers/dash_board_controller.dart';
 import 'package:customer/themes/app_them_data.dart';
@@ -22,9 +21,11 @@ class DashBoardScreen extends StatelessWidget {
             canPop: controller.canPopNow.value,
             onPopInvoked: (didPop) {
               if (didPop) return; // If already popped, don't handle again
-              
+
               final now = DateTime.now();
-              if (controller.currentBackPressTime == null || now.difference(controller.currentBackPressTime!) > const Duration(seconds: 2)) {
+              if (controller.currentBackPressTime == null ||
+                  now.difference(controller.currentBackPressTime!) >
+                      const Duration(seconds: 2)) {
                 controller.currentBackPressTime = now;
                 controller.canPopNow.value = false;
                 ShowToastDialog.showToast("Double press to exit".tr);
@@ -45,8 +46,12 @@ class DashBoardScreen extends StatelessWidget {
             //   }
             // },
             child: Scaffold(
-              body: controller.pageList[controller.selectedIndex.value],
-                bottomNavigationBar: Obx(() {
+              // body: controller.pageList[controller.selectedIndex.value],
+              body: Obx(() => IndexedStack(
+                    index: controller.selectedIndex.value,
+                    children: controller.pageList.toList(),
+                  )),
+              bottomNavigationBar: Obx(() {
                 final items = [
                   navigationBarItem(
                     themeChange,
@@ -77,18 +82,27 @@ class DashBoardScreen extends StatelessWidget {
                   //   controller: controller,
                   // ),
                 ];
-                final safeIndex = controller.selectedIndex.value.clamp(0, items.length - 1);
+                final safeIndex =
+                    controller.selectedIndex.value.clamp(0, items.length - 1);
                 return BottomNavigationBar(
                   type: BottomNavigationBarType.fixed,
                   showUnselectedLabels: true,
                   showSelectedLabels: true,
                   selectedFontSize: 12,
-                  selectedLabelStyle: const TextStyle(fontFamily: AppThemeData.bold),
-                  unselectedLabelStyle: const TextStyle(fontFamily: AppThemeData.bold),
+                  selectedLabelStyle:
+                      const TextStyle(fontFamily: AppThemeData.bold),
+                  unselectedLabelStyle:
+                      const TextStyle(fontFamily: AppThemeData.bold),
                   currentIndex: safeIndex,
-                  backgroundColor: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
-                  selectedItemColor: themeChange.getThem() ? AppThemeData.primary300 : AppThemeData.primary300,
-                  unselectedItemColor: themeChange.getThem() ? AppThemeData.grey300 : AppThemeData.grey600,
+                  backgroundColor: themeChange.getThem()
+                      ? AppThemeData.grey900
+                      : AppThemeData.grey50,
+                  selectedItemColor: themeChange.getThem()
+                      ? AppThemeData.primary300
+                      : AppThemeData.primary300,
+                  unselectedItemColor: themeChange.getThem()
+                      ? AppThemeData.grey300
+                      : AppThemeData.grey600,
                   onTap: (int index) {
                     final clampedIndex = index.clamp(0, items.length - 1);
                     controller.selectedIndex.value = clampedIndex;
@@ -101,7 +115,11 @@ class DashBoardScreen extends StatelessWidget {
         });
   }
 
-  BottomNavigationBarItem navigationBarItem(themeChange, {required int index, required String label, required String assetIcon, required DashBoardController controller}) {
+  BottomNavigationBarItem navigationBarItem(themeChange,
+      {required int index,
+      required String label,
+      required String assetIcon,
+      required DashBoardController controller}) {
     return BottomNavigationBarItem(
       icon: Padding(
         padding: const EdgeInsets.symmetric(vertical: 5),

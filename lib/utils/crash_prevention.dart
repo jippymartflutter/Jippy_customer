@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
-import 'package:get/get.dart';
 
 /// **COMPREHENSIVE CRASH PREVENTION SYSTEM**
-/// 
+///
 /// This utility prevents app crashes by:
 /// - Managing memory pressure
 /// - Preventing ANR (Application Not Responding)
@@ -21,15 +21,15 @@ class CrashPrevention {
   static const Duration _memoryCooldown = Duration(seconds: 2);
   int _currentMemoryOperations = 0;
   DateTime? _lastMemoryReset;
-  
+
   // **RATE LIMITING**
   static const Duration _operationCooldown = Duration(milliseconds: 500);
   final Map<String, DateTime> _lastOperationTimes = {};
-  
+
   // **ANR PREVENTION**
   static const Duration _anrThreshold = Duration(milliseconds: 300);
   final Map<String, Timer> _operationTimers = {};
-  
+
   // **ERROR RECOVERY**
   int _consecutiveErrors = 0;
   static const int _maxConsecutiveErrors = 3;
@@ -37,7 +37,7 @@ class CrashPrevention {
   static const Duration _errorCooldown = Duration(seconds: 5);
 
   /// **SAFE OPERATION EXECUTOR**
-  /// 
+  ///
   /// Executes operations with crash prevention measures
   static Future<T> safeExecute<T>(
     String operationName,
@@ -55,7 +55,7 @@ class CrashPrevention {
   }
 
   /// **MEMORY-SAFE OPERATION**
-  /// 
+  ///
   /// Ensures operations don't exceed memory limits
   static Future<T> memorySafeExecute<T>(
     String operationName,
@@ -71,7 +71,7 @@ class CrashPrevention {
   }
 
   /// **RATE-LIMITED OPERATION**
-  /// 
+  ///
   /// Prevents rapid successive operations
   static Future<T> rateLimitedExecute<T>(
     String operationName,
@@ -87,7 +87,7 @@ class CrashPrevention {
   }
 
   /// **DEEP LINK SAFE PROCESSING**
-  /// 
+  ///
   /// Special handling for deep link operations
   static Future<void> safeDeepLinkProcess(
     String deepLinkUrl,
@@ -101,7 +101,7 @@ class CrashPrevention {
   }
 
   /// **CLEANUP RESOURCES**
-  /// 
+  ///
   /// Call this when app is closing or memory is low
   static void cleanup() {
     final instance = CrashPrevention();
@@ -109,7 +109,7 @@ class CrashPrevention {
   }
 
   /// **GET SYSTEM STATUS**
-  /// 
+  ///
   /// Returns current system health status
   static Map<String, dynamic> getSystemStatus() {
     final instance = CrashPrevention();
@@ -149,16 +149,16 @@ class CrashPrevention {
       // Reset error count on success
       _consecutiveErrors = 0;
       return result;
-
     } catch (e) {
       _handleError(operationName, e);
-      
+
       if (allowRetry && _consecutiveErrors < _maxConsecutiveErrors) {
         log('CRASH_PREVENTION: Retrying operation: $operationName');
         await Future.delayed(Duration(milliseconds: 500 * _consecutiveErrors));
-        return _safeExecuteInternal(operationName, operation, timeout: timeout, allowRetry: false);
+        return _safeExecuteInternal(operationName, operation,
+            timeout: timeout, allowRetry: false);
       }
-      
+
       rethrow;
     }
   }
@@ -210,14 +210,14 @@ class CrashPrevention {
   ) async {
     try {
       log('CRASH_PREVENTION: Processing deep link: $deepLinkUrl');
-      
+
       // Rate limit deep link processing
       await _rateLimitedExecuteInternal(
         'deep_link_processing',
         processFunction,
         cooldown: const Duration(milliseconds: 1000),
       );
-      
+
       log('CRASH_PREVENTION: Deep link processed successfully: $deepLinkUrl');
     } catch (e) {
       log('CRASH_PREVENTION: Deep link processing failed: $deepLinkUrl - $e');
@@ -228,7 +228,8 @@ class CrashPrevention {
   bool _isInErrorRecoveryMode() {
     if (_consecutiveErrors >= _maxConsecutiveErrors) {
       final now = DateTime.now();
-      if (_lastErrorTime != null && now.difference(_lastErrorTime!) < _errorCooldown) {
+      if (_lastErrorTime != null &&
+          now.difference(_lastErrorTime!) < _errorCooldown) {
         return true;
       } else {
         // Reset error recovery mode
@@ -245,7 +246,8 @@ class CrashPrevention {
 
   Future<void> _waitForMemoryCooldown() async {
     final now = DateTime.now();
-    if (_lastMemoryReset == null || now.difference(_lastMemoryReset!) > _memoryCooldown) {
+    if (_lastMemoryReset == null ||
+        now.difference(_lastMemoryReset!) > _memoryCooldown) {
       _currentMemoryOperations = 0;
       _lastMemoryReset = now;
     } else {
@@ -256,10 +258,10 @@ class CrashPrevention {
   void _handleError(String operationName, dynamic error) {
     _consecutiveErrors++;
     _lastErrorTime = DateTime.now();
-    
+
     log('CRASH_PREVENTION: Error in operation: $operationName - $error');
     log('CRASH_PREVENTION: Consecutive errors: $_consecutiveErrors');
-    
+
     if (kDebugMode) {
       print('CRASH_PREVENTION: Error details: $error');
     }
@@ -271,14 +273,14 @@ class CrashPrevention {
       timer.cancel();
     }
     _operationTimers.clear();
-    
+
     // Reset counters
     _currentMemoryOperations = 0;
     _consecutiveErrors = 0;
     _lastMemoryReset = null;
     _lastErrorTime = null;
     _lastOperationTimes.clear();
-    
+
     log('CRASH_PREVENTION: Cleanup completed');
   }
 
@@ -297,14 +299,14 @@ class CrashPrevention {
 }
 
 /// **CRASH PREVENTION MIXIN**
-/// 
+///
 /// Add this mixin to controllers that need crash prevention
 mixin CrashPreventionMixin {
   final List<Timer> _crashPreventionTimers = [];
   final List<Completer<void>> _crashPreventionOperations = [];
 
   /// **SAFE CONTROLLER OPERATION**
-  /// 
+  ///
   /// Wraps controller operations with crash prevention
   Future<T> safeControllerOperation<T>(
     String operationName,
@@ -319,7 +321,7 @@ mixin CrashPreventionMixin {
   }
 
   /// **MEMORY-SAFE CONTROLLER OPERATION**
-  /// 
+  ///
   /// For memory-intensive controller operations
   Future<T> memorySafeControllerOperation<T>(
     String operationName,
@@ -334,7 +336,7 @@ mixin CrashPreventionMixin {
   }
 
   /// **RATE-LIMITED CONTROLLER OPERATION**
-  /// 
+  ///
   /// For operations that should be rate-limited
   Future<T> rateLimitedControllerOperation<T>(
     String operationName,
@@ -349,14 +351,14 @@ mixin CrashPreventionMixin {
   }
 
   /// **CLEANUP**
-  /// 
+  ///
   /// Call this in onClose()
   void cleanupCrashPrevention() {
     for (final timer in _crashPreventionTimers) {
       timer.cancel();
     }
     _crashPreventionTimers.clear();
-    
+
     for (final completer in _crashPreventionOperations) {
       if (!completer.isCompleted) {
         completer.completeError('Operation cancelled during cleanup');
@@ -367,7 +369,7 @@ mixin CrashPreventionMixin {
 }
 
 /// **DEEP LINK CRASH PREVENTION**
-/// 
+///
 /// Special handling for deep link operations
 class DeepLinkCrashPrevention {
   static final Map<String, DateTime> _lastDeepLinkTimes = {};
@@ -376,7 +378,7 @@ class DeepLinkCrashPrevention {
   static const int _maxConsecutiveDeepLinkErrors = 5;
 
   /// **SAFE DEEP LINK PROCESSING**
-  /// 
+  ///
   /// Processes deep links with crash prevention
   static Future<void> safeProcessDeepLink(
     String deepLinkUrl,
@@ -386,7 +388,7 @@ class DeepLinkCrashPrevention {
       // Check rate limiting
       final now = DateTime.now();
       final lastTime = _lastDeepLinkTimes[deepLinkUrl];
-      
+
       if (lastTime != null && now.difference(lastTime) < _deepLinkCooldown) {
         log('DEEP_LINK_CRASH_PREVENTION: Rate limiting deep link: $deepLinkUrl');
         return;
@@ -399,7 +401,7 @@ class DeepLinkCrashPrevention {
       }
 
       _lastDeepLinkTimes[deepLinkUrl] = now;
-      
+
       // Process with timeout
       await processFunction().timeout(
         const Duration(seconds: 5),
@@ -412,17 +414,16 @@ class DeepLinkCrashPrevention {
       // Reset error count on success
       _consecutiveDeepLinkErrors = 0;
       log('DEEP_LINK_CRASH_PREVENTION: Deep link processed successfully: $deepLinkUrl');
-
     } catch (e) {
       _consecutiveDeepLinkErrors++;
       log('DEEP_LINK_CRASH_PREVENTION: Deep link error: $deepLinkUrl - $e');
-      
+
       // Don't rethrow - deep links should fail gracefully
     }
   }
 
   /// **CLEANUP DEEP LINK PREVENTION**
-  /// 
+  ///
   /// Call this when app is closing
   static void cleanup() {
     _lastDeepLinkTimes.clear();

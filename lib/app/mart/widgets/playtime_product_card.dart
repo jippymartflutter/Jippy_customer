@@ -1,11 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:customer/utils/network_image_widget.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
+import 'package:customer/app/mart/mart_product_details_screen.dart';
 import 'package:customer/controllers/cart_controller.dart';
 import 'package:customer/models/cart_product_model.dart';
 import 'package:customer/models/mart_item_model.dart';
-import 'package:customer/app/mart/mart_product_details_screen.dart';
+import 'package:customer/utils/network_image_widget.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class PlaytimeProductCard extends StatelessWidget {
   final String volume;
@@ -55,7 +54,8 @@ class PlaytimeProductCard extends StatelessWidget {
         name: product!.name,
         photo: product!.photo,
         price: product!.price?.toString() ?? '0',
-        discountPrice: product!.disPrice?.toString() ?? product!.price?.toString() ?? '0',
+        discountPrice:
+            product!.disPrice?.toString() ?? product!.price?.toString() ?? '0',
         vendorID: martVendorID,
         vendorName: "Jippy Mart",
         categoryId: product!.categoryID,
@@ -92,7 +92,6 @@ class PlaytimeProductCard extends StatelessWidget {
           duration: Duration(seconds: 2),
         ),
       );
-
     } catch (e) {
       print('[CART] Error adding to cart: $e');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -122,8 +121,8 @@ class PlaytimeProductCard extends StatelessWidget {
                 // Navigate to product details screen if product model is available
                 if (product != null) {
                   Get.to(() => MartProductDetailsScreen(
-                    product: product!,
-                  ));
+                        product: product!,
+                      ));
                 } else {
                   // Show message if product model is not available
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -183,7 +182,7 @@ class PlaytimeProductCard extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Volume text (600 ml)
           // Positioned(
           //   left: 26, // 42 - 16 (container left offset)
@@ -199,7 +198,7 @@ class PlaytimeProductCard extends StatelessWidget {
           //     ),
           //   ),
           // ),
-          
+
           // Add button with plus icon
           Positioned(
             left: 13, // 29 - 16 (container left offset)
@@ -229,7 +228,7 @@ class PlaytimeProductCard extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Product name
           Positioned(
             left: 0,
@@ -251,7 +250,7 @@ class PlaytimeProductCard extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Current price and Original price side by side
           Positioned(
             left: 0,
@@ -286,7 +285,7 @@ class PlaytimeProductCard extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // Discount percentage
           Positioned(
             left: 0,
@@ -302,7 +301,7 @@ class PlaytimeProductCard extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Line separator
           // Positioned(
           //   left: 0,

@@ -7,7 +7,6 @@ import 'package:customer/constant/constant.dart';
 import 'package:customer/models/order_model.dart';
 import 'package:customer/models/user_model.dart';
 import 'package:customer/utils/fire_store_utils.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart' as flutterMap;
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:get/get.dart';
@@ -31,58 +30,93 @@ class LiveTrackingController extends GetxController {
   Rx<UserModel> driverUserModel = UserModel().obs;
   RxBool isLoading = true.obs;
 
-  Rx<location.LatLng> source = location.LatLng(21.1702, 72.8311).obs; // Start (e.g., Surat)
-  Rx<location.LatLng> current = location.LatLng(21.1800, 72.8400).obs; // Moving marker
-  Rx<location.LatLng> destination = location.LatLng(21.2000, 72.8600).obs; // Destination
+  Rx<location.LatLng> source =
+      location.LatLng(21.1702, 72.8311).obs; // Start (e.g., Surat)
+  Rx<location.LatLng> current =
+      location.LatLng(21.1800, 72.8400).obs; // Moving marker
+  Rx<location.LatLng> destination =
+      location.LatLng(21.2000, 72.8600).obs; // Destination
 
   getArgument() async {
     dynamic argumentData = Get.arguments;
     if (argumentData != null) {
       orderModel.value = argumentData['orderModel'];
-      FireStoreUtils.fireStore.collection(CollectionName.restaurantOrders).doc(orderModel.value.id).snapshots().listen((event) {
+      FireStoreUtils.fireStore
+          .collection(CollectionName.restaurantOrders)
+          .doc(orderModel.value.id)
+          .snapshots()
+          .listen((event) {
         if (event.data() != null) {
           OrderModel orderModelStream = OrderModel.fromJson(event.data()!);
           orderModel.value = orderModelStream;
-          FireStoreUtils.fireStore.collection(CollectionName.users).doc(orderModel.value.driverID).snapshots().listen((event) {
+          FireStoreUtils.fireStore
+              .collection(CollectionName.users)
+              .doc(orderModel.value.driverID)
+              .snapshots()
+              .listen((event) {
             if (event.data() != null) {
               driverUserModel.value = UserModel.fromJson(event.data()!);
               if (Constant.selectedMapType != 'osm') {
                 if (orderModel.value.status == Constant.orderShipped) {
                   getPolyline(
                       sourceLatitude: driverUserModel.value.location!.latitude,
-                      sourceLongitude: driverUserModel.value.location!.longitude,
+                      sourceLongitude:
+                          driverUserModel.value.location!.longitude,
                       destinationLatitude: orderModel.value.vendor!.latitude,
                       destinationLongitude: orderModel.value.vendor!.longitude);
                 } else if (orderModel.value.status == Constant.orderInTransit) {
                   getPolyline(
                       sourceLatitude: driverUserModel.value.location!.latitude,
-                      sourceLongitude: driverUserModel.value.location!.longitude,
-                      destinationLatitude: orderModel.value.address!.location!.latitude,
-                      destinationLongitude: orderModel.value.address!.location!.longitude);
+                      sourceLongitude:
+                          driverUserModel.value.location!.longitude,
+                      destinationLatitude:
+                          orderModel.value.address!.location!.latitude,
+                      destinationLongitude:
+                          orderModel.value.address!.location!.longitude);
                 } else {
                   getPolyline(
-                      sourceLatitude: orderModel.value.address!.location!.latitude,
-                      sourceLongitude: orderModel.value.address!.location!.longitude,
+                      sourceLatitude:
+                          orderModel.value.address!.location!.latitude,
+                      sourceLongitude:
+                          orderModel.value.address!.location!.longitude,
                       destinationLatitude: orderModel.value.vendor!.latitude,
                       destinationLongitude: orderModel.value.vendor!.longitude);
                 }
               } else {
                 if (orderModel.value.status == Constant.orderShipped) {
-                  current.value = location.LatLng(driverUserModel.value.location!.latitude ?? 0.0, driverUserModel.value.location!.longitude ?? 0.0);
-                  source.value = location.LatLng(orderModel.value.vendor!.latitude ?? 0.0, orderModel.value.vendor!.longitude ?? 0.0);
-                  destination.value = location.LatLng(orderModel.value.address!.location!.latitude ?? 0.0, orderModel.value.address!.location!.longitude ?? 0.0);
+                  current.value = location.LatLng(
+                      driverUserModel.value.location!.latitude ?? 0.0,
+                      driverUserModel.value.location!.longitude ?? 0.0);
+                  source.value = location.LatLng(
+                      orderModel.value.vendor!.latitude ?? 0.0,
+                      orderModel.value.vendor!.longitude ?? 0.0);
+                  destination.value = location.LatLng(
+                      orderModel.value.address!.location!.latitude ?? 0.0,
+                      orderModel.value.address!.location!.longitude ?? 0.0);
                   fetchRoute(current.value, source.value);
                   animateToSource();
                 } else if (orderModel.value.status == Constant.orderInTransit) {
-                  current.value = location.LatLng(driverUserModel.value.location!.latitude ?? 0.0, driverUserModel.value.location!.longitude ?? 0.0);
-                  source.value = location.LatLng(orderModel.value.vendor!.latitude ?? 0.0, orderModel.value.vendor!.longitude ?? 0.0);
-                  destination.value = location.LatLng(orderModel.value.address!.location!.latitude ?? 0.0, orderModel.value.address!.location!.longitude ?? 0.0);
+                  current.value = location.LatLng(
+                      driverUserModel.value.location!.latitude ?? 0.0,
+                      driverUserModel.value.location!.longitude ?? 0.0);
+                  source.value = location.LatLng(
+                      orderModel.value.vendor!.latitude ?? 0.0,
+                      orderModel.value.vendor!.longitude ?? 0.0);
+                  destination.value = location.LatLng(
+                      orderModel.value.address!.location!.latitude ?? 0.0,
+                      orderModel.value.address!.location!.longitude ?? 0.0);
                   fetchRoute(current.value, destination.value);
                   animateToSource();
                 } else {
-                  current.value = location.LatLng(driverUserModel.value.location!.latitude ?? 0.0, driverUserModel.value.location!.longitude ?? 0.0);
-                  source.value = location.LatLng(orderModel.value.vendor!.latitude ?? 0.0, orderModel.value.vendor!.longitude ?? 0.0);
-                  destination.value = location.LatLng(orderModel.value.address!.location!.latitude ?? 0.0, orderModel.value.address!.location!.longitude ?? 0.0);
+                  current.value = location.LatLng(
+                      driverUserModel.value.location!.latitude ?? 0.0,
+                      driverUserModel.value.location!.longitude ?? 0.0);
+                  source.value = location.LatLng(
+                      orderModel.value.vendor!.latitude ?? 0.0,
+                      orderModel.value.vendor!.longitude ?? 0.0);
+                  destination.value = location.LatLng(
+                      orderModel.value.address!.location!.latitude ?? 0.0,
+                      orderModel.value.address!.location!.longitude ?? 0.0);
                   fetchRoute(current.value, source.value);
                   animateToSource();
                 }
@@ -103,12 +137,16 @@ class LiveTrackingController extends GetxController {
   }
 
   void animateToSource() {
-    osmMapController.move(location.LatLng(driverUserModel.value.location!.latitude ?? 0.0, driverUserModel.value.location!.longitude ?? 0.0), 16);
+    osmMapController.move(
+        location.LatLng(driverUserModel.value.location!.latitude ?? 0.0,
+            driverUserModel.value.location!.longitude ?? 0.0),
+        16);
   }
 
   RxList<location.LatLng> routePoints = <location.LatLng>[].obs;
 
-  Future<void> fetchRoute(location.LatLng source, location.LatLng destination) async {
+  Future<void> fetchRoute(
+      location.LatLng source, location.LatLng destination) async {
     final url = Uri.parse(
       'https://router.project-osrm.org/route/v1/driving/${source.longitude},${source.latitude};${destination.longitude},${destination.latitude}?overview=full&geometries=geojson',
     );
@@ -134,8 +172,15 @@ class LiveTrackingController extends GetxController {
   BitmapDescriptor? destinationIcon;
   BitmapDescriptor? driverIcon;
 
-  void getPolyline({required double? sourceLatitude, required double? sourceLongitude, required double? destinationLatitude, required double? destinationLongitude}) async {
-    if (sourceLatitude != null && sourceLongitude != null && destinationLatitude != null && destinationLongitude != null) {
+  void getPolyline(
+      {required double? sourceLatitude,
+      required double? sourceLongitude,
+      required double? destinationLatitude,
+      required double? destinationLongitude}) async {
+    if (sourceLatitude != null &&
+        sourceLongitude != null &&
+        destinationLatitude != null &&
+        destinationLongitude != null) {
       List<LatLng> polylineCoordinates = [];
       PolylineRequest polylineRequest = PolylineRequest(
         origin: PointLatLng(sourceLatitude, sourceLongitude),
@@ -181,7 +226,12 @@ class LiveTrackingController extends GetxController {
             descriptor: destinationIcon!,
             rotation: 0.0);
       } else {
-        addMarker(latitude: orderModel.value.vendor!.latitude, longitude: orderModel.value.vendor!.longitude, id: "Departure", descriptor: departureIcon!, rotation: 0.0);
+        addMarker(
+            latitude: orderModel.value.vendor!.latitude,
+            longitude: orderModel.value.vendor!.longitude,
+            id: "Departure",
+            descriptor: departureIcon!,
+            rotation: 0.0);
         addMarker(
             latitude: orderModel.value.address!.location!.latitude,
             longitude: orderModel.value.address!.location!.longitude,
@@ -196,17 +246,29 @@ class LiveTrackingController extends GetxController {
 
   RxMap<MarkerId, Marker> markers = <MarkerId, Marker>{}.obs;
 
-  addMarker({required double? latitude, required double? longitude, required String id, required BitmapDescriptor descriptor, required double? rotation}) {
+  addMarker(
+      {required double? latitude,
+      required double? longitude,
+      required String id,
+      required BitmapDescriptor descriptor,
+      required double? rotation}) {
     MarkerId markerId = MarkerId(id);
-    Marker marker = Marker(markerId: markerId, icon: descriptor, position: LatLng(latitude ?? 0.0, longitude ?? 0.0), rotation: rotation ?? 0.0);
+    Marker marker = Marker(
+        markerId: markerId,
+        icon: descriptor,
+        position: LatLng(latitude ?? 0.0, longitude ?? 0.0),
+        rotation: rotation ?? 0.0);
     markers[markerId] = marker;
   }
 
   addMarkerSetup() async {
     if (Constant.selectedMapType != 'osm') {
-      final Uint8List departure = await Constant().getBytesFromAsset('assets/images/pickup.png', 100);
-      final Uint8List destination = await Constant().getBytesFromAsset('assets/images/dropoff.png', 100);
-      final Uint8List driver = await Constant().getBytesFromAsset('assets/images/food_delivery.png', 100);
+      final Uint8List departure =
+          await Constant().getBytesFromAsset('assets/images/pickup.png', 100);
+      final Uint8List destination =
+          await Constant().getBytesFromAsset('assets/images/dropoff.png', 100);
+      final Uint8List driver = await Constant()
+          .getBytesFromAsset('assets/images/food_delivery.png', 100);
       departureIcon = BitmapDescriptor.bytes(departure);
       destinationIcon = BitmapDescriptor.bytes(destination);
       driverIcon = BitmapDescriptor.bytes(driver);
@@ -233,7 +295,8 @@ class LiveTrackingController extends GetxController {
       width: 6,
     );
     polyLines[id] = polyline;
-    updateCameraLocation(polylineCoordinates.first, polylineCoordinates.last, mapController);
+    updateCameraLocation(
+        polylineCoordinates.first, polylineCoordinates.last, mapController);
   }
 
   Future<void> updateCameraLocation(
@@ -245,12 +308,17 @@ class LiveTrackingController extends GetxController {
 
     LatLngBounds bounds;
 
-    if (source.latitude > destination.latitude && source.longitude > destination.longitude) {
+    if (source.latitude > destination.latitude &&
+        source.longitude > destination.longitude) {
       bounds = LatLngBounds(southwest: destination, northeast: source);
     } else if (source.longitude > destination.longitude) {
-      bounds = LatLngBounds(southwest: LatLng(source.latitude, destination.longitude), northeast: LatLng(destination.latitude, source.longitude));
+      bounds = LatLngBounds(
+          southwest: LatLng(source.latitude, destination.longitude),
+          northeast: LatLng(destination.latitude, source.longitude));
     } else if (source.latitude > destination.latitude) {
-      bounds = LatLngBounds(southwest: LatLng(destination.latitude, source.longitude), northeast: LatLng(source.latitude, destination.longitude));
+      bounds = LatLngBounds(
+          southwest: LatLng(destination.latitude, source.longitude),
+          northeast: LatLng(source.latitude, destination.longitude));
     } else {
       bounds = LatLngBounds(southwest: source, northeast: destination);
     }
@@ -260,7 +328,8 @@ class LiveTrackingController extends GetxController {
     return checkCameraLocation(cameraUpdate, mapController);
   }
 
-  Future<void> checkCameraLocation(CameraUpdate cameraUpdate, GoogleMapController mapController) async {
+  Future<void> checkCameraLocation(
+      CameraUpdate cameraUpdate, GoogleMapController mapController) async {
     mapController.animateCamera(cameraUpdate);
     LatLngBounds l1 = await mapController.getVisibleRegion();
     LatLngBounds l2 = await mapController.getVisibleRegion();

@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:developer';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:get/get.dart';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:get/get.dart';
 
 /// **COMPREHENSIVE PERFORMANCE OPTIMIZER**
-/// 
+///
 /// This utility provides various optimizations to reduce app loading time
 /// from 3 seconds to 1 second by implementing:
 /// - Image preloading and caching
@@ -16,7 +16,8 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 /// - Network optimization
 /// - UI performance improvements
 class PerformanceOptimizer {
-  static final PerformanceOptimizer _instance = PerformanceOptimizer._internal();
+  static final PerformanceOptimizer _instance =
+      PerformanceOptimizer._internal();
   factory PerformanceOptimizer() => _instance;
   PerformanceOptimizer._internal();
 
@@ -57,7 +58,8 @@ class PerformanceOptimizer {
   }
 
   /// **MEASURE ASYNC OPERATION**
-  static Future<T> measureAsync<T>(String operationName, Future<T> Function() operation) async {
+  static Future<T> measureAsync<T>(
+      String operationName, Future<T> Function() operation) async {
     startTracking(operationName);
     try {
       final result = await operation();
@@ -73,7 +75,8 @@ class PerformanceOptimizer {
   /// **CACHE MANAGEMENT**
   static T? getFromCache<T>(String key) {
     final timestamp = _cacheTimestamps[key];
-    if (timestamp != null && DateTime.now().difference(timestamp) < _cacheExpiry) {
+    if (timestamp != null &&
+        DateTime.now().difference(timestamp) < _cacheExpiry) {
       final cached = _memoryCache[key];
       if (cached is T) {
         log('💾 PerformanceOptimizer - Cache HIT: $key');
@@ -99,7 +102,7 @@ class PerformanceOptimizer {
   /// **IMAGE OPTIMIZATION**
   static Future<void> preloadImages(List<String> imageUrls) async {
     startTracking('preload_images');
-    
+
     final futures = imageUrls.map((url) async {
       if (!_preloadedImages.contains(url)) {
         try {
@@ -164,10 +167,10 @@ class PerformanceOptimizer {
 
     // Make network call
     final result = await measureAsync('network_call_$cacheKey', networkCall);
-    
+
     // Cache result
     setCache(cacheKey, result);
-    
+
     return result;
   }
 
@@ -192,7 +195,7 @@ class PerformanceOptimizer {
       itemBuilder: (context, index) {
         final item = items[index];
         final itemId = '$cacheKey-$index';
-        
+
         // Lazy load if needed
         if (shouldLazyLoad(itemId)) {
           addToLazyLoadQueue(itemId);
@@ -200,7 +203,7 @@ class PerformanceOptimizer {
             markAsLazyLoaded(itemId);
           });
         }
-        
+
         return itemBuilder(context, item, index);
       },
     );
@@ -228,7 +231,7 @@ class PerformanceOptimizer {
       itemBuilder: (context, index) {
         final item = items[index];
         final itemId = '$cacheKey-$index';
-        
+
         // Lazy load if needed
         if (shouldLazyLoad(itemId)) {
           addToLazyLoadQueue(itemId);
@@ -236,7 +239,7 @@ class PerformanceOptimizer {
             markAsLazyLoaded(itemId);
           });
         }
-        
+
         return itemBuilder(context, item, index);
       },
     );
@@ -247,7 +250,7 @@ class PerformanceOptimizer {
     // Clear old cache entries
     final now = DateTime.now();
     final keysToRemove = <String>[];
-    
+
     _cacheTimestamps.forEach((key, timestamp) {
       if (now.difference(timestamp) > _cacheExpiry) {
         keysToRemove.add(key);
@@ -325,7 +328,7 @@ class PerformanceOptimizer {
   /// **INITIALIZATION**
   static Future<void> initialize() async {
     startTracking('initialization');
-    
+
     // Set up periodic memory optimization
     Timer.periodic(const Duration(minutes: 5), (_) {
       optimizeMemory();
@@ -379,10 +382,10 @@ class OptimizedNetworkImage extends StatelessWidget {
       width: width,
       height: height,
       fit: fit ?? BoxFit.cover,
-      placeholder: (context, url) => placeholder ?? 
-          const Center(child: CircularProgressIndicator()),
-      errorWidget: (context, url, error) => errorWidget ?? 
-          const Icon(Icons.error),
+      placeholder: (context, url) =>
+          placeholder ?? const Center(child: CircularProgressIndicator()),
+      errorWidget: (context, url, error) =>
+          errorWidget ?? const Icon(Icons.error),
       cacheManager: DefaultCacheManager(),
       maxWidthDiskCache: 1024,
       maxHeightDiskCache: 1024,
@@ -440,7 +443,8 @@ class PerformanceMonitorWidget extends StatefulWidget {
   });
 
   @override
-  State<PerformanceMonitorWidget> createState() => _PerformanceMonitorWidgetState();
+  State<PerformanceMonitorWidget> createState() =>
+      _PerformanceMonitorWidgetState();
 }
 
 class _PerformanceMonitorWidgetState extends State<PerformanceMonitorWidget> {

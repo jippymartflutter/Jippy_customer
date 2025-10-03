@@ -94,6 +94,7 @@ import '../models/product_model.dart';
 class CartController extends GetxController
     with CrashPreventionMixin, SystemCallOptimizerMixin {
   Future<Map<String, dynamic>> getWeather(double lat, double lon) async {
+    print(" getWeather ");
     const apiKey = "7885eed00855633516f769cf3646aace"; // 🔑 Add your key
     final url =
         "https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=$apiKey&units=metric";
@@ -237,6 +238,23 @@ class CartController extends GetxController
     await _initializeAddressWithPriority();
   }
 
+  // void initialLiseSurgeValue(double lat, double lon) async {
+  //   Map<String, dynamic> weather = await getWeather(
+  //     defaultAddress.location?.latitude ?? 0.0,
+  //     defaultAddress.location?.longitude ?? 0.0,
+  //   );
+  //   Map<String, dynamic> rules = await getSurgeRules();
+  //   surgePercent.value = calculateSurgeFee(weather, rules);
+  // }
+  Future<void> initialLiseSurgeValue(double lat, double lon) async {
+    Map<String, dynamic> weather = await getWeather(
+      lat,
+      lon,
+    );
+    Map<String, dynamic> rules = await getSurgeRules();
+    surgePercent.value = calculateSurgeFee(weather, rules);
+  }
+
   /// 🔑 NEW ADDRESS PRIORITY SYSTEM: saved address > current location > BLOCK ORDER
   Future<void> _initializeAddressWithPriority() async {
     try {
@@ -250,21 +268,11 @@ class CartController extends GetxController
         final defaultAddress = Constant.userModel!.shippingAddress!.firstWhere(
             (a) => a.isDefault == true,
             orElse: () => Constant.userModel!.shippingAddress!.first);
-
         selectedAddress.value = defaultAddress;
-        Map<String, dynamic> weather = await getWeather(
+        initialLiseSurgeValue(
           defaultAddress.location?.latitude ?? 0.0,
           defaultAddress.location?.longitude ?? 0.0,
         );
-        // Map<String, dynamic> weather = {
-        //   "weather": [
-        //     {"main": "Clouds"}
-        //   ],
-        //   "main": {"temp": 5.0}
-        // };
-        Map<String, dynamic> rules = await getSurgeRules();
-        surgePercent.value = calculateSurgeFee(weather, rules);
-
         print(" surge value ${surgePercent}");
         print(
             '🏠 [ADDRESS_PRIORITY] ✅ PRIORITY 1 SUCCESS - Using saved address: ${defaultAddress.address}');
@@ -292,18 +300,16 @@ class CartController extends GetxController
 
       if (homeScreenAddress != null) {
         selectedAddress.value = homeScreenAddress;
-        Map<String, dynamic> weather = await getWeather(
+        initialLiseSurgeValue(
           homeScreenAddress.location?.latitude ?? 0.0,
           homeScreenAddress.location?.longitude ?? 0.0,
         );
-        // Map<String, dynamic> weather = {
-        //   "weather": [
-        //     {"main": "Clouds"}
-        //   ],
-        //   "main": {"temp": 5}
-        // };
-        Map<String, dynamic> rules = await getSurgeRules();
-        surgePercent.value = calculateSurgeFee(weather, rules);
+        // Map<String, dynamic> weather = await getWeather(
+        //   homeScreenAddress.location?.latitude ?? 0.0,
+        //   homeScreenAddress.location?.longitude ?? 0.0,
+        // );
+        // Map<String, dynamic> rules = await getSurgeRules();
+        // surgePercent.value = calculateSurgeFee(weather, rules);
         print(" surge value ${surgePercent}");
         print(
             '🏠 [ADDRESS_PRIORITY] ✅ PRIORITY 2 SUCCESS - Using home screen address: ${homeScreenAddress.address}');
@@ -626,7 +632,6 @@ class CartController extends GetxController
 
     // **FIXED: Use existing bulletproof address validation method**
     _initializeAddressWithPriority();
-
     getCartData();
     getPaymentSettings();
 
@@ -4651,17 +4656,21 @@ class CartController extends GetxController
     print('🔑 Payment state set to in progress');
 
     // 🔑 CRITICAL FIX: Validate Razorpay configuration before creating options
-    if (razorPayModel.value.razorpayKey == null || razorPayModel.value.razorpayKey!.isEmpty) {
+    if (razorPayModel.value.razorpayKey == null ||
+        razorPayModel.value.razorpayKey!.isEmpty) {
       print('🔑 ERROR: Razorpay key is null or empty');
       isPaymentInProgress.value = false;
-      ShowToastDialog.showToast("Payment configuration error. Please contact support.".tr);
+      ShowToastDialog.showToast(
+          "Payment configuration error. Please contact support.".tr);
       return;
     }
 
     if (!razorPayModel.value.razorpayKey!.startsWith('rzp_')) {
-      print('🔑 ERROR: Invalid Razorpay key format: ${razorPayModel.value.razorpayKey}');
+      print(
+          '🔑 ERROR: Invalid Razorpay key format: ${razorPayModel.value.razorpayKey}');
       isPaymentInProgress.value = false;
-      ShowToastDialog.showToast("Payment configuration error. Please contact support.".tr);
+      ShowToastDialog.showToast(
+          "Payment configuration error. Please contact support.".tr);
       return;
     }
 
@@ -4671,7 +4680,7 @@ class CartController extends GetxController
 
     var options = {
       'key': razorPayModel.value.razorpayKey,
-      'amount': amountInPaise,  // ✅ FIXED: Now using int instead of double
+      'amount': amountInPaise, // ✅ FIXED: Now using int instead of double
       'name': 'GoRide',
       'order_id': orderId,
       "currency": "INR",
@@ -4733,7 +4742,8 @@ class CartController extends GetxController
 
       print('🔑 RAZORPAY SUCCESS - Payment details stored');
       print('🔑 RAZORPAY SUCCESS - Payment ID stored: $_lastPaymentId');
-      print('🔑 RAZORPAY SUCCESS - Payment signature stored: $_lastPaymentSignature');
+      print(
+          '🔑 RAZORPAY SUCCESS - Payment signature stored: $_lastPaymentSignature');
 
       // Show loading immediately to prevent user interaction
       ShowToastDialog.showLoader("Processing payment and placing order...".tr);

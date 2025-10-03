@@ -1,9 +1,9 @@
 import 'dart:developer';
-import 'package:flutter/foundation.dart';
+
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 /// **RAZORPAY CRASH PREVENTION UTILITY**
-/// 
+///
 /// This utility prevents Razorpay-related crashes by:
 /// - Handling NoSuchFieldError for activity_result_invalid_parameters
 /// - Providing safe Razorpay initialization
@@ -19,7 +19,7 @@ class RazorpayCrashPrevention {
   bool _isInitializationSafe = false;
 
   /// **SAFE RAZORPAY INITIALIZATION**
-  /// 
+  ///
   /// Initializes Razorpay with crash prevention measures
   Future<bool> safeInitialize({
     required Function(PaymentSuccessResponse) onSuccess,
@@ -28,7 +28,7 @@ class RazorpayCrashPrevention {
   }) async {
     try {
       log('RAZORPAY_CRASH_PREVENTION: Starting safe initialization...');
-      
+
       // ✅ CRITICAL: Check if Razorpay can be safely initialized
       if (!await _canSafelyInitializeRazorpay()) {
         log('RAZORPAY_CRASH_PREVENTION: Razorpay initialization not safe, skipping...');
@@ -37,7 +37,7 @@ class RazorpayCrashPrevention {
 
       // Create Razorpay instance
       _razorpay = Razorpay();
-      
+
       // Set up event handlers with error protection
       _razorpay!.on(Razorpay.EVENT_PAYMENT_SUCCESS, (PaymentSuccessResponse response) {
         try {
@@ -71,7 +71,7 @@ class RazorpayCrashPrevention {
 
       _isInitialized = true;
       _isInitializationSafe = true;
-      
+
       log('RAZORPAY_CRASH_PREVENTION: ✅ Safe initialization completed');
       return true;
 
@@ -84,7 +84,7 @@ class RazorpayCrashPrevention {
   }
 
   /// **SAFE PAYMENT OPENING**
-  /// 
+  ///
   /// Opens Razorpay payment with crash prevention
   Future<bool> safeOpenPayment(Map<String, dynamic> options) async {
     try {
@@ -101,7 +101,7 @@ class RazorpayCrashPrevention {
 
       log('RAZORPAY_CRASH_PREVENTION: Opening payment with validated options');
       _razorpay!.open(options);
-      
+
       log('RAZORPAY_CRASH_PREVENTION: ✅ Payment opened successfully');
       return true;
 
@@ -112,7 +112,7 @@ class RazorpayCrashPrevention {
   }
 
   /// **SAFE CLEANUP**
-  /// 
+  ///
   /// Safely cleans up Razorpay resources
   void safeCleanup() {
     try {
@@ -137,13 +137,13 @@ class RazorpayCrashPrevention {
   // **INTERNAL METHODS**
 
   /// **CHECK IF RAZORPAY CAN BE SAFELY INITIALIZED**
-  /// 
+  ///
   /// This method checks for the specific NoSuchFieldError that causes crashes
   Future<bool> _canSafelyInitializeRazorpay() async {
     try {
       // ✅ CRITICAL: Test if Razorpay can be instantiated without crashes
       final testRazorpay = Razorpay();
-      
+
       // ✅ NEW: Test if the problematic field exists
       // This prevents the NoSuchFieldError for activity_result_invalid_parameters
       try {
@@ -153,7 +153,7 @@ class RazorpayCrashPrevention {
           Razorpay.EVENT_PAYMENT_ERROR,
           Razorpay.EVENT_EXTERNAL_WALLET,
         ];
-        
+
         // If we can access these constants without crashing, it's safe
         for (String constant in constants) {
           if (constant.isEmpty) {
@@ -161,18 +161,18 @@ class RazorpayCrashPrevention {
             return false;
           }
         }
-        
+
         // Clean up test instance
         testRazorpay.clear();
-        
+
         log('RAZORPAY_CRASH_PREVENTION: ✅ Razorpay can be safely initialized');
         return true;
-        
+
       } catch (e) {
         log('RAZORPAY_CRASH_PREVENTION: ❌ Razorpay constant access failed: $e');
         return false;
       }
-      
+
     } catch (e) {
       log('RAZORPAY_CRASH_PREVENTION: ❌ Razorpay instantiation test failed: $e');
       return false;
@@ -180,12 +180,12 @@ class RazorpayCrashPrevention {
   }
 
   /// **VALIDATE PAYMENT OPTIONS**
-  /// 
+  ///
   /// Ensures payment options are valid before opening payment
   bool _validatePaymentOptions(Map<String, dynamic> options) {
     try {
       log('RAZORPAY_CRASH_PREVENTION: Validating payment options: $options');
-      
+
       // Check required fields
       final requiredFields = ['key', 'amount', 'name', 'order_id'];
       for (String field in requiredFields) {
@@ -207,7 +207,7 @@ class RazorpayCrashPrevention {
         log('RAZORPAY_CRASH_PREVENTION: Invalid amount type: ${amount.runtimeType}, value: $amount');
         return false;
       }
-      
+
       if (amountValue <= 0) {
         log('RAZORPAY_CRASH_PREVENTION: Invalid amount: $amountValue (must be > 0)');
         return false;
@@ -219,7 +219,7 @@ class RazorpayCrashPrevention {
         log('RAZORPAY_CRASH_PREVENTION: Razorpay key is empty');
         return false;
       }
-      
+
       if (!key.startsWith('rzp_')) {
         log('RAZORPAY_CRASH_PREVENTION: Invalid Razorpay key format: $key (should start with rzp_)');
         return false;
@@ -236,7 +236,7 @@ class RazorpayCrashPrevention {
 }
 
 /// **RAZORPAY CRASH PREVENTION MIXIN**
-/// 
+///
 /// Add this mixin to controllers that use Razorpay
 mixin RazorpayCrashPreventionMixin {
   final RazorpayCrashPrevention _razorpayCrashPrevention = RazorpayCrashPrevention();
@@ -272,7 +272,7 @@ mixin RazorpayCrashPreventionMixin {
 }
 
 /// **RAZORPAY ERROR RECOVERY**
-/// 
+///
 /// Handles specific Razorpay errors and provides recovery
 class RazorpayErrorRecovery {
   static int _consecutiveErrors = 0;
@@ -281,15 +281,15 @@ class RazorpayErrorRecovery {
   static const Duration _errorCooldown = Duration(minutes: 5);
 
   /// **HANDLE RAZORPAY ERROR**
-  /// 
+  ///
   /// Provides recovery strategies for Razorpay errors
   static Future<bool> handleError(dynamic error) async {
     try {
       _consecutiveErrors++;
       _lastErrorTime = DateTime.now();
-      
+
       log('RAZORPAY_ERROR_RECOVERY: Handling error: $error');
-      
+
       // Check if we should attempt recovery
       if (_consecutiveErrors > _maxConsecutiveErrors) {
         final now = DateTime.now();
@@ -323,19 +323,19 @@ class RazorpayErrorRecovery {
     try {
       // Strategy 1: Clean up and reinitialize
       log('RAZORPAY_ERROR_RECOVERY: Attempting cleanup and reinitialization...');
-      
+
       // Wait a bit before retrying
       await Future.delayed(const Duration(seconds: 2));
-      
+
       // Strategy 2: Check if it's a version compatibility issue
-      if (error.toString().contains('NoSuchFieldError') || 
+      if (error.toString().contains('NoSuchFieldError') ||
           error.toString().contains('activity_result_invalid_parameters')) {
         log('RAZORPAY_ERROR_RECOVERY: Detected version compatibility issue');
         return false; // This requires dependency update
       }
-      
+
       return true;
-      
+
     } catch (e) {
       log('RAZORPAY_ERROR_RECOVERY: Recovery attempt failed: $e');
       return false;

@@ -70,7 +70,7 @@ dependencies:
   qr_flutter: ^4.1.0
   shared_preferences: ^2.5.2
   sign_in_with_apple: ^7.0.1
-  syncfusion_flutter_datepicker: ^30.2.7
+  syncfusion_flutter_datepicker: ^31.1.19
   timer_count_down: ^2.2.2
   url_launcher: ^6.3.1
   uuid: ^4.5.1
@@ -117,6 +117,7 @@ dependencies:
   
   # Deep link handling
   app_links: ^6.1.4
+  font_awesome_flutter: ^10.9.1
 
 dependency_overrides:
   webview_flutter: ^4.7.0

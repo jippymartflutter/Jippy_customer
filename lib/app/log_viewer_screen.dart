@@ -1,10 +1,9 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:customer/utils/production_logger.dart';
+
 import 'package:customer/utils/app_lifecycle_logger.dart';
+import 'package:customer/utils/production_logger.dart';
+import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart' show SharePlus, ShareParams, XFile;
-import 'package:path_provider/path_provider.dart';
 
 class LogViewerScreen extends StatefulWidget {
   const LogViewerScreen({Key? key}) : super(key: key);
@@ -33,7 +32,7 @@ class _LogViewerScreenState extends State<LogViewerScreen> {
     try {
       // Get log file path
       final logFilePath = await ProductionLogger.getLogFilePath();
-      
+
       if (logFilePath != null) {
         final logFile = File(logFilePath);
         final exists = await logFile.exists();
@@ -48,7 +47,7 @@ class _LogViewerScreenState extends State<LogViewerScreen> {
 
       // Get log statistics
       _logStats = await ProductionLogger.getLogStats();
-      
+
       // Get app lifecycle statistics
       _appStats = await AppLifecycleLogger().getAppStats();
     } catch (e) {
@@ -204,8 +203,10 @@ class _LogViewerScreenState extends State<LogViewerScreen> {
                       ),
                       const SizedBox(height: 8),
                       if (_logStats.isNotEmpty) ...[
-                        Text('File Size: ${_logStats['file_size_mb'] ?? 'N/A'} MB'),
-                        Text('Log Entries: ${_logStats['log_entries'] ?? 'N/A'}'),
+                        Text(
+                            'File Size: ${_logStats['file_size_mb'] ?? 'N/A'} MB'),
+                        Text(
+                            'Log Entries: ${_logStats['log_entries'] ?? 'N/A'}'),
                         Text('Device ID: ${_logStats['device_id'] ?? 'N/A'}'),
                         Text('User ID: ${_logStats['user_id'] ?? 'N/A'}'),
                       ] else
@@ -213,7 +214,7 @@ class _LogViewerScreenState extends State<LogViewerScreen> {
                     ],
                   ),
                 ),
-                
+
                 // App Lifecycle Statistics
                 Container(
                   padding: const EdgeInsets.all(16),
@@ -230,17 +231,22 @@ class _LogViewerScreenState extends State<LogViewerScreen> {
                       ),
                       const SizedBox(height: 8),
                       if (_appStats.isNotEmpty) ...[
-                        Text('App Open Count: ${_appStats['app_open_count'] ?? 'N/A'}'),
-                        Text('Firebase User: ${_appStats['firebase_user'] ?? 'N/A'}'),
-                        Text('API Token Exists: ${_appStats['api_token_exists'] ?? 'N/A'}'),
-                        Text('Last Resume: ${_appStats['last_resume_time'] ?? 'N/A'}'),
-                        Text('Last Pause: ${_appStats['last_pause_time'] ?? 'N/A'}'),
+                        Text(
+                            'App Open Count: ${_appStats['app_open_count'] ?? 'N/A'}'),
+                        Text(
+                            'Firebase User: ${_appStats['firebase_user'] ?? 'N/A'}'),
+                        Text(
+                            'API Token Exists: ${_appStats['api_token_exists'] ?? 'N/A'}'),
+                        Text(
+                            'Last Resume: ${_appStats['last_resume_time'] ?? 'N/A'}'),
+                        Text(
+                            'Last Pause: ${_appStats['last_pause_time'] ?? 'N/A'}'),
                       ] else
                         const Text('No app statistics available'),
                     ],
                   ),
                 ),
-                
+
                 // Instructions
                 Container(
                   padding: const EdgeInsets.all(16),
@@ -258,7 +264,7 @@ class _LogViewerScreenState extends State<LogViewerScreen> {
                     ],
                   ),
                 ),
-                
+
                 // Log Content
                 Expanded(
                   child: Container(
