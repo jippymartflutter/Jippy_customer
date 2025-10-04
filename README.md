@@ -1,10 +1,7 @@
-<<<<<<< HEAD
-# Jippy_customer_Updates
-Jippy Customer Mobile App - Flutter
-=======
-# customer
 
-A new Flutter project.
+# Jippy Customer App
+
+A Flutter application for Jippy customer services.
 
 ## Getting Started
 
@@ -18,4 +15,3 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
->>>>>>> f4a6074 (Initial commit of customer app code)

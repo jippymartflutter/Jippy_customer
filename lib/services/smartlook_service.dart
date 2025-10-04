@@ -88,25 +88,71 @@ class SmartlookService {
     }
   }
 
-  /// ✅ NEW: Handle specific SessionRecordingStorage errors
+  /// ✅ ENHANCED: Handle specific SessionRecordingStorage errors with proper validation
   Future<void> _cleanupCorruptedSessionFiles() async {
     try {
       final Directory appDir = await getApplicationDocumentsDirectory();
       final Directory smartlookDir = Directory('${appDir.path}/smartlook');
       
       if (await smartlookDir.exists()) {
+        // ✅ CRITICAL FIX: Validate directory before operations
+        final stat = await smartlookDir.stat();
+        if (stat.type != FileSystemEntityType.directory) {
+          print('[SMARTLOOK] Smartlook path is not a directory, recreating...');
+          await smartlookDir.delete();
+          await smartlookDir.create(recursive: true);
+          return;
+        }
+        
         // Look for the specific session recording directory structure
         final Directory sessionRecordingDir = Directory('${smartlookDir.path}/session_recording');
         if (await sessionRecordingDir.exists()) {
           print('[SMARTLOOK] Found session_recording directory - cleaning up...');
           
-          // Delete the entire session_recording directory to prevent FileTreeWalk errors
-          await sessionRecordingDir.delete(recursive: true);
+          // ✅ SAFE DELETE: Use enhanced deletion with validation
+          await _safeDeleteDirectory(sessionRecordingDir);
+          await sessionRecordingDir.create(recursive: true);
           print('[SMARTLOOK] Deleted corrupted session_recording directory');
+        }
+        
+        // ✅ NEW: Clean up other problematic directories that cause crashes
+        final List<String> problemDirs = ['sessions', 'temp', 'cache'];
+        for (String dirName in problemDirs) {
+          final Directory dir = Directory('${smartlookDir.path}/$dirName');
+          if (await dir.exists()) {
+            print('[SMARTLOOK] Cleaning up $dirName directory...');
+            await _safeDeleteDirectory(dir);
+            await dir.create(recursive: true);
+          }
         }
       }
     } catch (e) {
       print('[SMARTLOOK] Error cleaning up corrupted session files: $e');
+    }
+  }
+  
+  /// ✅ NEW: Safe directory deletion that prevents the crash
+  Future<void> _safeDeleteDirectory(Directory dir) async {
+    try {
+      // Validate directory exists and is actually a directory
+      if (await dir.exists()) {
+        final stat = await dir.stat();
+        if (stat.type == FileSystemEntityType.directory) {
+          // Use a more careful deletion approach
+          await dir.delete(recursive: true);
+        } else {
+          print('[SMARTLOOK] Path is not a directory, deleting as file: ${dir.path}');
+          await File(dir.path).delete();
+        }
+      }
+    } catch (e) {
+      print('[SMARTLOOK] Safe directory deletion failed for ${dir.path}: $e');
+      // Try alternative cleanup approach
+      try {
+        await dir.delete();
+      } catch (e2) {
+        print('[SMARTLOOK] Alternative cleanup also failed: $e2');
+      }
     }
   }
 
