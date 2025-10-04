@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:customer/app/category_service/model/category_service_model.dart';
-import 'package:customer/services/api_service.dart';
+import 'package:customer/app/video_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -9,14 +9,23 @@ import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class CategoryServiceController extends GetxController {
+  String baseUrl = 'https://customer.jippymart.in/api/catering/';
   @override
   void onInit() {
     super.onInit();
     updateGuestCounts();
   }
 
+  // Modify the dropdown changer method
   void dropDownChanger(String newValue) {
     functionTypeController.text = newValue;
+    // Check if "Other" is selected
+    if (newValue == 'Other') {
+      isOtherFunctionType.value = true;
+    } else {
+      isOtherFunctionType.value = false;
+      otherFunctionTypeController.clear();
+    }
     update();
   }
 
@@ -42,7 +51,9 @@ class CategoryServiceController extends GetxController {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Select Date'),
+          title: const Text(
+            'Select Date',
+          ),
           content: SizedBox(
             height: 400,
             width: 400,
@@ -67,15 +78,17 @@ class CategoryServiceController extends GetxController {
     );
   }
 
-  void showSuccessDialog({required BuildContext context}) {
+  void showSuccessDialog({required BuildContext context, String message = ''}) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Success!'),
-          content: const Text(
-              'Your catering request has been submitted successfully. '
-              'We will contact you shortly to confirm the details.'),
+          content: message.isNotEmpty
+              ? Text(message)
+              : const Text(
+                  'Your catering request has been submitted successfully. '
+                  'We will contact you shortly to confirm the details.'),
           actions: [
             TextButton(
               child: const Text('OK'),
@@ -106,27 +119,43 @@ class CategoryServiceController extends GetxController {
     );
   }
 
+  // Update resetForm to clear the new field
   void resetForm() {
     formKey.currentState!.reset();
     selectedDate = DateTime.now();
     mealPreference = 'Veg';
     dateController.clear();
+    otherFunctionTypeController.clear();
+    isOtherFunctionType.value = false;
     update();
   }
 
   Future<Map<String, dynamic>> submitCateringRequest(
-      CateringRequest request) async {
+      CateringRequest request, BuildContext context) async {
     try {
       final response = await http.post(
-        Uri.parse('${ApiService.baseUrl}catering-requests'),
+        Uri.parse('${baseUrl}requests'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
         body: json.encode(request.toJson()),
       );
+      print("${json.encode(request.toJson())} submitCateringRequest body ");
+      print("${response.body} ${response.statusCode} submitCateringRequest ");
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => VideoSplashScreen(),
+          ),
+          (Route<dynamic> route) => false, // condition to stop removing
+        );
+        // Navigator.of(context).push(
+        //   MaterialPageRoute(
+        //     builder: (context) => DashBoardScreen(),
+        //   ),
+        // );
         return {
           'success': true,
           'message': 'Catering request submitted successfully!',
@@ -163,11 +192,12 @@ class CategoryServiceController extends GetxController {
       TextEditingController();
   final TextEditingController vegCountController = TextEditingController();
   final TextEditingController nonvegCountController = TextEditingController();
-
+  final TextEditingController otherFunctionTypeController =
+      TextEditingController();
   DateTime selectedDate = DateTime.now();
   String mealPreference = 'Veg';
   bool isLoading = false;
-
+  var isOtherFunctionType = false.obs;
   List<String> functionTypes = [
     'Wedding',
     'Birthday Party',
@@ -175,48 +205,134 @@ class CategoryServiceController extends GetxController {
     'Family Function',
     'Other'
   ];
-
-  Future<void> submitForm(
-      {required CategoryServiceController categoryServiceController,
-      required BuildContext context}) async {
+  // Update the submitForm method to handle "Other" function type
+  Future<void> submitForm({
+    required CategoryServiceController categoryServiceController,
+    required BuildContext context,
+  }) async {
     if (!formKey.currentState!.validate()) return;
+
+    // If "Other" is selected, validate the other function type field
+    if (isOtherFunctionType.value &&
+        (otherFunctionTypeController.text.isEmpty ||
+            otherFunctionTypeController.text.trim().isEmpty)) {
+      showErrorDialog(
+        message: 'Please specify the function type',
+        context: context,
+      );
+      return;
+    }
+
     isLoading = true;
     update();
     try {
+      // Use the other function type if "Other" is selected
+      String finalFunctionType = isOtherFunctionType.value
+          ? otherFunctionTypeController.text
+          : functionTypeController.text;
+
       final request = CateringRequest(
         name: nameController.text,
         mobile: mobileController.text,
+        alternativeMobile: alterMobileNumber.text,
         email: emailController.text.isEmpty ? null : emailController.text,
         place: placeController.text,
         date: selectedDate,
         guests: int.parse(guestsController.text),
-        functionType: functionTypeController.text,
-        mealPreference: mealPreference,
+        functionType: finalFunctionType, // Use the final function type
+        mealPreference: mealPreference == "Veg"
+            ? "veg"
+            : mealPreference == "Non-Veg"
+                ? "non_veg"
+                : mealPreference == "Both"
+                    ? "both"
+                    : "veg",
         vegCount: int.parse(vegCountController.text),
         nonvegCount: int.parse(nonvegCountController.text),
         specialRequirements: specialRequirementsController.text.isEmpty
             ? null
             : specialRequirementsController.text,
       );
-
-      final result =
-          await categoryServiceController.submitCateringRequest(request);
-
-      if (result['success'] == true) {
-        showSuccessDialog(context: context);
+      final result = await categoryServiceController.submitCateringRequest(
+          request, context);
+      print("$result final result ");
+      if (result['success']) {
+        // Success flow
+        showSuccessDialog(
+          message: result['message'],
+          context: context,
+        );
         resetForm();
       } else {
+        // Error flow
+        final errors = result['errors'] as Map<String, dynamic>;
+        final errorMessages = errors.values
+            .expand((e) => e) // flatten lists
+            .join("\n"); // join into a string
+
         showErrorDialog(
-          message: result['message'],
+          message: errorMessages,
           context: context,
         );
       }
     } catch (e) {
       showErrorDialog(
-          message: 'An unexpected error occurred', context: context);
+        message: 'An unexpected error occurred ',
+        context: context,
+      );
     } finally {
       isLoading = false;
       update();
     }
   }
+
+  // Future<void> submitForm(
+  //     {required CategoryServiceController categoryServiceController,
+  //     required BuildContext context}) async {
+  //   if (!formKey.currentState!.validate()) return;
+  //   isLoading = true;
+  //   update();
+  //   try {
+  //     final request = CateringRequest(
+  //       name: nameController.text,
+  //       mobile: mobileController.text,
+  //       alternativeMobile: alterMobileNumber.text,
+  //       email: emailController.text.isEmpty ? null : emailController.text,
+  //       place: placeController.text,
+  //       date: selectedDate,
+  //       guests: int.parse(guestsController.text),
+  //       functionType: functionTypeController.text,
+  //       mealPreference: mealPreference == "Veg"
+  //           ? "veg"
+  //           : mealPreference == "Non-Veg"
+  //               ? "non_veg"
+  //               : mealPreference == "Both"
+  //                   ? "both"
+  //                   : "veg",
+  //       vegCount: int.parse(vegCountController.text),
+  //       nonvegCount: int.parse(nonvegCountController.text),
+  //       specialRequirements: specialRequirementsController.text.isEmpty
+  //           ? null
+  //           : specialRequirementsController.text,
+  //     );
+  //
+  //     final result =
+  //         await categoryServiceController.submitCateringRequest(request);
+  //     if (result['success'] == true) {
+  //       showSuccessDialog(context: context);
+  //       resetForm();
+  //     } else {
+  //       showErrorDialog(
+  //         message: result['errors'],
+  //         context: context,
+  //       );
+  //     }
+  //   } catch (e) {
+  //     showErrorDialog(
+  //         message: 'An unexpected error occurred', context: context);
+  //   } finally {
+  //     isLoading = false;
+  //     update();
+  //   }
+  // }
 }

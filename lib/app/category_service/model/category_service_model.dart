@@ -2,6 +2,7 @@
 class CateringRequest {
   final String name;
   final String mobile;
+  final String? alternativeMobile;
   final String? email;
   final String place;
   final DateTime date;
@@ -15,6 +16,7 @@ class CateringRequest {
   CateringRequest({
     required this.name,
     required this.mobile,
+    this.alternativeMobile,
     this.email,
     required this.place,
     required this.date,
@@ -30,6 +32,7 @@ class CateringRequest {
     return {
       'name': name,
       'mobile': mobile,
+      'alternative_mobile': alternativeMobile,
       'email': email,
       'place': place,
       'date': date.toIso8601String().split('T')[0],
@@ -40,5 +43,22 @@ class CateringRequest {
       'nonveg_count': nonvegCount,
       'special_requirements': specialRequirements,
     };
+  }
+
+  factory CateringRequest.fromJson(Map<String, dynamic> json) {
+    return CateringRequest(
+      name: json['name'],
+      mobile: json['mobile'],
+      alternativeMobile: json['alternative_mobile'],
+      email: json['email'],
+      place: json['place'],
+      date: DateTime.parse(json['date']),
+      guests: json['guests'],
+      functionType: json['function_type'],
+      mealPreference: json['meal_preference'],
+      vegCount: json['veg_count'],
+      nonvegCount: json['nonveg_count'],
+      specialRequirements: json['special_requirements'],
+    );
   }
 }

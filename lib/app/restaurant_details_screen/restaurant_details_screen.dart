@@ -1,4 +1,5 @@
 import 'package:customer/app/cart_screen/cart_screen.dart';
+import 'package:customer/app/restaurant_details_screen/widget/restaurant_detail_shimmer_widget.dart';
 import 'package:customer/app/review_list_screen/review_list_screen.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
@@ -136,998 +137,1035 @@ class RestaurantDetailsScreen extends StatelessWidget {
               ),
             ),
             floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-            body: NestedScrollView(
-              headerSliverBuilder:
-                  (BuildContext context, bool innerBoxIsScrolled) {
-                return <Widget>[
-                  SliverAppBar(
-                    expandedHeight: Responsive.height(30, context),
-                    floating: true,
-                    pinned: true,
-                    automaticallyImplyLeading: false,
-                    backgroundColor: AppThemeData.primary300,
-                    title: Row(
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            Get.back();
-                          },
-                          child: Icon(
-                            Icons.arrow_back,
-                            color: themeChange.getThem()
-                                ? AppThemeData.grey50
-                                : AppThemeData.grey50,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            controller.vendorModel.value.title ?? "",
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
+            body: RefreshIndicator(
+              onRefresh: controller.getArgument,
+              child: NestedScrollView(
+                headerSliverBuilder:
+                    (BuildContext context, bool innerBoxIsScrolled) {
+                  return <Widget>[
+                    SliverAppBar(
+                      expandedHeight: Responsive.height(30, context),
+                      floating: true,
+                      pinned: true,
+                      automaticallyImplyLeading: false,
+                      backgroundColor: AppThemeData.primary300,
+                      title: Row(
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Get.back();
+                            },
+                            child: Icon(
+                              Icons.arrow_back,
                               color: themeChange.getThem()
                                   ? AppThemeData.grey50
                                   : AppThemeData.grey50,
-                              fontFamily: AppThemeData.semiBold,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 18,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    flexibleSpace: FlexibleSpaceBar(
-                      background: Stack(
-                        children: [
-                          controller.vendorModel.value.photos == null ||
-                                  controller.vendorModel.value.photos!.isEmpty
-                              ? Stack(
-                                  children: [
-                                    NetworkImageWidget(
-                                      imageUrl: controller
-                                          .vendorModel.value.photo
-                                          .toString(),
-                                      fit: BoxFit.cover,
-                                      width: Responsive.width(100, context),
-                                      height: Responsive.height(40, context),
-                                    ),
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          begin: const Alignment(0.00, -1.00),
-                                          end: const Alignment(0, 1),
-                                          colors: [
-                                            Colors.black.withOpacity(0),
-                                            Colors.black
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : PageView.builder(
-                                  physics: const BouncingScrollPhysics(),
-                                  controller: controller.pageController.value,
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: controller
-                                      .vendorModel.value.photos!.length,
-                                  padEnds: false,
-                                  pageSnapping: true,
-                                  allowImplicitScrolling: true,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    String image = controller
-                                        .vendorModel.value.photos![index];
-                                    return Stack(
-                                      children: [
-                                        NetworkImageWidget(
-                                          imageUrl: image.toString(),
-                                          fit: BoxFit.cover,
-                                          width: Responsive.width(100, context),
-                                          height:
-                                              Responsive.height(40, context),
-                                        ),
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              begin:
-                                                  const Alignment(0.00, -1.00),
-                                              end: const Alignment(0, 1),
-                                              colors: [
-                                                Colors.black.withOpacity(0),
-                                                Colors.black
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                ),
-                          Positioned(
-                            bottom: 10,
-                            right: 0,
-                            left: 0,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: List.generate(
-                                controller.vendorModel.value.photos!.length,
-                                (index) {
-                                  return Obx(
-                                    () => Container(
-                                      margin: const EdgeInsets.only(right: 5),
-                                      alignment: Alignment.centerLeft,
-                                      height: 9,
-                                      width: 9,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: controller.currentPage.value ==
-                                                index
-                                            ? AppThemeData.primary300
-                                            : AppThemeData.grey300,
-                                      ),
-                                    ),
-                                  );
-                                },
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              controller.vendorModel.value.title ?? "",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: themeChange.getThem()
+                                    ? AppThemeData.grey50
+                                    : AppThemeData.grey50,
+                                fontFamily: AppThemeData.semiBold,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 18,
                               ),
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  ),
-                ];
-              },
-              body: controller.isLoading.value
-                  ? Constant.loader(message: "Loading restaurant details...".tr)
-                  : Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: SingleChildScrollView(
-                        controller: controller.scrollController.value,
-                        physics: const BouncingScrollPhysics(),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                      flexibleSpace: FlexibleSpaceBar(
+                        background: Stack(
                           children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                            controller.vendorModel.value.photos == null ||
+                                    controller.vendorModel.value.photos!.isEmpty
+                                ? Stack(
                                     children: [
-                                      Expanded(
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              controller.vendorModel.value.title
-                                                  .toString(),
-                                              textAlign: TextAlign.start,
-                                              maxLines: 1,
-                                              style: TextStyle(
-                                                fontSize: 22,
-                                                overflow: TextOverflow.ellipsis,
-                                                fontFamily:
-                                                    AppThemeData.semiBold,
-                                                fontWeight: FontWeight.w600,
-                                                color: themeChange.getThem()
-                                                    ? AppThemeData.grey50
-                                                    : AppThemeData.grey900,
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width:
-                                                  Responsive.width(78, context),
-                                              child: Text(
-                                                controller
-                                                    .vendorModel.value.location
-                                                    .toString(),
-                                                textAlign: TextAlign.start,
-                                                style: TextStyle(
-                                                  fontFamily:
-                                                      AppThemeData.medium,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: themeChange.getThem()
-                                                      ? AppThemeData.grey400
-                                                      : AppThemeData.grey400,
-                                                ),
-                                              ),
-                                            )
-                                          ],
+                                      NetworkImageWidget(
+                                        imageUrl: controller
+                                            .vendorModel.value.photo
+                                            .toString(),
+                                        fit: BoxFit.cover,
+                                        width: Responsive.width(100, context),
+                                        height: Responsive.height(40, context),
+                                      ),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            begin: const Alignment(0.00, -1.00),
+                                            end: const Alignment(0, 1),
+                                            colors: [
+                                              Colors.black.withOpacity(0),
+                                              Colors.black
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                      Column(
+                                    ],
+                                  )
+                                : PageView.builder(
+                                    physics: const BouncingScrollPhysics(),
+                                    controller: controller.pageController.value,
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: controller
+                                        .vendorModel.value.photos!.length,
+                                    padEnds: false,
+                                    pageSnapping: true,
+                                    allowImplicitScrolling: true,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      String image = controller
+                                          .vendorModel.value.photos![index];
+                                      return Stack(
                                         children: [
+                                          NetworkImageWidget(
+                                            imageUrl: image.toString(),
+                                            fit: BoxFit.cover,
+                                            width:
+                                                Responsive.width(100, context),
+                                            height:
+                                                Responsive.height(40, context),
+                                          ),
                                           Container(
-                                            decoration: ShapeDecoration(
-                                              color: themeChange.getThem()
-                                                  ? AppThemeData.primary600
-                                                  : AppThemeData.primary50,
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          120)),
+                                            decoration: BoxDecoration(
+                                              gradient: LinearGradient(
+                                                begin: const Alignment(
+                                                    0.00, -1.00),
+                                                end: const Alignment(0, 1),
+                                                colors: [
+                                                  Colors.black.withOpacity(0),
+                                                  Colors.black
+                                                ],
+                                              ),
                                             ),
-                                            child: Padding(
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ),
+                            Positioned(
+                              bottom: 10,
+                              right: 0,
+                              left: 0,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: List.generate(
+                                  controller.vendorModel.value.photos!.length,
+                                  (index) {
+                                    return Obx(
+                                      () => Container(
+                                        margin: const EdgeInsets.only(right: 5),
+                                        alignment: Alignment.centerLeft,
+                                        height: 9,
+                                        width: 9,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: controller.currentPage.value ==
+                                                  index
+                                              ? AppThemeData.primary300
+                                              : AppThemeData.grey300,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+                //changed here1
+                body: controller.isLoading.value
+                    // ? Constant.loader(message: "Loading restaurant details...".tr)
+                    ? resturantDetailsShimmer()
+                    : Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: SingleChildScrollView(
+                          controller: controller.scrollController.value,
+                          physics: const BouncingScrollPhysics(),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Expanded(
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                controller
+                                                    .vendorModel.value.title
+                                                    .toString(),
+                                                textAlign: TextAlign.start,
+                                                maxLines: 1,
+                                                style: TextStyle(
+                                                  fontSize: 22,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  fontFamily:
+                                                      AppThemeData.semiBold,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: themeChange.getThem()
+                                                      ? AppThemeData.grey50
+                                                      : AppThemeData.grey900,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: Responsive.width(
+                                                    78, context),
+                                                child: Text(
+                                                  controller.vendorModel.value
+                                                      .location
+                                                      .toString(),
+                                                  textAlign: TextAlign.start,
+                                                  style: TextStyle(
+                                                    fontFamily:
+                                                        AppThemeData.medium,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: themeChange.getThem()
+                                                        ? AppThemeData.grey400
+                                                        : AppThemeData.grey400,
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                        Column(
+                                          children: [
+                                            Container(
+                                              decoration: ShapeDecoration(
+                                                color: themeChange.getThem()
+                                                    ? AppThemeData.primary600
+                                                    : AppThemeData.primary50,
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            120)),
+                                              ),
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 12,
+                                                        vertical: 4),
+                                                child: Row(
+                                                  children: [
+                                                    SvgPicture.asset(
+                                                      "assets/icons/ic_star.svg",
+                                                      colorFilter:
+                                                          ColorFilter.mode(
+                                                              AppThemeData
+                                                                  .primary300,
+                                                              BlendMode.srcIn),
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 5,
+                                                    ),
+                                                    Text(
+                                                      Constant.calculateReview(
+                                                          reviewCount: controller
+                                                              .vendorModel
+                                                              .value
+                                                              .reviewsCount!
+                                                              .toStringAsFixed(
+                                                                  0),
+                                                          reviewSum: controller
+                                                              .vendorModel
+                                                              .value
+                                                              .reviewsSum
+                                                              .toString()),
+                                                      style: TextStyle(
+                                                        color: themeChange
+                                                                .getThem()
+                                                            ? AppThemeData
+                                                                .primary300
+                                                            : AppThemeData
+                                                                .primary300,
+                                                        fontFamily: AppThemeData
+                                                            .semiBold,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                            InkWell(
+                                              onTap: () {
+                                                Get.to(const ReviewListScreen(),
+                                                    arguments: {
+                                                      "vendorModel": controller
+                                                          .vendorModel.value
+                                                    });
+                                              },
+                                              child: Text(
+                                                "${controller.vendorModel.value.reviewsCount} ${'Ratings'.tr}",
+                                                style: TextStyle(
+                                                  decoration:
+                                                      TextDecoration.underline,
+                                                  color: themeChange.getThem()
+                                                      ? AppThemeData.grey200
+                                                      : AppThemeData.grey700,
+                                                  fontFamily:
+                                                      AppThemeData.regular,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        /*
+                                  if (controller.vendorModel.value.reststatus == false) ...[
+                                    Container(
+                                  */
+                                        // Use the new clean workflow for status display
+                                        Obx(() {
+                                          final statusInfo = controller
+                                              .getRestaurantStatusInfo();
+                                          return Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 12, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: statusInfo['statusColor'],
+                                              borderRadius:
+                                                  BorderRadius.circular(24),
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(
+                                                  statusInfo['statusIcon'],
+                                                  color: Colors.white,
+                                                  size: 16,
+                                                ),
+                                                SizedBox(width: 6),
+                                                Text(
+                                                  statusInfo['statusText'],
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        }),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          child: Icon(
+                                            Icons.circle,
+                                            size: 5,
+                                            color: themeChange.getThem()
+                                                ? AppThemeData.grey400
+                                                : AppThemeData.grey500,
+                                          ),
+                                        ),
+                                        InkWell(
+                                          onTap: () {
+                                            if (controller.vendorModel.value
+                                                .workingHours!.isEmpty) {
+                                              ShowToastDialog.showToast(
+                                                  "Timing is not added by restaurant"
+                                                      .tr);
+                                            } else {
+                                              timeShowBottomSheet(
+                                                  context, controller);
+                                            }
+                                          },
+                                          child: Text(
+                                            "View Timings".tr,
+                                            textAlign: TextAlign.start,
+                                            maxLines: 1,
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              decoration:
+                                                  TextDecoration.underline,
+                                              decorationColor:
+                                                  AppThemeData.secondary300,
+                                              overflow: TextOverflow.ellipsis,
+                                              fontFamily: AppThemeData.semiBold,
+                                              fontWeight: FontWeight.w600,
+                                              color: themeChange.getThem()
+                                                  ? AppThemeData.secondary300
+                                                  : AppThemeData.secondary300,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    controller.vendorModel.value.dineInActive ==
+                                                true ||
+                                            (controller.vendorModel.value
+                                                        .openDineTime !=
+                                                    null &&
+                                                controller.vendorModel.value
+                                                    .openDineTime!.isNotEmpty)
+                                        ? const SizedBox() // Permanently hide Table Booking
+                                        : const SizedBox(),
+                                    controller.couponList.isEmpty
+                                        ? const SizedBox()
+                                        : Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              const SizedBox(
+                                                height: 10,
+                                              ),
+                                              Text(
+                                                "Additional Offers".tr,
+                                                textAlign: TextAlign.start,
+                                                maxLines: 1,
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  fontFamily:
+                                                      AppThemeData.semiBold,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: themeChange.getThem()
+                                                      ? AppThemeData.grey50
+                                                      : AppThemeData.grey900,
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                height: 10,
+                                              ),
+                                              CouponListView(
+                                                controller: controller,
+                                              ),
+                                            ],
+                                          ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text(
+                                      "Menu".tr,
+                                      textAlign: TextAlign.start,
+                                      maxLines: 1,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        overflow: TextOverflow.ellipsis,
+                                        fontFamily: AppThemeData.semiBold,
+                                        fontWeight: FontWeight.w600,
+                                        color: themeChange.getThem()
+                                            ? AppThemeData.grey50
+                                            : AppThemeData.grey900,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    TextFieldWidget(
+                                      controller: controller
+                                          .searchEditingController.value,
+                                      hintText:
+                                          'Search the dish, food, meals and more...'
+                                              .tr,
+                                      onchange: (value) {
+                                        controller.searchProduct(value);
+                                      },
+                                      prefix: Padding(
+                                        padding: const EdgeInsets.all(12),
+                                        child: SvgPicture.asset(
+                                            "assets/icons/ic_search.svg"),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                        height:
+                                            16), // Add spacing between search bar and filters
+                                    SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          InkWell(
+                                            onTap: () {
+                                              if (!controller.isVag.value) {
+                                                controller.isVag.value = true;
+                                                controller.isNonVag.value =
+                                                    false;
+                                                controller.filterRecord();
+                                              }
+                                            },
+                                            child: Container(
                                               padding:
                                                   const EdgeInsets.symmetric(
-                                                      horizontal: 12,
+                                                      horizontal: 6,
                                                       vertical: 4),
-                                              child: Row(
-                                                children: [
-                                                  SvgPicture.asset(
-                                                    "assets/icons/ic_star.svg",
-                                                    colorFilter:
-                                                        ColorFilter.mode(
-                                                            AppThemeData
-                                                                .primary300,
-                                                            BlendMode.srcIn),
-                                                  ),
-                                                  const SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                  Text(
-                                                    Constant.calculateReview(
-                                                        reviewCount: controller
-                                                            .vendorModel
-                                                            .value
-                                                            .reviewsCount!
-                                                            .toStringAsFixed(0),
-                                                        reviewSum: controller
-                                                            .vendorModel
-                                                            .value
-                                                            .reviewsSum
-                                                            .toString()),
-                                                    style: TextStyle(
+                                              decoration: controller.isVag.value
+                                                  ? ShapeDecoration(
                                                       color:
                                                           themeChange.getThem()
                                                               ? AppThemeData
-                                                                  .primary300
+                                                                  .primary600
                                                               : AppThemeData
-                                                                  .primary300,
+                                                                  .primary50,
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        side: BorderSide(
+                                                            width: 1,
+                                                            color: AppThemeData
+                                                                .primary300),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(120),
+                                                      ),
+                                                    )
+                                                  : ShapeDecoration(
+                                                      color: themeChange
+                                                              .getThem()
+                                                          ? AppThemeData.grey800
+                                                          : AppThemeData
+                                                              .grey100,
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        side: BorderSide(
+                                                            width: 1,
+                                                            color: themeChange
+                                                                    .getThem()
+                                                                ? AppThemeData
+                                                                    .grey700
+                                                                : AppThemeData
+                                                                    .grey200),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(120),
+                                                      ),
+                                                    ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  SvgPicture.asset(
+                                                    "assets/icons/ic_veg.svg",
+                                                    height: 16,
+                                                    width: 16,
+                                                  ),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    'Veg'.tr,
+                                                    style: TextStyle(
+                                                      color: themeChange
+                                                              .getThem()
+                                                          ? AppThemeData.grey100
+                                                          : AppThemeData
+                                                              .grey800,
                                                       fontFamily:
                                                           AppThemeData.semiBold,
                                                       fontWeight:
                                                           FontWeight.w600,
+                                                      fontSize: 12,
                                                     ),
                                                   ),
                                                 ],
                                               ),
                                             ),
                                           ),
+                                          const SizedBox(
+                                            width: 6,
+                                          ),
                                           InkWell(
                                             onTap: () {
-                                              Get.to(const ReviewListScreen(),
-                                                  arguments: {
-                                                    "vendorModel": controller
-                                                        .vendorModel.value
-                                                  });
+                                              if (!controller.isNonVag.value) {
+                                                controller.isNonVag.value =
+                                                    true;
+                                                controller.isVag.value = false;
+                                                controller.filterRecord();
+                                              }
                                             },
-                                            child: Text(
-                                              "${controller.vendorModel.value.reviewsCount} ${'Ratings'.tr}",
-                                              style: TextStyle(
-                                                decoration:
-                                                    TextDecoration.underline,
-                                                color: themeChange.getThem()
-                                                    ? AppThemeData.grey200
-                                                    : AppThemeData.grey700,
-                                                fontFamily:
-                                                    AppThemeData.regular,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      /*
-                                if (controller.vendorModel.value.reststatus == false) ...[
-                                  Container(
-                                */
-                                      // Use the new clean workflow for status display
-                                      Obx(() {
-                                        final statusInfo = controller
-                                            .getRestaurantStatusInfo();
-                                        return Container(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 12, vertical: 4),
-                                          decoration: BoxDecoration(
-                                            color: statusInfo['statusColor'],
-                                            borderRadius:
-                                                BorderRadius.circular(24),
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Icon(
-                                                statusInfo['statusIcon'],
-                                                color: Colors.white,
-                                                size: 16,
-                                              ),
-                                              SizedBox(width: 6),
-                                              Text(
-                                                statusInfo['statusText'],
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      }),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 10),
-                                        child: Icon(
-                                          Icons.circle,
-                                          size: 5,
-                                          color: themeChange.getThem()
-                                              ? AppThemeData.grey400
-                                              : AppThemeData.grey500,
-                                        ),
-                                      ),
-                                      InkWell(
-                                        onTap: () {
-                                          if (controller.vendorModel.value
-                                              .workingHours!.isEmpty) {
-                                            ShowToastDialog.showToast(
-                                                "Timing is not added by restaurant"
-                                                    .tr);
-                                          } else {
-                                            timeShowBottomSheet(
-                                                context, controller);
-                                          }
-                                        },
-                                        child: Text(
-                                          "View Timings".tr,
-                                          textAlign: TextAlign.start,
-                                          maxLines: 1,
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            decoration:
-                                                TextDecoration.underline,
-                                            decorationColor:
-                                                AppThemeData.secondary300,
-                                            overflow: TextOverflow.ellipsis,
-                                            fontFamily: AppThemeData.semiBold,
-                                            fontWeight: FontWeight.w600,
-                                            color: themeChange.getThem()
-                                                ? AppThemeData.secondary300
-                                                : AppThemeData.secondary300,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  controller.vendorModel.value.dineInActive ==
-                                              true ||
-                                          (controller.vendorModel.value
-                                                      .openDineTime !=
-                                                  null &&
-                                              controller.vendorModel.value
-                                                  .openDineTime!.isNotEmpty)
-                                      ? const SizedBox() // Permanently hide Table Booking
-                                      : const SizedBox(),
-                                  controller.couponList.isEmpty
-                                      ? const SizedBox()
-                                      : Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            const SizedBox(
-                                              height: 10,
-                                            ),
-                                            Text(
-                                              "Additional Offers".tr,
-                                              textAlign: TextAlign.start,
-                                              maxLines: 1,
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                overflow: TextOverflow.ellipsis,
-                                                fontFamily:
-                                                    AppThemeData.semiBold,
-                                                fontWeight: FontWeight.w600,
-                                                color: themeChange.getThem()
-                                                    ? AppThemeData.grey50
-                                                    : AppThemeData.grey900,
-                                              ),
-                                            ),
-                                            const SizedBox(
-                                              height: 10,
-                                            ),
-                                            CouponListView(
-                                              controller: controller,
-                                            ),
-                                          ],
-                                        ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Text(
-                                    "Menu".tr,
-                                    textAlign: TextAlign.start,
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      overflow: TextOverflow.ellipsis,
-                                      fontFamily: AppThemeData.semiBold,
-                                      fontWeight: FontWeight.w600,
-                                      color: themeChange.getThem()
-                                          ? AppThemeData.grey50
-                                          : AppThemeData.grey900,
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  TextFieldWidget(
-                                    controller: controller
-                                        .searchEditingController.value,
-                                    hintText:
-                                        'Search the dish, food, meals and more...'
-                                            .tr,
-                                    onchange: (value) {
-                                      controller.searchProduct(value);
-                                    },
-                                    prefix: Padding(
-                                      padding: const EdgeInsets.all(12),
-                                      child: SvgPicture.asset(
-                                          "assets/icons/ic_search.svg"),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                      height:
-                                          16), // Add spacing between search bar and filters
-                                  SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        InkWell(
-                                          onTap: () {
-                                            if (!controller.isVag.value) {
-                                              controller.isVag.value = true;
-                                              controller.isNonVag.value = false;
-                                              controller.filterRecord();
-                                            }
-                                          },
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 6, vertical: 4),
-                                            decoration: controller.isVag.value
-                                                ? ShapeDecoration(
-                                                    color: themeChange.getThem()
-                                                        ? AppThemeData
-                                                            .primary600
-                                                        : AppThemeData
-                                                            .primary50,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      side: BorderSide(
-                                                          width: 1,
-                                                          color: AppThemeData
-                                                              .primary300),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              120),
-                                                    ),
-                                                  )
-                                                : ShapeDecoration(
-                                                    color: themeChange.getThem()
-                                                        ? AppThemeData.grey800
-                                                        : AppThemeData.grey100,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      side: BorderSide(
-                                                          width: 1,
-                                                          color: themeChange
-                                                                  .getThem()
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 6,
+                                                      vertical: 4),
+                                              decoration: controller
+                                                      .isNonVag.value
+                                                  ? ShapeDecoration(
+                                                      color:
+                                                          themeChange.getThem()
                                                               ? AppThemeData
-                                                                  .grey700
+                                                                  .primary600
                                                               : AppThemeData
-                                                                  .grey200),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              120),
-                                                    ),
-                                                  ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                SvgPicture.asset(
-                                                  "assets/icons/ic_veg.svg",
-                                                  height: 16,
-                                                  width: 16,
-                                                ),
-                                                const SizedBox(width: 4),
-                                                Text(
-                                                  'Veg'.tr,
-                                                  style: TextStyle(
-                                                    color: themeChange.getThem()
-                                                        ? AppThemeData.grey100
-                                                        : AppThemeData.grey800,
-                                                    fontFamily:
-                                                        AppThemeData.semiBold,
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize: 12,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          width: 6,
-                                        ),
-                                        InkWell(
-                                          onTap: () {
-                                            if (!controller.isNonVag.value) {
-                                              controller.isNonVag.value = true;
-                                              controller.isVag.value = false;
-                                              controller.filterRecord();
-                                            }
-                                          },
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 6, vertical: 4),
-                                            decoration: controller
-                                                    .isNonVag.value
-                                                ? ShapeDecoration(
-                                                    color: themeChange.getThem()
-                                                        ? AppThemeData
-                                                            .primary600
-                                                        : AppThemeData
-                                                            .primary50,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      side: BorderSide(
-                                                          width: 1,
-                                                          color: AppThemeData
-                                                              .primary300),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              120),
-                                                    ),
-                                                  )
-                                                : ShapeDecoration(
-                                                    color: themeChange.getThem()
-                                                        ? AppThemeData.grey800
-                                                        : AppThemeData.grey100,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      side: BorderSide(
-                                                          width: 1,
-                                                          color: themeChange
-                                                                  .getThem()
-                                                              ? AppThemeData
-                                                                  .grey700
-                                                              : AppThemeData
-                                                                  .grey200),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              120),
-                                                    ),
-                                                  ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                SvgPicture.asset(
-                                                  "assets/icons/ic_nonveg.svg",
-                                                  height: 16,
-                                                  width: 16,
-                                                ),
-                                                const SizedBox(width: 4),
-                                                Text(
-                                                  'Non Veg'.tr,
-                                                  style: TextStyle(
-                                                    color: themeChange.getThem()
-                                                        ? AppThemeData.grey100
-                                                        : AppThemeData.grey800,
-                                                    fontFamily:
-                                                        AppThemeData.semiBold,
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize: 12,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          width: 6,
-                                        ),
-                                        InkWell(
-                                          onTap: () {
-                                            controller.toggleOfferFilter();
-                                          },
-                                          child: TweenAnimationBuilder<double>(
-                                            duration: Duration(seconds: 2),
-                                            tween:
-                                                Tween(begin: 0.95, end: 1.05),
-                                            builder: (context, value, child) {
-                                              return Transform.scale(
-                                                scale: controller
-                                                        .isOfferFilter.value
-                                                    ? 1.0
-                                                    : value,
-                                                child: AnimatedContainer(
-                                                  duration: Duration(
-                                                      milliseconds: 300),
-                                                  curve: Curves.easeInOut,
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 8,
-                                                      vertical: 6),
-                                                  decoration: controller
-                                                          .isOfferFilter.value
-                                                      ? BoxDecoration(
-                                                          gradient:
-                                                              LinearGradient(
-                                                            colors: [
-                                                              Color(
-                                                                  0xFFFF6B6B), // Coral red
-                                                              Color(
-                                                                  0xFFFF8E53), // Orange
-                                                              Color(
-                                                                  0xFFFF6B6B), // Coral red
-                                                            ],
-                                                            begin: Alignment
-                                                                .topLeft,
-                                                            end: Alignment
-                                                                .bottomRight,
-                                                            stops: [
-                                                              0.0,
-                                                              0.5,
-                                                              1.0
-                                                            ],
-                                                          ),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      120),
-                                                          boxShadow: [
-                                                            BoxShadow(
-                                                              color: Color(
-                                                                      0xFFFF6B6B)
-                                                                  .withOpacity(
-                                                                      0.4),
-                                                              blurRadius: 12,
-                                                              offset:
-                                                                  Offset(0, 3),
-                                                            ),
-                                                            BoxShadow(
-                                                              color: Color(
-                                                                      0xFFFF8E53)
-                                                                  .withOpacity(
-                                                                      0.2),
-                                                              blurRadius: 20,
-                                                              offset:
-                                                                  Offset(0, 5),
-                                                            ),
-                                                          ],
-                                                          border: Border.all(
-                                                            color: Color(
-                                                                0xFFFF6B6B),
-                                                            width: 1.5,
-                                                          ),
-                                                        )
-                                                      : BoxDecoration(
-                                                          gradient:
-                                                              LinearGradient(
-                                                            colors: themeChange
-                                                                    .getThem()
-                                                                ? [
-                                                                    Color(0xFFFF6B6B)
-                                                                        .withOpacity(
-                                                                            0.15), // Subtle coral
-                                                                    Color(0xFFFF8E53)
-                                                                        .withOpacity(
-                                                                            0.1), // Subtle orange
-                                                                  ]
-                                                                : [
-                                                                    Color(0xFFFF6B6B)
-                                                                        .withOpacity(
-                                                                            0.08), // Very subtle coral
-                                                                    Color(0xFFFF8E53)
-                                                                        .withOpacity(
-                                                                            0.05), // Very subtle orange
-                                                                  ],
-                                                            begin: Alignment
-                                                                .topLeft,
-                                                            end: Alignment
-                                                                .bottomRight,
-                                                          ),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      120),
-                                                          border: Border.all(
-                                                            color: Color(
-                                                                    0xFFFF6B6B)
-                                                                .withOpacity(
-                                                                    0.3),
-                                                            width: 1.5,
-                                                          ),
-                                                          boxShadow: [
-                                                            BoxShadow(
-                                                              color: Color(
-                                                                      0xFFFF6B6B)
-                                                                  .withOpacity(
-                                                                      0.1),
-                                                              blurRadius: 6,
-                                                              offset:
-                                                                  Offset(0, 2),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                  child: Row(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Icon(
-                                                        Icons.local_offer,
-                                                        size: 16,
-                                                        color: controller
-                                                                .isOfferFilter
-                                                                .value
-                                                            ? Colors.white
-                                                            : Color(0xFFFF6B6B),
+                                                                  .primary50,
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        side: BorderSide(
+                                                            width: 1,
+                                                            color: AppThemeData
+                                                                .primary300),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(120),
                                                       ),
-                                                      const SizedBox(width: 4),
-                                                      Text(
-                                                        'Offers'.tr,
-                                                        style: TextStyle(
+                                                    )
+                                                  : ShapeDecoration(
+                                                      color: themeChange
+                                                              .getThem()
+                                                          ? AppThemeData.grey800
+                                                          : AppThemeData
+                                                              .grey100,
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        side: BorderSide(
+                                                            width: 1,
+                                                            color: themeChange
+                                                                    .getThem()
+                                                                ? AppThemeData
+                                                                    .grey700
+                                                                : AppThemeData
+                                                                    .grey200),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(120),
+                                                      ),
+                                                    ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  SvgPicture.asset(
+                                                    "assets/icons/ic_nonveg.svg",
+                                                    height: 16,
+                                                    width: 16,
+                                                  ),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    'Non Veg'.tr,
+                                                    style: TextStyle(
+                                                      color: themeChange
+                                                              .getThem()
+                                                          ? AppThemeData.grey100
+                                                          : AppThemeData
+                                                              .grey800,
+                                                      fontFamily:
+                                                          AppThemeData.semiBold,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 12,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            width: 6,
+                                          ),
+                                          InkWell(
+                                            onTap: () {
+                                              controller.toggleOfferFilter();
+                                            },
+                                            child:
+                                                TweenAnimationBuilder<double>(
+                                              duration: Duration(seconds: 2),
+                                              tween:
+                                                  Tween(begin: 0.95, end: 1.05),
+                                              builder: (context, value, child) {
+                                                return Transform.scale(
+                                                  scale: controller
+                                                          .isOfferFilter.value
+                                                      ? 1.0
+                                                      : value,
+                                                  child: AnimatedContainer(
+                                                    duration: Duration(
+                                                        milliseconds: 300),
+                                                    curve: Curves.easeInOut,
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 8,
+                                                        vertical: 6),
+                                                    decoration: controller
+                                                            .isOfferFilter.value
+                                                        ? BoxDecoration(
+                                                            gradient:
+                                                                LinearGradient(
+                                                              colors: [
+                                                                Color(
+                                                                    0xFFFF6B6B), // Coral red
+                                                                Color(
+                                                                    0xFFFF8E53), // Orange
+                                                                Color(
+                                                                    0xFFFF6B6B), // Coral red
+                                                              ],
+                                                              begin: Alignment
+                                                                  .topLeft,
+                                                              end: Alignment
+                                                                  .bottomRight,
+                                                              stops: [
+                                                                0.0,
+                                                                0.5,
+                                                                1.0
+                                                              ],
+                                                            ),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        120),
+                                                            boxShadow: [
+                                                              BoxShadow(
+                                                                color: Color(
+                                                                        0xFFFF6B6B)
+                                                                    .withOpacity(
+                                                                        0.4),
+                                                                blurRadius: 12,
+                                                                offset: Offset(
+                                                                    0, 3),
+                                                              ),
+                                                              BoxShadow(
+                                                                color: Color(
+                                                                        0xFFFF8E53)
+                                                                    .withOpacity(
+                                                                        0.2),
+                                                                blurRadius: 20,
+                                                                offset: Offset(
+                                                                    0, 5),
+                                                              ),
+                                                            ],
+                                                            border: Border.all(
+                                                              color: Color(
+                                                                  0xFFFF6B6B),
+                                                              width: 1.5,
+                                                            ),
+                                                          )
+                                                        : BoxDecoration(
+                                                            gradient:
+                                                                LinearGradient(
+                                                              colors: themeChange
+                                                                      .getThem()
+                                                                  ? [
+                                                                      Color(0xFFFF6B6B)
+                                                                          .withOpacity(
+                                                                              0.15), // Subtle coral
+                                                                      Color(0xFFFF8E53)
+                                                                          .withOpacity(
+                                                                              0.1), // Subtle orange
+                                                                    ]
+                                                                  : [
+                                                                      Color(0xFFFF6B6B)
+                                                                          .withOpacity(
+                                                                              0.08), // Very subtle coral
+                                                                      Color(0xFFFF8E53)
+                                                                          .withOpacity(
+                                                                              0.05), // Very subtle orange
+                                                                    ],
+                                                              begin: Alignment
+                                                                  .topLeft,
+                                                              end: Alignment
+                                                                  .bottomRight,
+                                                            ),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        120),
+                                                            border: Border.all(
+                                                              color: Color(
+                                                                      0xFFFF6B6B)
+                                                                  .withOpacity(
+                                                                      0.3),
+                                                              width: 1.5,
+                                                            ),
+                                                            boxShadow: [
+                                                              BoxShadow(
+                                                                color: Color(
+                                                                        0xFFFF6B6B)
+                                                                    .withOpacity(
+                                                                        0.1),
+                                                                blurRadius: 6,
+                                                                offset: Offset(
+                                                                    0, 2),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                    child: Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Icon(
+                                                          Icons.local_offer,
+                                                          size: 16,
                                                           color: controller
                                                                   .isOfferFilter
                                                                   .value
                                                               ? Colors.white
                                                               : Color(
                                                                   0xFFFF6B6B),
-                                                          fontFamily:
-                                                              AppThemeData
-                                                                  .semiBold,
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                          fontSize: 12,
-                                                          shadows: controller
-                                                                  .isOfferFilter
-                                                                  .value
-                                                              ? [
-                                                                  Shadow(
-                                                                    color: Colors
-                                                                        .black
-                                                                        .withOpacity(
-                                                                            0.3),
-                                                                    offset:
-                                                                        Offset(
-                                                                            0,
-                                                                            1),
-                                                                    blurRadius:
-                                                                        2,
-                                                                  ),
-                                                                ]
-                                                              : null,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          width: 6,
-                                        ),
-                                        // Clear Filter Button
-                                        Builder(
-                                          builder: (context) {
-                                            try {
-                                              return Obx(() {
-                                                // Safety check for controller and reactive variables
-                                                if (!Get.isRegistered<
-                                                    RestaurantDetailsController>()) {
-                                                  return const SizedBox
-                                                      .shrink();
-                                                }
-
-                                                // Show clear button only if any filter is active
-                                                final hasActiveFilters = (controller
-                                                            .isVag.value ??
-                                                        false) ||
-                                                    (controller
-                                                            .isNonVag.value ??
-                                                        false) ||
-                                                    (controller.isOfferFilter
-                                                            .value ??
-                                                        false) ||
-                                                    (controller
-                                                        .searchEditingController
-                                                        .value
-                                                        .text
-                                                        .isNotEmpty);
-
-                                                if (!hasActiveFilters) {
-                                                  return const SizedBox
-                                                      .shrink();
-                                                }
-
-                                                return InkWell(
-                                                  onTap: () {
-                                                    try {
-                                                      controller
-                                                          .clearAllFilters();
-                                                    } catch (e) {
-                                                      print(
-                                                          'Error clearing filters: $e');
-                                                    }
-                                                  },
-                                                  child: Container(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        horizontal: 8,
-                                                        vertical: 6),
-                                                    decoration: BoxDecoration(
-                                                      color: themeChange
-                                                              .getThem()
-                                                          ? AppThemeData.grey700
-                                                          : AppThemeData
-                                                              .grey200,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              120),
-                                                      border: Border.all(
-                                                        width: 1,
-                                                        color: themeChange
-                                                                .getThem()
-                                                            ? AppThemeData
-                                                                .grey600
-                                                            : AppThemeData
-                                                                .grey300,
-                                                      ),
-                                                    ),
-                                                    child: Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Icon(
-                                                          Icons.clear,
-                                                          size: 16,
-                                                          color: themeChange
-                                                                  .getThem()
-                                                              ? AppThemeData
-                                                                  .grey100
-                                                              : AppThemeData
-                                                                  .grey800,
                                                         ),
                                                         const SizedBox(
                                                             width: 4),
                                                         Text(
-                                                          'Clear'.tr,
+                                                          'Offers'.tr,
                                                           style: TextStyle(
-                                                            color: themeChange
-                                                                    .getThem()
-                                                                ? AppThemeData
-                                                                    .grey100
-                                                                : AppThemeData
-                                                                    .grey800,
+                                                            color: controller
+                                                                    .isOfferFilter
+                                                                    .value
+                                                                ? Colors.white
+                                                                : Color(
+                                                                    0xFFFF6B6B),
                                                             fontFamily:
                                                                 AppThemeData
                                                                     .semiBold,
                                                             fontWeight:
                                                                 FontWeight.w600,
                                                             fontSize: 12,
+                                                            shadows: controller
+                                                                    .isOfferFilter
+                                                                    .value
+                                                                ? [
+                                                                    Shadow(
+                                                                      color: Colors
+                                                                          .black
+                                                                          .withOpacity(
+                                                                              0.3),
+                                                                      offset:
+                                                                          Offset(
+                                                                              0,
+                                                                              1),
+                                                                      blurRadius:
+                                                                          2,
+                                                                    ),
+                                                                  ]
+                                                                : null,
                                                           ),
                                                         ),
                                                       ],
                                                     ),
                                                   ),
                                                 );
-                                              });
-                                            } catch (e) {
-                                              print(
-                                                  'Error building clear filter button: $e');
-                                              return const SizedBox.shrink();
-                                            }
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            // if (controller.vendorModel.value.reststatus == false || controller.isOpen.value == false) ...[
-                            if (!controller.canAcceptOrders()) ...[
-                              const SizedBox(height: 20),
-                              Center(
-                                child: Column(
-                                  children: [
-                                    Icon(Icons.lock,
-                                        color: Colors.red, size: 48),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'This restaurant is currently closed.',
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          color: Colors.red,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    SizedBox(height: 8),
-                                    Obx(() {
-                                      final statusInfo =
-                                          controller.getRestaurantStatusInfo();
-
-                                      return Column(
-                                        children: [
-                                          Text(
-                                            statusInfo['reason'],
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                color: Colors.grey[600]),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                          if (statusInfo['nextOpeningTime'] !=
-                                              null) ...[
-                                            SizedBox(height: 4),
-                                            Text(
-                                              'Next opening: ${statusInfo['nextOpeningTime']}',
-                                              style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: Colors.grey[500]),
-                                              textAlign: TextAlign.center,
+                                              },
                                             ),
-                                          ],
+                                          ),
+                                          const SizedBox(
+                                            width: 6,
+                                          ),
+                                          // Clear Filter Button
+                                          Builder(
+                                            builder: (context) {
+                                              try {
+                                                return Obx(() {
+                                                  // Safety check for controller and reactive variables
+                                                  if (!Get.isRegistered<
+                                                      RestaurantDetailsController>()) {
+                                                    return const SizedBox
+                                                        .shrink();
+                                                  }
+
+                                                  // Show clear button only if any filter is active
+                                                  final hasActiveFilters =
+                                                      (controller.isVag
+                                                                  .value ??
+                                                              false) ||
+                                                          (controller.isNonVag
+                                                                  .value ??
+                                                              false) ||
+                                                          (controller
+                                                                  .isOfferFilter
+                                                                  .value ??
+                                                              false) ||
+                                                          (controller
+                                                              .searchEditingController
+                                                              .value
+                                                              .text
+                                                              .isNotEmpty);
+
+                                                  if (!hasActiveFilters) {
+                                                    return const SizedBox
+                                                        .shrink();
+                                                  }
+
+                                                  return InkWell(
+                                                    onTap: () {
+                                                      try {
+                                                        controller
+                                                            .clearAllFilters();
+                                                      } catch (e) {
+                                                        print(
+                                                            'Error clearing filters: $e');
+                                                      }
+                                                    },
+                                                    child: Container(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 8,
+                                                          vertical: 6),
+                                                      decoration: BoxDecoration(
+                                                        color: themeChange
+                                                                .getThem()
+                                                            ? AppThemeData
+                                                                .grey700
+                                                            : AppThemeData
+                                                                .grey200,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(120),
+                                                        border: Border.all(
+                                                          width: 1,
+                                                          color: themeChange
+                                                                  .getThem()
+                                                              ? AppThemeData
+                                                                  .grey600
+                                                              : AppThemeData
+                                                                  .grey300,
+                                                        ),
+                                                      ),
+                                                      child: Row(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Icon(
+                                                            Icons.clear,
+                                                            size: 16,
+                                                            color: themeChange
+                                                                    .getThem()
+                                                                ? AppThemeData
+                                                                    .grey100
+                                                                : AppThemeData
+                                                                    .grey800,
+                                                          ),
+                                                          const SizedBox(
+                                                              width: 4),
+                                                          Text(
+                                                            'Clear'.tr,
+                                                            style: TextStyle(
+                                                              color: themeChange
+                                                                      .getThem()
+                                                                  ? AppThemeData
+                                                                      .grey100
+                                                                  : AppThemeData
+                                                                      .grey800,
+                                                              fontFamily:
+                                                                  AppThemeData
+                                                                      .semiBold,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              fontSize: 12,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  );
+                                                });
+                                              } catch (e) {
+                                                print(
+                                                    'Error building clear filter button: $e');
+                                                return const SizedBox.shrink();
+                                              }
+                                            },
+                                          ),
                                         ],
-                                      );
-                                    }),
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
-                              const SizedBox(height: 20),
-                            ] else ...[
-                              ProductListView(controller: controller),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              // if (controller.vendorModel.value.reststatus == false || controller.isOpen.value == false) ...[
+                              if (!controller.canAcceptOrders()) ...[
+                                const SizedBox(height: 20),
+                                Center(
+                                  child: Column(
+                                    children: [
+                                      Icon(Icons.lock,
+                                          color: Colors.red, size: 48),
+                                      SizedBox(height: 8),
+                                      Text(
+                                        'This restaurant is currently closed.',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            color: Colors.red,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      SizedBox(height: 8),
+                                      Obx(() {
+                                        final statusInfo = controller
+                                            .getRestaurantStatusInfo();
+
+                                        return Column(
+                                          children: [
+                                            Text(
+                                              statusInfo['reason'],
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.grey[600]),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            if (statusInfo['nextOpeningTime'] !=
+                                                null) ...[
+                                              SizedBox(height: 4),
+                                              Text(
+                                                'Next opening: ${statusInfo['nextOpeningTime']}',
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.grey[500]),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ],
+                                          ],
+                                        );
+                                      }),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                              ] else ...[
+                                ProductListView(controller: controller),
+                              ],
                             ],
-                          ],
+                          ),
                         ),
                       ),
-                    ),
+              ),
             ),
           );
         });
@@ -4429,6 +4467,7 @@ Widget _buildProductsWithoutCategories(BuildContext context,
                                                   ],
                                                 ),
                                               )
+                                            //changed here
                                             : RoundedButtonFill(
                                                 title: "Add".tr,
                                                 width: 10,
@@ -4482,7 +4521,6 @@ Widget _buildProductsWithoutCategories(BuildContext context,
                                                         return;
                                                       }
                                                     }
-
                                                     String finalPrice = price;
                                                     String finalDiscountPrice =
                                                         disPrice;
@@ -4501,7 +4539,6 @@ Widget _buildProductsWithoutCategories(BuildContext context,
                                                               productModel.price
                                                                   .toString()); // original price for strikethrough
                                                     }
-
                                                     controller.addToCart(
                                                         productModel:
                                                             productModel,

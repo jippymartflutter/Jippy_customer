@@ -20,15 +20,15 @@ class SpecialPriceBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     print('[DEBUG] SpecialPriceBadge build() called');
     print('[DEBUG] Badge dimensions: ${width ?? 60} x ${height ?? 60}');
-    print('[DEBUG] Badge colors: Red background (#E73336), White text, Triangular design');
-    
+    print(
+        '[DEBUG] Badge colors: Red background (#E73336), White text, Triangular design');
+
     return Container(
       width: width ?? 60,
       height: height ?? 60,
       margin: margin ?? const EdgeInsets.only(right: 6),
       child: Stack(
         children: [
-          // Main triangular badge
           CustomPaint(
             size: Size(width ?? 60, height ?? 60),
             painter: TriangularBadgePainter(),
@@ -73,7 +73,7 @@ class TriangularBadgePainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     final path = Path();
-    
+
     // Create triangular shape
     path.moveTo(0, 0);
     path.lineTo(size.width, 0);
@@ -112,4 +112,4 @@ class TriangularBadgePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-} 
+}

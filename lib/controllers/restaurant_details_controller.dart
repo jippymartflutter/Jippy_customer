@@ -23,17 +23,18 @@ import 'package:get/get.dart';
 
 class RestaurantDetailsController extends GetxController {
   final String? scrollToProductId;
-  
+
   RestaurantDetailsController({this.scrollToProductId});
 
   /// Get restaurant by ID for deep linking
   Future<VendorModel?> getRestaurantById(String restaurantId) async {
     try {
-      print('[RESTAURANT CONTROLLER] 🔍 Fetching restaurant by ID: $restaurantId');
-      
+      print(
+          '[RESTAURANT CONTROLLER] 🔍 Fetching restaurant by ID: $restaurantId');
+
       // Query Firestore for restaurant by ID
       final doc = await FireStoreUtils.getVendorById(restaurantId);
-      
+
       if (doc != null) {
         print('[RESTAURANT CONTROLLER] ✅ Restaurant found: ${doc.title}');
         return doc;
@@ -46,8 +47,9 @@ class RestaurantDetailsController extends GetxController {
       return null;
     }
   }
-  
-  Rx<TextEditingController> searchEditingController = TextEditingController().obs;
+
+  Rx<TextEditingController> searchEditingController =
+      TextEditingController().obs;
 
   RxBool isLoading = true.obs;
   Rx<PageController> pageController = PageController().obs;
@@ -72,14 +74,12 @@ class RestaurantDetailsController extends GetxController {
 
   // **ENHANCED CACHE FOR FASTER FILTERING**
   Map<String, List<ProductModel>> _productsByCategory = {};
-  
-
 
   @override
   void onInit() {
     getArgument();
     super.onInit();
-    
+
     // If we need to scroll to a specific product, set the flag
     if (scrollToProductId != null) {
       shouldScrollToProduct.value = true;
@@ -87,35 +87,40 @@ class RestaurantDetailsController extends GetxController {
   }
 
   /// **DEEP LINK UPDATE METHOD**
-  /// 
+  ///
   /// Updates restaurant data when new deep links come in
   /// This ensures UI refreshes even when controller is already in memory
   void updateRestaurant(VendorModel newRestaurant) {
-    print('[RESTAURANT CONTROLLER] 🔄 Updating with new restaurant: ${newRestaurant.title}');
-    print('[RESTAURANT CONTROLLER] 🔄 Previous restaurant: ${vendorModel.value.title}');
+    print(
+        '[RESTAURANT CONTROLLER] 🔄 Updating with new restaurant: ${newRestaurant.title}');
+    print(
+        '[RESTAURANT CONTROLLER] 🔄 Previous restaurant: ${vendorModel.value.title}');
     print('[RESTAURANT CONTROLLER] 🔄 New restaurant ID: ${newRestaurant.id}');
-    print('[RESTAURANT CONTROLLER] 🔄 Previous restaurant ID: ${vendorModel.value.id}');
-    
+    print(
+        '[RESTAURANT CONTROLLER] 🔄 Previous restaurant ID: ${vendorModel.value.id}');
+
     // Update the vendor model directly
     vendorModel.value = newRestaurant;
     print('[RESTAURANT CONTROLLER] 🔄 Vendor model updated');
-    
+
     // **CRITICAL FIX: Clear promotional cache for new restaurant**
     PromotionalCacheService.clearRestaurantCache(vendorModel.value.id ?? '');
     _promotionalCacheLoaded = false;
-    print('[RESTAURANT CONTROLLER] 🔄 Cleared promotional cache for new restaurant');
-    
+    print(
+        '[RESTAURANT CONTROLLER] 🔄 Cleared promotional cache for new restaurant');
+
     // Reset loading state
     isLoading.value = true;
     print('[RESTAURANT CONTROLLER] 🔄 Loading state set to true');
-    
+
     // Reload all data for the new restaurant
     _loadCriticalDataInParallel().then((_) async {
       // **CRITICAL FIX: Reload promotional cache for new restaurant**
       await _loadPromotionalCache();
       isLoading.value = false;
       update(); // Force UI refresh
-      print('[RESTAURANT CONTROLLER] ✅ Restaurant updated successfully: ${newRestaurant.title}');
+      print(
+          '[RESTAURANT CONTROLLER] ✅ Restaurant updated successfully: ${newRestaurant.title}');
       print('[RESTAURANT CONTROLLER] ✅ UI refresh triggered');
     }).catchError((error) {
       print('[RESTAURANT CONTROLLER] ❌ Error updating restaurant: $error');
@@ -124,14 +129,16 @@ class RestaurantDetailsController extends GetxController {
   }
 
   void animateSlider() {
-    if (vendorModel.value.photos != null && vendorModel.value.photos!.isNotEmpty) {
+    if (vendorModel.value.photos != null &&
+        vendorModel.value.photos!.isNotEmpty) {
       Timer.periodic(const Duration(seconds: 2), (Timer timer) {
         // Check if controller is still valid and widget is mounted
-        if (!Get.isRegistered<RestaurantDetailsController>() || !pageController.value.hasClients) {
+        if (!Get.isRegistered<RestaurantDetailsController>() ||
+            !pageController.value.hasClients) {
           timer.cancel();
           return;
         }
-        
+
         if (currentPage < vendorModel.value.photos!.length - 1) {
           currentPage++;
         } else {
@@ -162,7 +169,8 @@ class RestaurantDetailsController extends GetxController {
   // **ULTRA-FAST PROMOTIONAL DATA CACHE FOR INSTANT BUTTON RESPONSE**
   Map<String, Map<String, dynamic>> _promotionalCache = {};
   Map<String, int> _promotionalLimits = {}; // Pre-calculated limits
-  Map<String, bool> _promotionalAvailability = {}; // Pre-calculated availability
+  Map<String, bool> _promotionalAvailability =
+      {}; // Pre-calculated availability
   bool _promotionalCacheLoaded = false;
 
   // **ULTRA-FAST METHOD TO LOAD AND PRE-CALCULATE ALL PROMOTIONAL DATA (OPTIMIZED)**
@@ -171,16 +179,17 @@ class RestaurantDetailsController extends GetxController {
       print('DEBUG: Promotional cache already loaded');
       return;
     }
-    
+
     try {
       print('DEBUG: Loading promotional cache using shared service...');
-      
+
       // **PERFORMANCE FIX: Use shared promotional cache service**
-      await PromotionalCacheService.loadRestaurantPromotions(vendorModel.value.id ?? '');
-      
+      await PromotionalCacheService.loadRestaurantPromotions(
+          vendorModel.value.id ?? '');
+
       _promotionalCacheLoaded = true;
       print('DEBUG: Promotional cache loaded successfully');
-      
+
       // **CRITICAL FIX: Force UI update after cache is loaded**
       update();
     } catch (e) {
@@ -190,15 +199,18 @@ class RestaurantDetailsController extends GetxController {
   }
 
   // **INSTANT METHOD TO GET CACHED PROMOTIONAL DATA (ZERO ASYNC)**
-  Map<String, dynamic>? _getCachedPromotionalData(String productId, String restaurantId) {
+  Map<String, dynamic>? _getCachedPromotionalData(
+      String productId, String restaurantId) {
     // **PERFORMANCE FIX: Use shared promotional cache service**
-    return PromotionalCacheService.getCachedPromotionalData(productId, restaurantId);
+    return PromotionalCacheService.getCachedPromotionalData(
+        productId, restaurantId);
   }
 
   // **INSTANT METHOD TO CHECK PROMOTIONAL AVAILABILITY (ZERO ASYNC)**
   bool _isPromotionalAvailable(String productId, String restaurantId) {
     // **PERFORMANCE FIX: Use shared promotional cache service**
-    return PromotionalCacheService.isPromotionalAvailable(productId, restaurantId);
+    return PromotionalCacheService.isPromotionalAvailable(
+        productId, restaurantId);
   }
 
   // **INSTANT METHOD TO GET PROMOTIONAL LIMIT (ZERO ASYNC)**
@@ -209,9 +221,10 @@ class RestaurantDetailsController extends GetxController {
 
   // **METHOD TO CHECK IF CART HAS PROMOTIONAL ITEMS**
   bool hasPromotionalItems() {
-    return cartItem.any((item) => item.promoId != null && item.promoId!.isNotEmpty);
+    return cartItem
+        .any((item) => item.promoId != null && item.promoId!.isNotEmpty);
   }
-  
+
   // **ULTRA-FAST METHOD TO GET PROMOTIONAL ITEM LIMIT (ZERO ASYNC)**
   int? getPromotionalItemLimit(String productId, String restaurantId) {
     if (!_isPromotionalAvailable(productId, restaurantId)) {
@@ -220,20 +233,23 @@ class RestaurantDetailsController extends GetxController {
     final limit = _getPromotionalLimit(productId, restaurantId);
     return limit > 0 ? limit : null;
   }
-  
+
   // **ULTRA-FAST METHOD TO CHECK IF PROMOTIONAL ITEM QUANTITY IS WITHIN LIMIT (ZERO ASYNC)**
-  bool isPromotionalItemQuantityAllowed(String productId, String restaurantId, int currentQuantity) {
+  bool isPromotionalItemQuantityAllowed(
+      String productId, String restaurantId, int currentQuantity) {
     if (currentQuantity <= 0) {
       return true; // Allow decrement
     }
-    
+
     if (!_isPromotionalAvailable(productId, restaurantId)) {
       return false;
     }
-    
+
     final limit = _getPromotionalLimit(productId, restaurantId);
     return currentQuantity <= limit;
   }
+
+  bool isLoadingAddButton = false;
 
   // **ULTRA-FAST METHOD TO GET ACTIVE PROMOTION WITH LAZY LOADING**
   Map<String, dynamic>? getActivePromotionForProduct({
@@ -244,10 +260,10 @@ class RestaurantDetailsController extends GetxController {
     if (!_promotionalCacheLoaded) {
       _loadPromotionalCache(); // **BACKGROUND LOADING: Non-blocking**
     }
-    
+
     // Use cached data instead of Firebase query - INSTANT RESPONSE
     final promo = _getCachedPromotionalData(productId, restaurantId);
-    
+
     // **DEBUG: Log promotional data access for troubleshooting**
     if (kDebugMode) {
       print('[DEBUG] getActivePromotionForProduct called:');
@@ -259,77 +275,78 @@ class RestaurantDetailsController extends GetxController {
         print('[DEBUG] - Promo data: $promo');
       }
     }
-    
+
     return promo;
   }
 
   /// **OPTIMIZED PARALLEL DATA LOADING ARCHITECTURE**
-  /// 
+  ///
   /// Loads all data in parallel for maximum performance:
   /// 1. Critical data (products, categories, favorites) - parallel
   /// 2. Secondary data (coupons, attributes, promotional) - parallel
   /// 3. Background data (promotional testing) - non-blocking
-  getArgument() async {
+  Future<void> getArgument() async {
     // PerformanceMonitor.startTiming('totalScreenLoad');
-    
+
     cartProvider.cartStream.listen(
       (event) async {
         cartItem.clear();
         cartItem.addAll(event);
       },
     );
-    
+
     dynamic argumentData = Get.arguments;
     if (argumentData != null) {
       vendorModel.value = argumentData['vendorModel'];
     }
-    
+
     animateSlider();
     statusCheck();
 
     // **STEP 1: Load critical data in parallel (products, categories, favorites)**
     await _loadCriticalDataInParallel();
-    
+
     // **STEP 2: Mark screen as ready immediately**
     isLoading.value = false;
     update();
-    
+
     // **STEP 3: Load secondary data in parallel (non-blocking)**
     _loadSecondaryDataInParallel();
-    
+
     // **STEP 4: Load promotional cache in parallel with secondary data (non-blocking)**
     _loadPromotionalCache(); // **ULTRA-FAST: Non-blocking parallel loading**
-    
+
     // PerformanceMonitor.endTiming('totalScreenLoad');
   }
 
   /// **PARALLEL CRITICAL DATA LOADING**
-  /// 
+  ///
   /// Loads products, categories, and favorites simultaneously
   Future<void> _loadCriticalDataInParallel() async {
     return await PerformanceMonitor.monitorOperation(
       'loadCriticalDataInParallel',
       () async {
         print("DEBUG: Starting parallel critical data loading");
-        
+
         // Load products, categories, and favorites in parallel
         await Future.wait([
           _loadProducts(),
           _loadCategories(),
           _loadFavorites(),
         ]);
-        
+
         // Build product cache after both products and categories are loaded
         _buildProductCache();
-        print("DEBUG: Cache built with ${_productsByCategory.length} categories");
-        
+        print(
+            "DEBUG: Cache built with ${_productsByCategory.length} categories");
+
         print("DEBUG: Parallel critical data loading completed");
       },
     );
   }
 
   /// **PARALLEL SECONDARY DATA LOADING**
-  /// 
+  ///
   /// Loads coupons, attributes, and other secondary data in parallel
   void _loadSecondaryDataInParallel() async {
     try {
@@ -337,7 +354,7 @@ class RestaurantDetailsController extends GetxController {
         'loadSecondaryDataInParallel',
         () async {
           print("DEBUG: Starting parallel secondary data loading");
-          
+
           if (Constant.userModel != null) {
             // Load coupons and attributes in parallel
             await Future.wait([
@@ -348,7 +365,7 @@ class RestaurantDetailsController extends GetxController {
             // Load only attributes if user not logged in
             await _loadAttributes();
           }
-          
+
           print("DEBUG: Parallel secondary data loading completed");
           update();
         },
@@ -358,27 +375,26 @@ class RestaurantDetailsController extends GetxController {
     }
   }
 
-
-
   /// **OPTIMIZED PRODUCT LOADING**
   Future<void> _loadProducts() async {
     return await PerformanceMonitor.monitorOperation(
       'loadProducts',
       () async {
         print("DEBUG: Loading products for vendor: ${vendorModel.value.id}");
-        
+
         // Check cache first with enhanced validation
         final cacheKey = 'products_${vendorModel.value.id}';
-        final cachedProducts = await CacheManager.get<List<ProductModel>>(cacheKey);
-        
+        final cachedProducts =
+            await CacheManager.get<List<ProductModel>>(cacheKey);
+
         if (cachedProducts != null && cachedProducts.isNotEmpty) {
           // PerformanceMonitor.recordCacheHit(cacheKey);
           allProductList.value = cachedProducts;
           productList.value = cachedProducts;
-          
+
           // **APPLY SMART SORTING AFTER LOADING FROM CACHE**
           _applySmartSorting();
-          
+
           print("DEBUG: Using cached products: ${cachedProducts.length} items");
         } else {
           // Cache miss or empty - clear potentially corrupted cache
@@ -387,19 +403,25 @@ class RestaurantDetailsController extends GetxController {
             CacheManager.clear(cacheKey);
           }
           // PerformanceMonitor.recordCacheMiss(cacheKey);
-          
+
           // **SINGLE QUERY FOR ALL PRODUCTS**
-          final products = await FireStoreUtils.getProductByVendorId(vendorModel.value.id.toString());
+          final products = await FireStoreUtils.getProductByVendorId(
+              vendorModel.value.id.toString());
           print("DEBUG: Loaded ${products.length} products");
 
-          if ((Constant.isSubscriptionModelApplied == true || Constant.adminCommission?.isEnabled == true) && vendorModel.value.subscriptionPlan != null) {
+          if ((Constant.isSubscriptionModelApplied == true ||
+                  Constant.adminCommission?.isEnabled == true) &&
+              vendorModel.value.subscriptionPlan != null) {
             if (vendorModel.value.subscriptionPlan?.itemLimit == '-1') {
               allProductList.value = products;
               productList.value = products;
             } else {
-              int selectedProduct = products.length < int.parse(vendorModel.value.subscriptionPlan?.itemLimit ?? '0')
+              int selectedProduct = products.length <
+                      int.parse(
+                          vendorModel.value.subscriptionPlan?.itemLimit ?? '0')
                   ? (products.isEmpty ? 0 : (products.length))
-                  : int.parse(vendorModel.value.subscriptionPlan?.itemLimit ?? '0');
+                  : int.parse(
+                      vendorModel.value.subscriptionPlan?.itemLimit ?? '0');
               allProductList.value = products.sublist(0, selectedProduct);
               productList.value = products.sublist(0, selectedProduct);
             }
@@ -417,12 +439,12 @@ class RestaurantDetailsController extends GetxController {
         }
 
         print("DEBUG: Final product list has ${productList.length} items");
-        
+
         // DEBUG: Cache diagnostics for testing
         if (kDebugMode) {
           await _logCacheDiagnostics();
         }
-        
+
         // Scroll to specific product if needed
         if (scrollToProductId != null) {
           scrollToProductAfterLoad();
@@ -430,29 +452,32 @@ class RestaurantDetailsController extends GetxController {
       },
     );
   }
-  
+
   /// **OPTIMIZED CATEGORY LOADING**
   Future<void> _loadCategories() async {
     return await PerformanceMonitor.monitorOperation(
       'loadCategories',
       () async {
         final cacheKey = 'categories_${vendorModel.value.id}';
-        final cachedCategories = await CacheManager.get<List<VendorCategoryModel>>(cacheKey);
-        
+        final cachedCategories =
+            await CacheManager.get<List<VendorCategoryModel>>(cacheKey);
+
         if (cachedCategories != null) {
           // PerformanceMonitor.recordCacheHit(cacheKey);
           vendorCategoryList.value = cachedCategories;
-          print("DEBUG: Using cached categories: ${cachedCategories.length} items");
+          print(
+              "DEBUG: Using cached categories: ${cachedCategories.length} items");
         } else {
           // PerformanceMonitor.recordCacheMiss(cacheKey);
-          
+
           // **SINGLE QUERY FOR ALL CATEGORIES**
-          final categories = await FireStoreUtils.getAllVendorCategories(vendorModel.value.id.toString());
+          final categories = await FireStoreUtils.getAllVendorCategories(
+              vendorModel.value.id.toString());
           print("DEBUG: Loaded ${categories.length} categories");
-          
+
           // Set categories directly instead of fetching one by one
           vendorCategoryList.value = categories;
-          
+
           // Cache the categories
           await CacheManager.setProductData(cacheKey, categories);
           print("DEBUG: Cached ${categories.length} categories");
@@ -468,7 +493,7 @@ class RestaurantDetailsController extends GetxController {
       () async {
         if (Constant.userModel != null) {
           print("DEBUG: Loading favorites for user");
-          
+
           // Load favorite restaurants and items in parallel
           await Future.wait([
             FireStoreUtils.getFavouriteRestaurant().then((value) {
@@ -493,24 +518,28 @@ class RestaurantDetailsController extends GetxController {
       'loadCoupons',
       () async {
         print("DEBUG: Loading coupons");
-        
+
         // Load vendor-specific and global coupons in parallel
         await Future.wait([
-          FireStoreUtils.getOfferByVendorId(vendorModel.value.id.toString()).then((value) {
+          FireStoreUtils.getOfferByVendorId(vendorModel.value.id.toString())
+              .then((value) {
             couponList.value = value;
             print("DEBUG: Loaded ${value.length} vendor coupons");
           }),
           FireStoreUtils.getHomeCoupon().then((globalCoupons) {
-            final filteredGlobalCoupons = globalCoupons.where((c) =>
-              c.resturantId == null ||
-              c.resturantId == '' ||
-              c.resturantId?.toUpperCase() == 'ALL'
-            ).toList();
-            couponList.addAll(filteredGlobalCoupons.where((g) => !couponList.any((c) => c.id == g.id)));
-            print("DEBUG: Loaded ${filteredGlobalCoupons.length} global coupons");
+            final filteredGlobalCoupons = globalCoupons
+                .where((c) =>
+                    c.resturantId == null ||
+                    c.resturantId == '' ||
+                    c.resturantId?.toUpperCase() == 'ALL')
+                .toList();
+            couponList.addAll(filteredGlobalCoupons
+                .where((g) => !couponList.any((c) => c.id == g.id)));
+            print(
+                "DEBUG: Loaded ${filteredGlobalCoupons.length} global coupons");
           }),
         ]);
-        
+
         print("DEBUG: Total coupons loaded: ${couponList.length}");
       },
     );
@@ -531,28 +560,27 @@ class RestaurantDetailsController extends GetxController {
       },
     );
   }
-  
 
-  
   /// **TEST METHOD TO VERIFY PROMOTIONAL DATA FETCHING**
   Future<void> testPromotionalDataFetching() async {
     return await PerformanceMonitor.monitorOperation(
       'testPromotionalDataFetching',
       () async {
         print('DEBUG: Testing promotional data fetching...');
-        
+
         // Test with a sample product ID (you can replace this with an actual product ID)
-        final testProductId = "TgogRU5rLNmkoO4Cz1d5"; // Your promotional product ID
+        final testProductId =
+            "TgogRU5rLNmkoO4Cz1d5"; // Your promotional product ID
         final testRestaurantId = vendorModel.value.id ?? '';
-        
+
         print('DEBUG: Testing with product ID: $testProductId');
         print('DEBUG: Testing with restaurant ID: $testRestaurantId');
-        
+
         final promo = await FireStoreUtils.getActivePromotionForProduct(
           productId: testProductId,
           restaurantId: testRestaurantId,
         );
-        
+
         if (promo != null) {
           print('DEBUG: ✅ Promotional data found:');
           print('DEBUG: - item_limit: ${promo['item_limit']}');
@@ -563,14 +591,15 @@ class RestaurantDetailsController extends GetxController {
           print('DEBUG: - end_time: ${promo['end_time']}');
           print('DEBUG: - isAvailable: ${promo['isAvailable']}');
         } else {
-          print('DEBUG: ❌ No promotional data found for product: $testProductId');
+          print(
+              'DEBUG: ❌ No promotional data found for product: $testProductId');
         }
       },
     );
   }
 
   /// **SMART PRODUCT CACHING SYSTEM**
-  /// 
+  ///
   /// Builds cache for instant category filtering
   void _buildProductCache() {
     _productsByCategory.clear();
@@ -584,7 +613,7 @@ class RestaurantDetailsController extends GetxController {
   }
 
   /// **INSTANT CATEGORY FILTERING**
-  /// 
+  ///
   /// Returns products by category from cache (no database queries)
   List<ProductModel> getProductsByCategory(String categoryId) {
     return _productsByCategory[categoryId] ?? [];
@@ -599,61 +628,73 @@ class RestaurantDetailsController extends GetxController {
       isVag.value = false;
       isNonVag.value = false;
       isOfferFilter.value = false;
-      productList.value = allProductList.where((p0) => p0.name!.toLowerCase().contains(name.toLowerCase())).toList();
+      productList.value = allProductList
+          .where((p0) => p0.name!.toLowerCase().contains(name.toLowerCase()))
+          .toList();
     }
     update();
   }
 
   filterRecord() {
     List<ProductModel> filteredList = [];
-    
+
     if (isVag.value == true && isNonVag.value == true) {
-      filteredList = allProductList.where((p0) => p0.nonveg == true || p0.nonveg == false).toList();
+      filteredList = allProductList
+          .where((p0) => p0.nonveg == true || p0.nonveg == false)
+          .toList();
     } else if (isVag.value == true && isNonVag.value == false) {
       filteredList = allProductList.where((p0) => p0.nonveg == false).toList();
     } else if (isVag.value == false && isNonVag.value == true) {
       filteredList = allProductList.where((p0) => p0.nonveg == true).toList();
     } else if (isVag.value == false && isNonVag.value == false) {
-      filteredList = allProductList.where((p0) => p0.nonveg == true || p0.nonveg == false).toList();
+      filteredList = allProductList
+          .where((p0) => p0.nonveg == true || p0.nonveg == false)
+          .toList();
     }
-    
+
     // Apply offer filter if enabled
     if (isOfferFilter.value) {
-      filteredList = filteredList.where((product) => _isPromotionalItem(product)).toList();
+      filteredList =
+          filteredList.where((product) => _isPromotionalItem(product)).toList();
     }
-    
+
     productList.value = filteredList;
     _applySmartSorting();
   }
 
-  Future<List<ProductModel>> getProductByCategory(VendorCategoryModel vendorCategoryModel) async {
-    return productList.where((p0) => p0.categoryID == vendorCategoryModel.id).toList();
+  Future<List<ProductModel>> getProductByCategory(
+      VendorCategoryModel vendorCategoryModel) async {
+    return productList
+        .where((p0) => p0.categoryID == vendorCategoryModel.id)
+        .toList();
   }
 
   /// **ULTRA-FAST PROMOTIONAL ITEM DETECTION**
-  /// 
+  ///
   /// Uses cached promotional data for instant detection without Firebase queries
   bool _isPromotionalItem(ProductModel product) {
     final productId = product.id ?? '';
     final restaurantId = vendorModel.value.id ?? '';
-    
+
     // **PERFORMANCE FIX: Use cached promotional data (instant)**
     final hasPromotion = _isPromotionalAvailable(productId, restaurantId);
-    
+
     if (hasPromotion) {
       return true;
     }
-    
+
     // **FALLBACK: Check for price-based promotional items**
     final priceValue = double.tryParse(product.price ?? '0') ?? 0.0;
     final discountPriceValue = double.tryParse(product.disPrice ?? '0') ?? 0.0;
-    
+
     // Consider it promotional if there's a discount price lower than regular price
-    return priceValue > 0 && discountPriceValue > 0 && priceValue < discountPriceValue;
+    return priceValue > 0 &&
+        discountPriceValue > 0 &&
+        priceValue < discountPriceValue;
   }
 
   /// **SMART SORTING SYSTEM**
-  /// 
+  ///
   /// Sorts items in this order for optimal user experience:
   /// 1. Promotional items (on top)
   /// 2. Available regular items
@@ -663,23 +704,23 @@ class RestaurantDetailsController extends GetxController {
       // When offer filter is active, show only promotional items
       return;
     }
-    
+
     // Sort products for better user experience
     productList.sort((a, b) {
       // 1. Check promotional status
       final aIsPromotional = _isPromotionalItem(a);
       final bIsPromotional = _isPromotionalItem(b);
-      
+
       if (aIsPromotional && !bIsPromotional) return -1; // a comes first
-      if (!aIsPromotional && bIsPromotional) return 1;  // b comes first
-      
+      if (!aIsPromotional && bIsPromotional) return 1; // b comes first
+
       // 2. If both have same promotional status, check availability
       final aIsAvailable = a.isAvailable ?? true;
       final bIsAvailable = b.isAvailable ?? true;
-      
+
       if (aIsAvailable && !bIsAvailable) return -1; // a comes first
-      if (!aIsAvailable && bIsAvailable) return 1;  // b comes first
-      
+      if (!aIsAvailable && bIsAvailable) return 1; // b comes first
+
       // 3. If both have same promotional status and availability, sort by name
       return (a.name ?? '').compareTo(b.name ?? '');
     });
@@ -688,13 +729,13 @@ class RestaurantDetailsController extends GetxController {
   /// **OFFER FILTER TOGGLE METHOD**
   void toggleOfferFilter() {
     isOfferFilter.value = !isOfferFilter.value;
-    
+
     // Reset other filters when offer filter is activated
     if (isOfferFilter.value) {
       isVag.value = false;
       isNonVag.value = false;
     }
-    
+
     filterRecord();
   }
 
@@ -705,12 +746,12 @@ class RestaurantDetailsController extends GetxController {
       if (isVag.value != null) isVag.value = false;
       if (isNonVag.value != null) isNonVag.value = false;
       if (isOfferFilter.value != null) isOfferFilter.value = false;
-      
+
       // Clear search text with safety check
       if (searchEditingController.value != null) {
         searchEditingController.value.clear();
       }
-      
+
       // Reset product list to show all products with safety checks
       if (productList.isNotEmpty) {
         productList.clear();
@@ -718,14 +759,14 @@ class RestaurantDetailsController extends GetxController {
       if (allProductList.isNotEmpty) {
         productList.addAll(allProductList);
       }
-      
+
       // Apply smart sorting with safety check
       try {
         _applySmartSorting();
       } catch (e) {
         print('Error applying smart sorting: $e');
       }
-      
+
       // Update UI with safety check
       try {
         update();
@@ -746,7 +787,7 @@ class RestaurantDetailsController extends GetxController {
   }
 
   // **BACKWARD COMPATIBILITY METHODS**
-  
+
   /// **LEGACY PRODUCT LOADING (now uses parallel loading)**
   getProduct() async {
     print("DEBUG: getProduct() called - using parallel loading instead");
@@ -761,54 +802,57 @@ class RestaurantDetailsController extends GetxController {
 
   RxBool isOpen = false.obs;
   RxMap<String, dynamic> restaurantStatus = <String, dynamic>{}.obs;
-  
+
   /// **FAILPROOF RESTAURANT STATUS SYSTEM**
-  /// 
+  ///
   /// Implements the comprehensive failproof system where restaurant is ONLY OPEN if:
   /// 1. Manual toggle (isOpen) is explicitly true AND
   /// 2. Current time is within working hours
-  /// 
+  ///
   /// This replaces the old reststatus-based logic with the new isOpen field
   void statusCheck() {
-    print('DEBUG: RestaurantDetailsController - Running failproof status check');
-    
+    print(
+        'DEBUG: RestaurantDetailsController - Running failproof status check');
+
     // Use the RestaurantStatusManager for failproof logic
     final statusManager = RestaurantStatusManager();
-    
+
     // Get current status using the new isOpen field from Firebase
     final status = statusManager.getRestaurantStatus(
       vendorModel.value.workingHours,
-      vendorModel.value.isOpen, // Use the new isOpen field instead of reststatus
+      vendorModel
+          .value.isOpen, // Use the new isOpen field instead of reststatus
     );
-    
+
     // Update reactive variables
     isOpen.value = status['isOpen'];
     restaurantStatus.assignAll(status);
-    
+
     // Log status for debugging
     print('DEBUG: Status check result:');
     print('  - Manual toggle (isOpen): ${vendorModel.value.isOpen}');
     print('  - Within working hours: ${status['withinWorkingHours']}');
     print('  - Final status: ${status['isOpen'] ? 'OPEN' : 'CLOSED'}');
     print('  - Reason: ${status['reason']}');
-    
+
     // Start monitoring for status changes
     _startStatusMonitoring();
   }
-  
+
   /// **START STATUS MONITORING**
-  /// 
+  ///
   /// Monitors restaurant status every 5 minutes
   void _startStatusMonitoring() {
     final statusManager = RestaurantStatusManager();
-    
+
     statusManager.startStatusMonitoring(
       workingHours: vendorModel.value.workingHours,
       isOpen: vendorModel.value.isOpen,
       onStatusUpdate: (status) {
         // Update status if it changed
         if (isOpen.value != status['isOpen']) {
-          print('DEBUG: Status changed from ${isOpen.value} to ${status['isOpen']}');
+          print(
+              'DEBUG: Status changed from ${isOpen.value} to ${status['isOpen']}');
           isOpen.value = status['isOpen'];
           restaurantStatus.assignAll(status);
         }
@@ -816,7 +860,7 @@ class RestaurantDetailsController extends GetxController {
       intervalMinutes: 5,
     );
   }
-  
+
   /// **GET RESTAURANT STATUS INFO (LEGACY COMPATIBILITY)**
   Map<String, dynamic> getRestaurantStatusInfo() {
     if (restaurantStatus.isEmpty) {
@@ -829,23 +873,23 @@ class RestaurantDetailsController extends GetxController {
       restaurantStatus.assignAll(status);
       isOpen.value = status['isOpen'];
     }
-    
+
     return Map<String, dynamic>.from(restaurantStatus);
   }
-  
+
   /// **CHECK IF RESTAURANT ACCEPTS ORDERS**
-  /// 
+  ///
   /// Uses the failproof system to determine if orders can be accepted
   bool canAcceptOrders() {
     return isOpen.value;
   }
-  
+
   /// **GET NEXT OPENING TIME**
   String? getNextOpeningTime() {
     final status = getRestaurantStatusInfo();
     return status['nextOpeningTime'];
   }
-  
+
   /// **GET STATUS SUMMARY FOR DEBUGGING**
   String getStatusSummary() {
     final statusManager = RestaurantStatusManager();
@@ -878,13 +922,25 @@ class RestaurantDetailsController extends GetxController {
     String adOnsPrice = "0";
 
     if (productModel.itemAttribute != null) {
-      if (productModel.itemAttribute!.variants!.where((element) => element.variantSku == selectedVariants.join('-')).isNotEmpty) {
+      if (productModel.itemAttribute!.variants!
+          .where((element) => element.variantSku == selectedVariants.join('-'))
+          .isNotEmpty) {
         variantPrice = Constant.productCommissionPrice(
-            vendorModel.value, productModel.itemAttribute!.variants!.where((element) => element.variantSku == selectedVariants.join('-')).first.variantPrice ?? '0');
+            vendorModel.value,
+            productModel.itemAttribute!.variants!
+                    .where((element) =>
+                        element.variantSku == selectedVariants.join('-'))
+                    .first
+                    .variantPrice ??
+                '0');
       }
     } else {
-      String price = Constant.productCommissionPrice(vendorModel.value, productModel.price.toString());
-      String disPrice = double.parse(productModel.disPrice.toString()) <= 0 ? "0" : Constant.productCommissionPrice(vendorModel.value, productModel.disPrice.toString());
+      String price = Constant.productCommissionPrice(
+          vendorModel.value, productModel.price.toString());
+      String disPrice = double.parse(productModel.disPrice.toString()) <= 0
+          ? "0"
+          : Constant.productCommissionPrice(
+              vendorModel.value, productModel.disPrice.toString());
       if (double.parse(disPrice) <= 0) {
         variantPrice = price;
       } else {
@@ -894,11 +950,17 @@ class RestaurantDetailsController extends GetxController {
 
     for (int i = 0; i < productModel.addOnsPrice!.length; i++) {
       if (selectedAddOns.contains(productModel.addOnsTitle![i]) == true) {
-        adOnsPrice = (double.parse(adOnsPrice.toString()) + double.parse(Constant.productCommissionPrice(vendorModel.value, productModel.addOnsPrice![i].toString()))).toString();
+        adOnsPrice = (double.parse(adOnsPrice.toString()) +
+                double.parse(Constant.productCommissionPrice(vendorModel.value,
+                    productModel.addOnsPrice![i].toString())))
+            .toString();
       }
     }
     adOnsPrice = (quantity.value * double.parse(adOnsPrice)).toString();
-    mainPrice = ((double.parse(variantPrice.toString()) * double.parse(quantity.value.toString())) + double.parse(adOnsPrice.toString())).toString();
+    mainPrice = ((double.parse(variantPrice.toString()) *
+                double.parse(quantity.value.toString())) +
+            double.parse(adOnsPrice.toString()))
+        .toString();
     return mainPrice;
   }
 
@@ -925,43 +987,46 @@ class RestaurantDetailsController extends GetxController {
         productModel.id ?? '',
         vendorModel.value.id ?? '',
       );
-      
-      print('DEBUG: RestaurantDetailsController - Checking promotional item: ${productModel.id}');
+
+      print(
+          'DEBUG: RestaurantDetailsController - Checking promotional item: ${productModel.id}');
       print('DEBUG: RestaurantDetailsController - Promo data: $promo');
-      
+
       if (promo != null) {
         // **PERFORMANCE FIX: Use cached availability check (instant)**
         final isAllowed = isPromotionalItemQuantityAllowed(
-          productModel.id ?? '',
-          vendorModel.value.id ?? '',
-          quantity
-        );
-        
+            productModel.id ?? '', vendorModel.value.id ?? '', quantity);
+
         if (!isAllowed) {
           // **PERFORMANCE FIX: Use cached limit (instant)**
           final limit = getPromotionalItemLimit(
-            productModel.id ?? '',
-            vendorModel.value.id ?? ''
-          );
-          ShowToastDialog.showToast("Maximum $limit items allowed for this promotional offer".tr);
+              productModel.id ?? '', vendorModel.value.id ?? '');
+          ShowToastDialog.showToast(
+              "Maximum $limit items allowed for this promotional offer".tr);
           return; // Don't add to cart if limit exceeded
         }
       } else {
-        print('DEBUG: RestaurantDetailsController - No promotional data found for product: ${productModel.id}');
+        print(
+            'DEBUG: RestaurantDetailsController - No promotional data found for product: ${productModel.id}');
       }
     }
-    
+
     CartProductModel cartProductModel = CartProductModel();
 
     String adOnsPrice = "0";
     for (int i = 0; i < productModel.addOnsPrice!.length; i++) {
-      if (selectedAddOns.contains(productModel.addOnsTitle![i]) == true && productModel.addOnsPrice![i] != '0') {
-        adOnsPrice = (double.parse(adOnsPrice.toString()) + double.parse(Constant.productCommissionPrice(vendorModel.value, productModel.addOnsPrice![i].toString()))).toString();
+      if (selectedAddOns.contains(productModel.addOnsTitle![i]) == true &&
+          productModel.addOnsPrice![i] != '0') {
+        adOnsPrice = (double.parse(adOnsPrice.toString()) +
+                double.parse(Constant.productCommissionPrice(vendorModel.value,
+                    productModel.addOnsPrice![i].toString())))
+            .toString();
       }
     }
 
     if (variantInfo != null) {
-      cartProductModel.id = "${productModel.id!}~${variantInfo.variantId.toString()}";
+      cartProductModel.id =
+          "${productModel.id!}~${variantInfo.variantId.toString()}";
       cartProductModel.name = productModel.name!;
       cartProductModel.photo = productModel.photo!;
       cartProductModel.categoryId = productModel.categoryID!;
@@ -973,7 +1038,7 @@ class RestaurantDetailsController extends GetxController {
       cartProductModel.variantInfo = variantInfo;
       cartProductModel.extrasPrice = adOnsPrice;
       cartProductModel.extras = selectedAddOns.isEmpty ? [] : selectedAddOns;
-      
+
       // Set promoId for promotional items (OPTIMIZED)
       if (isIncrement) {
         // **PERFORMANCE FIX: Use cached promotional data instead of Firebase query**
@@ -983,7 +1048,8 @@ class RestaurantDetailsController extends GetxController {
         );
         if (promo != null) {
           cartProductModel.promoId = promo['product_id'] ?? '';
-          print('DEBUG: RestaurantDetailsController - Set promoId for variant: ${cartProductModel.promoId}');
+          print(
+              'DEBUG: RestaurantDetailsController - Set promoId for variant: ${cartProductModel.promoId}');
         }
       }
     } else {
@@ -999,7 +1065,7 @@ class RestaurantDetailsController extends GetxController {
       cartProductModel.variantInfo = VariantInfo();
       cartProductModel.extrasPrice = adOnsPrice;
       cartProductModel.extras = selectedAddOns.isEmpty ? [] : selectedAddOns;
-      
+
       // Set promoId for promotional items
       if (isIncrement) {
         final promo = await FireStoreUtils.getActivePromotionForProduct(
@@ -1008,7 +1074,8 @@ class RestaurantDetailsController extends GetxController {
         );
         if (promo != null) {
           cartProductModel.promoId = promo['product_id'] ?? '';
-          print('DEBUG: RestaurantDetailsController - Set promoId: ${cartProductModel.promoId}');
+          print(
+              'DEBUG: RestaurantDetailsController - Set promoId: ${cartProductModel.promoId}');
         }
       }
     }
@@ -1025,9 +1092,10 @@ class RestaurantDetailsController extends GetxController {
   // Method to scroll to a specific product
   void scrollToProduct(String productId) {
     print("DEBUG: scrollToProduct called with productId: $productId");
-    print("DEBUG: scrollController has clients: ${scrollController.value.hasClients}");
+    print(
+        "DEBUG: scrollController has clients: ${scrollController.value.hasClients}");
     print("DEBUG: productList length: ${productList.length}");
-    
+
     if (scrollController.value.hasClients) {
       // Find the index of the product in the product list
       int productIndex = -1;
@@ -1037,22 +1105,23 @@ class RestaurantDetailsController extends GetxController {
           break;
         }
       }
-      
+
       if (productIndex != -1) {
         // Calculate approximate position (each product card is roughly 120px height)
         double scrollPosition = productIndex * 120.0;
-        
+
         // Add some offset for better visibility
         scrollPosition = scrollPosition - 100.0;
         if (scrollPosition < 0) scrollPosition = 0;
-        
+
         scrollController.value.animateTo(
           scrollPosition,
           duration: const Duration(milliseconds: 800),
           curve: Curves.easeInOut,
         );
-        
-        print("DEBUG: Scrolled to product $productId at position $scrollPosition");
+
+        print(
+            "DEBUG: Scrolled to product $productId at position $scrollPosition");
       } else {
         print("DEBUG: Product $productId not found in product list");
       }
@@ -1081,33 +1150,34 @@ class RestaurantDetailsController extends GetxController {
     } catch (e) {
       // Ignore disposal errors
     }
-    
+
     // Print performance report when controller is closed
     // PerformanceMonitor.printPerformanceReport();
-    
+
     super.onClose();
   }
-  
+
   /// **CACHE DIAGNOSTICS FOR TESTING**
   Future<void> _logCacheDiagnostics() async {
     if (!kDebugMode) return;
-    
+
     try {
       final vendorId = vendorModel.value.id;
       final cacheKey = 'restaurant_products_$vendorId';
-      
+
       print("🔍 CACHE DIAGNOSTICS:");
       print("📋 Vendor ID: $vendorId");
       print("🔑 Cache Key: $cacheKey");
       print("📊 Products Loaded: ${productList.length}");
-      print("💾 Cache Status: ${CacheManager.hasCache(cacheKey) ? 'HIT' : 'MISS'}");
-      
+      print(
+          "💾 Cache Status: ${CacheManager.hasCache(cacheKey) ? 'HIT' : 'MISS'}");
+
       if (CacheManager.hasCache(cacheKey)) {
         final cachedData = await CacheManager.get<List<dynamic>>(cacheKey);
         print("📦 Cached Products: ${cachedData?.length ?? 0}");
         print("⏰ Cache Age: ${CacheManager.getCacheAge(cacheKey)}");
       }
-      
+
       print("🔍 END CACHE DIAGNOSTICS");
     } catch (e) {
       print("❌ Cache diagnostics error: $e");
