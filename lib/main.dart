@@ -321,7 +321,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             );
           } catch (e) {
             print(
-                '[SMARTLOOK] Error wrapping with SmartlookRecordingWidget: $e');
+              '[SMARTLOOK] Error wrapping with SmartlookRecordingWidget: $e',
+            );
             // Return app without Smartlook wrapping if there's an error
             return appWidget;
           }

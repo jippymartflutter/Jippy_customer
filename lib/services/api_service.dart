@@ -1,19 +1,21 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:get/get.dart';
+
 import 'package:customer/utils/preferences.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 
 class ApiService extends GetxService {
   // Base URL for your API - Replace this with your actual API URL
-  static const String baseUrl = 'https://jippymart.in/api/'; // Example: 'https://your-domain.com/api/v1' or 'http://your-ip:port/api/v1'
-  
+  static const String baseUrl =
+      'https://jippymart.in/api/'; // Example: 'https://your-domain.com/api/v1' or 'http://your-ip:port/api/v1'
+
   // Initialize the service
   Future<ApiService> init() async {
     // Any initialization logic can go here
     return this;
   }
 
-  // API Headers 
+  // API Headers
   Map<String, String> get _headers {
     final token = Preferences.getString(Preferences.tokenKey);
     return {
@@ -34,7 +36,7 @@ class ApiService extends GetxService {
           'password': password,
         }),
       );
-      
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         // Save token
@@ -57,7 +59,7 @@ class ApiService extends GetxService {
         headers: _headers,
         body: jsonEncode(userData),
       );
-      
+
       if (response.statusCode == 201) {
         return jsonDecode(response.body);
       } else {
@@ -87,7 +89,7 @@ class ApiService extends GetxService {
         Uri.parse('$baseUrl/products').replace(queryParameters: queryParams),
         headers: _headers,
       );
-      
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         return List<Map<String, dynamic>>.from(data['data']);
@@ -105,7 +107,7 @@ class ApiService extends GetxService {
         Uri.parse('$baseUrl/products/$id'),
         headers: _headers,
       );
-      
+
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {
@@ -133,7 +135,7 @@ class ApiService extends GetxService {
         Uri.parse('$baseUrl/orders').replace(queryParameters: queryParams),
         headers: _headers,
       );
-      
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         return List<Map<String, dynamic>>.from(data['data']);
@@ -145,14 +147,15 @@ class ApiService extends GetxService {
     }
   }
 
-  Future<Map<String, dynamic>> createOrder(Map<String, dynamic> orderData) async {
+  Future<Map<String, dynamic>> createOrder(
+      Map<String, dynamic> orderData) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/orders'),
         headers: _headers,
         body: jsonEncode(orderData),
       );
-      
+
       if (response.statusCode == 201) {
         return jsonDecode(response.body);
       } else {
@@ -170,7 +173,7 @@ class ApiService extends GetxService {
         Uri.parse('$baseUrl/profile'),
         headers: _headers,
       );
-      
+
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {
@@ -181,14 +184,15 @@ class ApiService extends GetxService {
     }
   }
 
-  Future<Map<String, dynamic>> updateProfile(Map<String, dynamic> profileData) async {
+  Future<Map<String, dynamic>> updateProfile(
+      Map<String, dynamic> profileData) async {
     try {
       final response = await http.put(
         Uri.parse('$baseUrl/profile'),
         headers: _headers,
         body: jsonEncode(profileData),
       );
-      
+
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {
@@ -206,7 +210,7 @@ class ApiService extends GetxService {
         Uri.parse('$baseUrl/cart'),
         headers: _headers,
       );
-      
+
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {
@@ -227,7 +231,7 @@ class ApiService extends GetxService {
           'quantity': quantity,
         }),
       );
-      
+
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {
@@ -238,7 +242,8 @@ class ApiService extends GetxService {
     }
   }
 
-  Future<Map<String, dynamic>> updateCartItem(String cartItemId, int quantity) async {
+  Future<Map<String, dynamic>> updateCartItem(
+      String cartItemId, int quantity) async {
     try {
       final response = await http.put(
         Uri.parse('$baseUrl/cart/$cartItemId'),
@@ -247,7 +252,7 @@ class ApiService extends GetxService {
           'quantity': quantity,
         }),
       );
-      
+
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {
@@ -264,7 +269,7 @@ class ApiService extends GetxService {
         Uri.parse('$baseUrl/cart/$cartItemId'),
         headers: _headers,
       );
-      
+
       if (response.statusCode != 200) {
         throw Exception('Failed to remove from cart: ${response.body}');
       }
@@ -272,4 +277,4 @@ class ApiService extends GetxService {
       throw Exception('Failed to remove from cart: $e');
     }
   }
-} 
+}
