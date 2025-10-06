@@ -1,10 +1,11 @@
 import 'package:customer/app/mart/mart_category_detail_screen.dart';
+import 'package:customer/app/mart/mart_home_screen/controller/mart_controller.dart';
+import 'package:customer/app/mart/mart_home_screen/widget/mart_sub_category_section.dart';
 import 'package:customer/app/mart/widgets/mart_product_card.dart';
 import 'package:customer/app/mart/widgets/mart_search_bar.dart';
 import 'package:customer/app/mart/widgets/playtime_product_card.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/controllers/category_detail_controller.dart';
-import 'package:customer/controllers/mart_controller.dart';
 import 'package:customer/models/mart_banner_model.dart';
 import 'package:customer/models/mart_category_model.dart';
 import 'package:customer/models/mart_item_model.dart';
@@ -229,7 +230,6 @@ class MartHomeScreen extends StatelessWidget {
                           child: MartSubcategoriesSection(
                               screenWidth: screenWidth),
                         ),
-
                         // Dynamic Categories Sectiony
                         // SliverToBoxAdapter(
                         //   child: MartDynamicCategoriesSection(screenWidth: screenWidth),
@@ -1205,712 +1205,713 @@ class SpotlightCard extends StatelessWidget {
     );
   }
 }
-
-class MartSubcategoriesSection extends StatelessWidget {
-  final double screenWidth;
-
-  const MartSubcategoriesSection({super.key, required this.screenWidth});
-
-  /// Get appropriate icon for subcategory based on name
-  IconData _getSubcategoryIcon(String subcategoryName) {
-    final name = subcategoryName.toLowerCase();
-
-    if (name.contains('veggie') || name.contains('vegetable')) {
-      return Icons.eco;
-    } else if (name.contains('spice')) {
-      return Icons.local_dining;
-    } else if (name.contains('oil')) {
-      return Icons.opacity;
-    } else if (name.contains('dal') || name.contains('pulse')) {
-      return Icons.grain;
-    } else if (name.contains('rice')) {
-      return Icons.grain;
-    } else if (name.contains('atta') || name.contains('flour')) {
-      return Icons.grain;
-    } else if (name.contains('fruit')) {
-      return Icons.apple;
-    } else if (name.contains('milk') || name.contains('dairy')) {
-      return Icons.local_drink;
-    } else if (name.contains('bread') || name.contains('bakery')) {
-      return Icons.local_dining;
-    } else if (name.contains('snack') || name.contains('chips')) {
-      return Icons.fastfood;
-    } else if (name.contains('beverage') || name.contains('drink')) {
-      return Icons.local_cafe;
-    } else if (name.contains('personal') || name.contains('care')) {
-      return Icons.person;
-    } else if (name.contains('baby') || name.contains('care')) {
-      return Icons.child_care;
-    } else if (name.contains('pet') || name.contains('animal')) {
-      return Icons.pets;
-    } else {
-      return Icons.category;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding:
-          const EdgeInsets.symmetric(horizontal: 16), // Reduced from 20 to 12
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Section Title
-          const Text(
-            'Shop by Subcategory',
-            style: TextStyle(
-              fontFamily: 'Montserrat',
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF000000),
-            ),
-          ),
-
-          // Subcategories Grid
-          GetX<MartController>(
-            builder: (controller) {
-              if (controller.isSubcategoryLoading.value) {
-                return SizedBox(
-                  height: 140,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: List.generate(
-                      4,
-                      (index) => Column(
-                        children: [
-                          Container(
-                            width: 87,
-                            height: 81.54,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(18),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Container(
-                            width: 87,
-                            height: 12,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              }
-
-              // Load all homepage subcategories directly from Firestore
-              if (controller.subcategoriesMap.isEmpty &&
-                  !controller.isSubcategoryLoading.value) {
-                print(
-                    '[MART HOME] 🏷️ Loading all homepage subcategories directly from Firestore...');
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  controller.loadAllHomepageSubcategories();
-                });
-              }
-
-              // Debug: Add manual test buttons
-              if (controller.subcategoriesMap.isEmpty) {
-                return Column(
-                  children: [
-                    const SizedBox(height: 8), // Reduced from 20
-                    ElevatedButton(
-                      onPressed: () {
-                        print(
-                            '[MART HOME] 🧪 Manual test button pressed - Loading homepage subcategories');
-                        controller.loadAllHomepageSubcategories();
-                      },
-                      child: const Text('Test Load Homepage Subcategories'),
-                    ),
-                    const SizedBox(height: 8), // Reduced from 16
-                    ElevatedButton(
-                      onPressed: () {
-                        print(
-                            '[MART HOME] 🔍 DEBUG button pressed - Loading ALL subcategories (no filters)');
-                        controller.loadAllSubcategoriesDebug();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.orange,
-                        foregroundColor: Colors.white,
-                      ),
-                      child: const Text('DEBUG: Load ALL Subcategories'),
-                    ),
-                    const SizedBox(height: 12), // Reduced from 20
-                    if (controller.isSubcategoryLoading.value)
-                      const Column(
-                        children: [
-                          CircularProgressIndicator(),
-                          SizedBox(height: 12), // Reduced from 16
-                          Text(
-                            'Loading subcategories...',
-                            style: TextStyle(
-                              fontFamily: 'Montserrat',
-                              fontSize: 14,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      )
-                    else
-                      const Text(
-                        'No subcategories loaded. Use buttons above to test.',
-                        style: TextStyle(
-                          fontFamily: 'Montserrat',
-                          fontSize: 14,
-                          color: Colors.grey,
-                        ),
-                      ),
-                  ],
-                );
-              }
-
-              // Check if we have subcategories loaded
-              if (controller.subcategoriesMap.isEmpty) {
-                if (controller.isSubcategoryLoading.value) {
-                  return const SizedBox(
-                    height: 80,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircularProgressIndicator(),
-                          SizedBox(height: 16),
-                          Text(
-                            'Loading subcategories...',
-                            style: TextStyle(
-                              fontFamily: 'Montserrat',
-                              fontSize: 14,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                } else {
-                  return const SizedBox(
-                    height: 80,
-                    child: Center(
-                      child: Text(
-                        'No subcategories available',
-                        style: TextStyle(
-                          fontFamily: 'Montserrat',
-                          fontSize: 14,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ),
-                  );
-                }
-              }
-
-              // Get all subcategories from all categories and filter by show_in_homepage
-              final allSubcategories = <MartSubcategoryModel>[];
-              controller.subcategoriesMap
-                  .forEach((categoryId, subcategoryList) {
-                allSubcategories.addAll(subcategoryList);
-              });
-
-              print(
-                  '[MART HOME] 🏷️ Total subcategories from all categories: ${allSubcategories.length}');
-              print(
-                  '[MART HOME] 🏷️ ==========================================');
-              allSubcategories.forEach((subcategory) {
-                print('[MART HOME] 🏷️ Subcategory: ${subcategory.title}');
-                print('[MART HOME] 🏷️   - ID: ${subcategory.id}');
-                print('[MART HOME] 🏷️   - Photo: ${subcategory.photo}');
-                print(
-                    '[MART HOME] 🏷️   - Valid Image URL: ${subcategory.validImageUrl}');
-                print(
-                    '[MART HOME] 🏷️   - Parent Category ID: ${subcategory.parentCategoryId}');
-                print(
-                    '[MART HOME] 🏷️   - Is Empty URL: ${subcategory.validImageUrl.isEmpty}');
-                print(
-                    '[MART HOME] 🏷️   - Will Show Image: ${(subcategory.validImageUrl.isNotEmpty || (subcategory.photo != null && subcategory.photo!.isNotEmpty))}');
-                print(
-                    '[MART HOME] 🏷️   - Final Image URL: ${subcategory.validImageUrl.isNotEmpty ? subcategory.validImageUrl : subcategory.photo}');
-                print(
-                    '[MART HOME] 🏷️   - Show in Homepage: ${subcategory.showInHomepage}');
-                print(
-                    '[MART HOME] 🏷️ ==========================================');
-              });
-
-              // Filter subcategories to show only those marked for homepage
-              final homepageSubcategories = allSubcategories
-                  .where((subcategory) => subcategory.showInHomepage == true)
-                  .toList();
-
-              print(
-                  '[MART HOME] 🏷️ Total subcategories: ${allSubcategories.length}');
-              print(
-                  '[MART HOME] 🏷️ Homepage subcategories: ${homepageSubcategories.length}');
-
-              if (homepageSubcategories.isEmpty) {
-                return const SizedBox(
-                  height: 80,
-                  child: Center(
-                    child: Text(
-                      'No subcategories available for homepage',
-                      style: TextStyle(
-                        fontFamily: 'Montserrat',
-                        fontSize: 14,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ),
-                );
-              }
-
-              // Display subcategories in a proper grid
-              return GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 4,
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 16,
-                  childAspectRatio:
-                      0.75, // Reduced from 0.8 to give more height
-                ),
-                itemCount: homepageSubcategories.length,
-                itemBuilder: (context, index) {
-                  final subcategory = homepageSubcategories[index];
-
-                  return InkWell(
-                    onTap: () {
-                      // Use the subcategory's parent category for navigation
-                      if (subcategory.parentCategoryId != null &&
-                          subcategory.parentCategoryId!.isNotEmpty) {
-                        Get.to(() => const MartCategoryDetailScreen(),
-                            arguments: {
-                              'categoryId': subcategory.parentCategoryId!,
-                              'categoryName':
-                                  subcategory.parentCategoryTitle ?? 'Category',
-                              'subcategoryId': subcategory.id ?? '',
-                            });
-                      } else {
-                        print(
-                            '[MART HOME] 🏷️ Warning: Subcategory ${subcategory.title} has no parent category ID');
-                      }
-                    },
-                    borderRadius: BorderRadius.circular(20),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 87,
-                          height: 81.54,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFECEAFD),
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(18),
-                            child: (subcategory.validImageUrl.isNotEmpty ||
-                                    (subcategory.photo != null &&
-                                        subcategory.photo!.isNotEmpty))
-                                ? NetworkImageWidget(
-                                    imageUrl:
-                                        subcategory.validImageUrl.isNotEmpty
-                                            ? subcategory.validImageUrl
-                                            : subcategory.photo!,
-                                    width: 87,
-                                    height: 81.54,
-                                    fit: BoxFit.cover,
-                                    errorWidget: Container(
-                                      width: 87,
-                                      height: 81.54,
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFFECEAFD),
-                                        borderRadius: BorderRadius.circular(18),
-                                      ),
-                                      child: Icon(
-                                        _getSubcategoryIcon(
-                                            subcategory.title ?? ''),
-                                        color: const Color(0xFF00998a),
-                                        size: 32,
-                                      ),
-                                    ),
-                                  )
-                                : Container(
-                                    width: 87,
-                                    height: 81.54,
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFECEAFD),
-                                      borderRadius: BorderRadius.circular(18),
-                                    ),
-                                    child: Icon(
-                                      _getSubcategoryIcon(
-                                          subcategory.title ?? ''),
-                                      color: const Color(0xFF00998a),
-                                      size: 32,
-                                    ),
-                                  ),
-                          ),
-                        ),
-                        const SizedBox(height: 6), // Reduced from 8 to 6
-                        SizedBox(
-                          width: 87,
-                          child: Text(
-                            subcategory.title ?? 'Subcategory',
-                            style: const TextStyle(
-                              fontFamily: 'Montserrat',
-                              fontSize: 11, // Reduced from 12 to 11
-                              fontWeight: FontWeight.w600,
-                              height: 1.2, // Reduced from 15/12 to 1.2
-                              color: Color(0xFF000000),
-                            ),
-                            textAlign: TextAlign.center,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class MartSubcategoriesHorizontalSection extends StatelessWidget {
-  final double screenWidth;
-
-  const MartSubcategoriesHorizontalSection(
-      {super.key, required this.screenWidth});
-
-  /// Get appropriate icon for subcategory based on name
-  IconData _getSubcategoryIcon(String subcategoryName) {
-    final name = subcategoryName.toLowerCase();
-
-    if (name.contains('veggie') || name.contains('vegetable')) {
-      return Icons.eco;
-    } else if (name.contains('spice')) {
-      return Icons.local_dining;
-    } else if (name.contains('oil')) {
-      return Icons.opacity;
-    } else if (name.contains('dal') || name.contains('pulse')) {
-      return Icons.grain;
-    } else if (name.contains('rice')) {
-      return Icons.grain;
-    } else if (name.contains('atta') || name.contains('flour')) {
-      return Icons.grain;
-    } else if (name.contains('fruit')) {
-      return Icons.apple;
-    } else if (name.contains('milk') || name.contains('dairy')) {
-      return Icons.local_drink;
-    } else if (name.contains('bread') || name.contains('bakery')) {
-      return Icons.local_dining;
-    } else if (name.contains('snack') || name.contains('chips')) {
-      return Icons.fastfood;
-    } else if (name.contains('beverage') || name.contains('drink')) {
-      return Icons.local_cafe;
-    } else if (name.contains('personal') || name.contains('care')) {
-      return Icons.person;
-    } else if (name.contains('baby') || name.contains('care')) {
-      return Icons.child_care;
-    } else if (name.contains('pet') || name.contains('animal')) {
-      return Icons.pets;
-    } else {
-      return Icons.category;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Section Title
-          const Text(
-            'Shop by Subcategory',
-            style: TextStyle(
-              fontFamily: 'Montserrat',
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF000000),
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Subcategories Horizontal Scroll
-          GetX<MartController>(
-            builder: (controller) {
-              if (controller.isSubcategoryLoading.value) {
-                return SizedBox(
-                  height: 120,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 6,
-                    itemBuilder: (context, index) => Container(
-                      margin: const EdgeInsets.only(right: 16),
-                      child: Column(
-                        children: [
-                          Container(
-                            width: 60,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Container(
-                            width: 60,
-                            height: 12,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              }
-
-              // Load all homepage subcategories directly from Firestore (same as main section)
-              if (controller.subcategoriesMap.isEmpty &&
-                  !controller.isSubcategoryLoading.value) {
-                print(
-                    '[MART HOME] 🏷️ Horizontal section - Loading all homepage subcategories directly from Firestore...');
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  controller.loadAllHomepageSubcategories();
-                });
-              }
-
-              // Check if we have subcategories loaded
-              if (controller.subcategoriesMap.isEmpty) {
-                if (controller.isSubcategoryLoading.value) {
-                  return const SizedBox(
-                    height: 80,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircularProgressIndicator(),
-                          SizedBox(height: 16),
-                          Text(
-                            'Loading subcategories...',
-                            style: TextStyle(
-                              fontFamily: 'Montserrat',
-                              fontSize: 14,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                } else {
-                  return const SizedBox(
-                    height: 80,
-                    child: Center(
-                      child: Text(
-                        'No subcategories available',
-                        style: TextStyle(
-                          fontFamily: 'Montserrat',
-                          fontSize: 14,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ),
-                  );
-                }
-              }
-
-              if (controller.subcategories.isEmpty) {
-                return const SizedBox(
-                  height: 80,
-                  child: Center(
-                    child: Text(
-                      'Loading subcategories...',
-                      style: TextStyle(
-                        fontFamily: 'Montserrat',
-                        fontSize: 14,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ),
-                );
-              }
-
-              // Get all subcategories from all categories and filter by show_in_homepage
-              final allSubcategories = <MartSubcategoryModel>[];
-              controller.subcategoriesMap
-                  .forEach((categoryId, subcategoryList) {
-                allSubcategories.addAll(subcategoryList);
-              });
-
-              // Filter subcategories to show only those marked for homepage
-              final homepageSubcategories = allSubcategories
-                  .where((subcategory) => subcategory.showInHomepage == true)
-                  .toList();
-
-              print(
-                  '[MART HOME] 🏷️ Horizontal section - Total subcategories: ${allSubcategories.length}');
-              print(
-                  '[MART HOME] 🏷️ Horizontal section - Homepage subcategories: ${homepageSubcategories.length}');
-
-              if (homepageSubcategories.isEmpty) {
-                return const SizedBox(
-                  height: 80,
-                  child: Center(
-                    child: Text(
-                      'No subcategories available for homepage',
-                      style: TextStyle(
-                        fontFamily: 'Montserrat',
-                        fontSize: 14,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ),
-                );
-              }
-
-              // Display subcategories in horizontal scroll
-              print(
-                  '[MART HOME] 🏷️ Horizontal section - Displaying ${homepageSubcategories.length} subcategories');
-              homepageSubcategories.forEach((subcategory) {
-                print(
-                    '[MART HOME] 🏷️ Horizontal - Subcategory: ${subcategory.title}');
-                print('[MART HOME] 🏷️   - ID: ${subcategory.id}');
-                print('[MART HOME] 🏷️   - Photo: ${subcategory.photo}');
-                print(
-                    '[MART HOME] 🏷️   - Valid Image URL: ${subcategory.validImageUrl}');
-                print(
-                    '[MART HOME] 🏷️   - Parent Category ID: ${subcategory.parentCategoryId}');
-                print(
-                    '[MART HOME] 🏷️   - Is Empty URL: ${subcategory.validImageUrl.isEmpty}');
-                print(
-                    '[MART HOME] 🏷️   - Show in Homepage: ${subcategory.showInHomepage}');
-              });
-
-              return SizedBox(
-                height: 120,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: homepageSubcategories.length,
-                  itemBuilder: (context, index) {
-                    final subcategory = homepageSubcategories[index];
-                    return Container(
-                      margin: const EdgeInsets.only(right: 16),
-                      child: InkWell(
-                        onTap: () {
-                          // Use the subcategory's parent category for navigation
-                          if (subcategory.parentCategoryId != null &&
-                              subcategory.parentCategoryId!.isNotEmpty) {
-                            Get.to(() => const MartCategoryDetailScreen(),
-                                arguments: {
-                                  'categoryId': subcategory.parentCategoryId!,
-                                  'categoryName':
-                                      subcategory.parentCategoryTitle ??
-                                          'Category',
-                                  'subcategoryId': subcategory.id ?? '',
-                                });
-                          } else {
-                            print(
-                                '[MART HOME] 🏷️ Horizontal section - Warning: Subcategory ${subcategory.title} has no parent category ID');
-                          }
-                        },
-                        borderRadius: BorderRadius.circular(20),
-                        child: Column(
-                          children: [
-                            Container(
-                              width: 60,
-                              height: 60,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFF00998a),
-                                shape: BoxShape.circle,
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(30),
-                                child: (subcategory.validImageUrl.isNotEmpty ||
-                                        (subcategory.photo != null &&
-                                            subcategory.photo!.isNotEmpty))
-                                    ? NetworkImageWidget(
-                                        imageUrl:
-                                            subcategory.validImageUrl.isNotEmpty
-                                                ? subcategory.validImageUrl
-                                                : subcategory.photo!,
-                                        width: 60,
-                                        height: 60,
-                                        fit: BoxFit.cover,
-                                        errorWidget: Container(
-                                          width: 60,
-                                          height: 60,
-                                          decoration: const BoxDecoration(
-                                            color: Color(0xFF00998a),
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Icon(
-                                            _getSubcategoryIcon(
-                                                subcategory.title ?? ''),
-                                            color: Colors.white,
-                                            size: 28,
-                                          ),
-                                        ),
-                                      )
-                                    : Container(
-                                        width: 60,
-                                        height: 60,
-                                        decoration: const BoxDecoration(
-                                          color: Color(0xFF00998a),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: Icon(
-                                          _getSubcategoryIcon(
-                                              subcategory.title ?? ''),
-                                          color: Colors.white,
-                                          size: 28,
-                                        ),
-                                      ),
-                              ),
-                            ),
-                            const SizedBox(height: 6), // Reduced from 8 to 6
-                            SizedBox(
-                              width: 60,
-                              child: Text(
-                                subcategory.title ?? 'Subcategory',
-                                style: const TextStyle(
-                                  fontFamily: 'Montserrat',
-                                  fontSize: 11, // Reduced from 12 to 11
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF000000),
-                                ),
-                                textAlign: TextAlign.center,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
+//
+// class MartSubcategoriesSection extends StatelessWidget {
+//   final double screenWidth;
+//
+//   const MartSubcategoriesSection({super.key, required this.screenWidth});
+//
+//   /// Get appropriate icon for subcategory based on name
+//   IconData _getSubcategoryIcon(String subcategoryName) {
+//     final name = subcategoryName.toLowerCase();
+//
+//     if (name.contains('veggie') || name.contains('vegetable')) {
+//       return Icons.eco;
+//     } else if (name.contains('spice')) {
+//       return Icons.local_dining;
+//     } else if (name.contains('oil')) {
+//       return Icons.opacity;
+//     } else if (name.contains('dal') || name.contains('pulse')) {
+//       return Icons.grain;
+//     } else if (name.contains('rice')) {
+//       return Icons.grain;
+//     } else if (name.contains('atta') || name.contains('flour')) {
+//       return Icons.grain;
+//     } else if (name.contains('fruit')) {
+//       return Icons.apple;
+//     } else if (name.contains('milk') || name.contains('dairy')) {
+//       return Icons.local_drink;
+//     } else if (name.contains('bread') || name.contains('bakery')) {
+//       return Icons.local_dining;
+//     } else if (name.contains('snack') || name.contains('chips')) {
+//       return Icons.fastfood;
+//     } else if (name.contains('beverage') || name.contains('drink')) {
+//       return Icons.local_cafe;
+//     } else if (name.contains('personal') || name.contains('care')) {
+//       return Icons.person;
+//     } else if (name.contains('baby') || name.contains('care')) {
+//       return Icons.child_care;
+//     } else if (name.contains('pet') || name.contains('animal')) {
+//       return Icons.pets;
+//     } else {
+//       return Icons.category;
+//     }
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       width: double.infinity,
+//       padding:
+//           const EdgeInsets.symmetric(horizontal: 16), // Reduced from 20 to 12
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           // Section Title
+//           const Text(
+//             'Shop by Subcategory',
+//             style: TextStyle(
+//               fontFamily: 'Montserrat',
+//               fontSize: 20,
+//               fontWeight: FontWeight.w700,
+//               color: Color(0xFF000000),
+//             ),
+//           ),
+//
+//           // Subcategories Grid
+//           GetX<MartController>(
+//             builder: (controller) {
+//               if (controller.isSubcategoryLoading.value) {
+//                 return SizedBox(
+//                   height: 140,
+//                   child: Row(
+//                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//                     children: List.generate(
+//                       4,
+//                       (index) => Column(
+//                         children: [
+//                           Container(
+//                             width: 87,
+//                             height: 81.54,
+//                             decoration: BoxDecoration(
+//                               color: Colors.grey[300],
+//                               borderRadius: BorderRadius.circular(18),
+//                             ),
+//                           ),
+//                           const SizedBox(height: 8),
+//                           Container(
+//                             width: 87,
+//                             height: 12,
+//                             decoration: BoxDecoration(
+//                               color: Colors.grey[300],
+//                               borderRadius: BorderRadius.circular(6),
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ),
+//                 );
+//               }
+//
+//               // Load all homepage subcategories directly from Firestore
+//               if (controller.subcategoriesMap.isEmpty &&
+//                   !controller.isSubcategoryLoading.value) {
+//                 print(
+//                     '[MART HOME] 🏷️ Loading all homepage subcategories directly from Firestore...');
+//                 WidgetsBinding.instance.addPostFrameCallback((_) {
+//                   controller.loadAllHomepageSubcategories();
+//                 });
+//               }
+//
+//               // Debug: Add manual test buttons
+//               if (controller.subcategoriesMap.isEmpty) {
+//                 return Column(
+//                   children: [
+//                     const SizedBox(height: 8), // Reduced from 20
+//                     ElevatedButton(
+//                       onPressed: () {
+//                         print(
+//                             '[MART HOME] 🧪 Manual test button pressed - Loading homepage subcategories');
+//                         controller.loadAllHomepageSubcategories();
+//                       },
+//                       child: const Text('Test Load Homepage Subcategories'),
+//                     ),
+//                     const SizedBox(height: 8), // Reduced from 16
+//                     ElevatedButton(
+//                       onPressed: () {
+//                         print(
+//                             '[MART HOME] 🔍 DEBUG button pressed - Loading ALL subcategories (no filters)');
+//                         controller.loadAllSubcategoriesDebug();
+//                       },
+//                       style: ElevatedButton.styleFrom(
+//                         backgroundColor: Colors.orange,
+//                         foregroundColor: Colors.white,
+//                       ),
+//                       child: const Text('DEBUG: Load ALL Subcategories'),
+//                     ),
+//                     const SizedBox(height: 12), // Reduced from 20
+//                     if (controller.isSubcategoryLoading.value)
+//                       const Column(
+//                         children: [
+//                           CircularProgressIndicator(),
+//                           SizedBox(height: 12), // Reduced from 16
+//                           Text(
+//                             'Loading subcategories...',
+//                             style: TextStyle(
+//                               fontFamily: 'Montserrat',
+//                               fontSize: 14,
+//                               color: Colors.grey,
+//                             ),
+//                           ),
+//                         ],
+//                       )
+//                     else
+//                       const Text(
+//                         'No subcategories loaded. Use buttons above to test.',
+//                         style: TextStyle(
+//                           fontFamily: 'Montserrat',
+//                           fontSize: 14,
+//                           color: Colors.grey,
+//                         ),
+//                       ),
+//                   ],
+//                 );
+//               }
+//
+//               // Check if we have subcategories loaded
+//               if (controller.subcategoriesMap.isEmpty) {
+//                 if (controller.isSubcategoryLoading.value) {
+//                   return const SizedBox(
+//                     height: 80,
+//                     child: Center(
+//                       child: Column(
+//                         mainAxisAlignment: MainAxisAlignment.center,
+//                         children: [
+//                           CircularProgressIndicator(),
+//                           SizedBox(height: 16),
+//                           Text(
+//                             'Loading subcategories...',
+//                             style: TextStyle(
+//                               fontFamily: 'Montserrat',
+//                               fontSize: 14,
+//                               color: Colors.grey,
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   );
+//                 } else {
+//                   return const SizedBox(
+//                     height: 80,
+//                     child: Center(
+//                       child: Text(
+//                         'No subcategories available',
+//                         style: TextStyle(
+//                           fontFamily: 'Montserrat',
+//                           fontSize: 14,
+//                           color: Colors.grey,
+//                         ),
+//                       ),
+//                     ),
+//                   );
+//                 }
+//               }
+//
+//               // Get all subcategories from all categories and filter by show_in_homepage
+//               final allSubcategories = <MartSubcategoryModel>[];
+//               controller.subcategoriesMap
+//                   .forEach((categoryId, subcategoryList) {
+//                 allSubcategories.addAll(subcategoryList);
+//               });
+//
+//               print(
+//                   '[MART HOME] 🏷️ Total subcategories from all categories: ${allSubcategories.length}');
+//               print(
+//                   '[MART HOME] 🏷️ ==========================================');
+//               allSubcategories.forEach((subcategory) {
+//                 print('[MART HOME] 🏷️ Subcategory: ${subcategory.title}');
+//                 print('[MART HOME] 🏷️   - ID: ${subcategory.id}');
+//                 print('[MART HOME] 🏷️   - Photo: ${subcategory.photo}');
+//                 print(
+//                     '[MART HOME] 🏷️   - Valid Image URL: ${subcategory.validImageUrl}');
+//                 print(
+//                     '[MART HOME] 🏷️   - Parent Category ID: ${subcategory.parentCategoryId}');
+//                 print(
+//                     '[MART HOME] 🏷️   - Is Empty URL: ${subcategory.validImageUrl.isEmpty}');
+//                 print(
+//                     '[MART HOME] 🏷️   - Will Show Image: ${(subcategory.validImageUrl.isNotEmpty || (subcategory.photo != null && subcategory.photo!.isNotEmpty))}');
+//                 print(
+//                     '[MART HOME] 🏷️   - Final Image URL: ${subcategory.validImageUrl.isNotEmpty ? subcategory.validImageUrl : subcategory.photo}');
+//                 print(
+//                     '[MART HOME] 🏷️   - Show in Homepage: ${subcategory.showInHomepage}');
+//                 print(
+//                     '[MART HOME] 🏷️ ==========================================');
+//               });
+//
+//               // Filter subcategories to show only those marked for homepage
+//               final homepageSubcategories = allSubcategories
+//                   .where((subcategory) => subcategory.showInHomepage == true)
+//                   .toList();
+//
+//               print(
+//                   '[MART HOME] 🏷️ Total subcategories: ${allSubcategories.length}');
+//               print(
+//                   '[MART HOME] 🏷️ Homepage subcategories: ${homepageSubcategories.length}');
+//
+//               if (homepageSubcategories.isEmpty) {
+//                 return const SizedBox(
+//                   height: 80,
+//                   child: Center(
+//                     child: Text(
+//                       'No subcategories available for homepage',
+//                       style: TextStyle(
+//                         fontFamily: 'Montserrat',
+//                         fontSize: 14,
+//                         color: Colors.grey,
+//                       ),
+//                     ),
+//                   ),
+//                 );
+//               }
+// //changed here
+//               // Display subcategories in a proper grid
+//
+//               return GridView.builder(
+//                 shrinkWrap: true,
+//                 physics: const NeverScrollableScrollPhysics(),
+//                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+//                   crossAxisCount: 4,
+//                   crossAxisSpacing: 8,
+//                   mainAxisSpacing: 16,
+//                   childAspectRatio:
+//                       0.75, // Reduced from 0.8 to give more height
+//                 ),
+//                 itemCount: homepageSubcategories.length,
+//                 itemBuilder: (context, index) {
+//                   final subcategory = homepageSubcategories[index];
+//
+//                   return InkWell(
+//                     onTap: () {
+//                       // Use the subcategory's parent category for navigation
+//                       if (subcategory.parentCategoryId != null &&
+//                           subcategory.parentCategoryId!.isNotEmpty) {
+//                         Get.to(() => const MartCategoryDetailScreen(),
+//                             arguments: {
+//                               'categoryId': subcategory.parentCategoryId!,
+//                               'categoryName':
+//                                   subcategory.parentCategoryTitle ?? 'Category',
+//                               'subcategoryId': subcategory.id ?? '',
+//                             });
+//                       } else {
+//                         print(
+//                             '[MART HOME] 🏷️ Warning: Subcategory ${subcategory.title} has no parent category ID');
+//                       }
+//                     },
+//                     borderRadius: BorderRadius.circular(20),
+//                     child: Column(
+//                       mainAxisAlignment: MainAxisAlignment.center,
+//                       children: [
+//                         Container(
+//                           width: 87,
+//                           height: 81.54,
+//                           decoration: BoxDecoration(
+//                             color: const Color(0xFFECEAFD),
+//                             borderRadius: BorderRadius.circular(18),
+//                           ),
+//                           child: ClipRRect(
+//                             borderRadius: BorderRadius.circular(18),
+//                             child: (subcategory.validImageUrl.isNotEmpty ||
+//                                     (subcategory.photo != null &&
+//                                         subcategory.photo!.isNotEmpty))
+//                                 ? NetworkImageWidget(
+//                                     imageUrl:
+//                                         subcategory.validImageUrl.isNotEmpty
+//                                             ? subcategory.validImageUrl
+//                                             : subcategory.photo!,
+//                                     width: 87,
+//                                     height: 81.54,
+//                                     fit: BoxFit.cover,
+//                                     errorWidget: Container(
+//                                       width: 87,
+//                                       height: 81.54,
+//                                       decoration: BoxDecoration(
+//                                         color: const Color(0xFFECEAFD),
+//                                         borderRadius: BorderRadius.circular(18),
+//                                       ),
+//                                       child: Icon(
+//                                         _getSubcategoryIcon(
+//                                             subcategory.title ?? ''),
+//                                         color: const Color(0xFF00998a),
+//                                         size: 32,
+//                                       ),
+//                                     ),
+//                                   )
+//                                 : Container(
+//                                     width: 87,
+//                                     height: 81.54,
+//                                     decoration: BoxDecoration(
+//                                       color: const Color(0xFFECEAFD),
+//                                       borderRadius: BorderRadius.circular(18),
+//                                     ),
+//                                     child: Icon(
+//                                       _getSubcategoryIcon(
+//                                           subcategory.title ?? ''),
+//                                       color: const Color(0xFF00998a),
+//                                       size: 32,
+//                                     ),
+//                                   ),
+//                           ),
+//                         ),
+//                         const SizedBox(height: 6), // Reduced from 8 to 6
+//                         SizedBox(
+//                           width: 87,
+//                           child: Text(
+//                             subcategory.title ?? 'Subcategory',
+//                             style: const TextStyle(
+//                               fontFamily: 'Montserrat',
+//                               fontSize: 11, // Reduced from 12 to 11
+//                               fontWeight: FontWeight.w600,
+//                               height: 1.2, // Reduced from 15/12 to 1.2
+//                               color: Color(0xFF000000),
+//                             ),
+//                             textAlign: TextAlign.center,
+//                             maxLines: 1,
+//                             overflow: TextOverflow.ellipsis,
+//                           ),
+//                         ),
+//                       ],
+//                     ),
+//                   );
+//                 },
+//               );
+//             },
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+//
+// class MartSubcategoriesHorizontalSection extends StatelessWidget {
+//   final double screenWidth;
+//
+//   const MartSubcategoriesHorizontalSection(
+//       {super.key, required this.screenWidth});
+//
+//   /// Get appropriate icon for subcategory based on name
+//   IconData _getSubcategoryIcon(String subcategoryName) {
+//     final name = subcategoryName.toLowerCase();
+//
+//     if (name.contains('veggie') || name.contains('vegetable')) {
+//       return Icons.eco;
+//     } else if (name.contains('spice')) {
+//       return Icons.local_dining;
+//     } else if (name.contains('oil')) {
+//       return Icons.opacity;
+//     } else if (name.contains('dal') || name.contains('pulse')) {
+//       return Icons.grain;
+//     } else if (name.contains('rice')) {
+//       return Icons.grain;
+//     } else if (name.contains('atta') || name.contains('flour')) {
+//       return Icons.grain;
+//     } else if (name.contains('fruit')) {
+//       return Icons.apple;
+//     } else if (name.contains('milk') || name.contains('dairy')) {
+//       return Icons.local_drink;
+//     } else if (name.contains('bread') || name.contains('bakery')) {
+//       return Icons.local_dining;
+//     } else if (name.contains('snack') || name.contains('chips')) {
+//       return Icons.fastfood;
+//     } else if (name.contains('beverage') || name.contains('drink')) {
+//       return Icons.local_cafe;
+//     } else if (name.contains('personal') || name.contains('care')) {
+//       return Icons.person;
+//     } else if (name.contains('baby') || name.contains('care')) {
+//       return Icons.child_care;
+//     } else if (name.contains('pet') || name.contains('animal')) {
+//       return Icons.pets;
+//     } else {
+//       return Icons.category;
+//     }
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       width: double.infinity,
+//       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           // Section Title
+//           const Text(
+//             'Shop by Subcategory',
+//             style: TextStyle(
+//               fontFamily: 'Montserrat',
+//               fontSize: 20,
+//               fontWeight: FontWeight.w700,
+//               color: Color(0xFF000000),
+//             ),
+//           ),
+//           const SizedBox(height: 16),
+//
+//           // Subcategories Horizontal Scroll
+//           GetX<MartController>(
+//             builder: (controller) {
+//               if (controller.isSubcategoryLoading.value) {
+//                 return SizedBox(
+//                   height: 120,
+//                   child: ListView.builder(
+//                     scrollDirection: Axis.horizontal,
+//                     itemCount: 6,
+//                     itemBuilder: (context, index) => Container(
+//                       margin: const EdgeInsets.only(right: 16),
+//                       child: Column(
+//                         children: [
+//                           Container(
+//                             width: 60,
+//                             height: 60,
+//                             decoration: BoxDecoration(
+//                               color: Colors.grey[300],
+//                               shape: BoxShape.circle,
+//                             ),
+//                           ),
+//                           const SizedBox(height: 8),
+//                           Container(
+//                             width: 60,
+//                             height: 12,
+//                             decoration: BoxDecoration(
+//                               color: Colors.grey[300],
+//                               borderRadius: BorderRadius.circular(6),
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ),
+//                 );
+//               }
+//
+//               // Load all homepage subcategories directly from Firestore (same as main section)
+//               if (controller.subcategoriesMap.isEmpty &&
+//                   !controller.isSubcategoryLoading.value) {
+//                 print(
+//                     '[MART HOME] 🏷️ Horizontal section - Loading all homepage subcategories directly from Firestore...');
+//                 WidgetsBinding.instance.addPostFrameCallback((_) {
+//                   controller.loadAllHomepageSubcategories();
+//                 });
+//               }
+//
+//               // Check if we have subcategories loaded
+//               if (controller.subcategoriesMap.isEmpty) {
+//                 if (controller.isSubcategoryLoading.value) {
+//                   return const SizedBox(
+//                     height: 80,
+//                     child: Center(
+//                       child: Column(
+//                         mainAxisAlignment: MainAxisAlignment.center,
+//                         children: [
+//                           CircularProgressIndicator(),
+//                           SizedBox(height: 16),
+//                           Text(
+//                             'Loading subcategories...',
+//                             style: TextStyle(
+//                               fontFamily: 'Montserrat',
+//                               fontSize: 14,
+//                               color: Colors.grey,
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   );
+//                 } else {
+//                   return const SizedBox(
+//                     height: 80,
+//                     child: Center(
+//                       child: Text(
+//                         'No subcategories available',
+//                         style: TextStyle(
+//                           fontFamily: 'Montserrat',
+//                           fontSize: 14,
+//                           color: Colors.grey,
+//                         ),
+//                       ),
+//                     ),
+//                   );
+//                 }
+//               }
+//
+//               if (controller.subcategories.isEmpty) {
+//                 return const SizedBox(
+//                   height: 80,
+//                   child: Center(
+//                     child: Text(
+//                       'Loading subcategories...',
+//                       style: TextStyle(
+//                         fontFamily: 'Montserrat',
+//                         fontSize: 14,
+//                         color: Colors.grey,
+//                       ),
+//                     ),
+//                   ),
+//                 );
+//               }
+//
+//               // Get all subcategories from all categories and filter by show_in_homepage
+//               final allSubcategories = <MartSubcategoryModel>[];
+//               controller.subcategoriesMap
+//                   .forEach((categoryId, subcategoryList) {
+//                 allSubcategories.addAll(subcategoryList);
+//               });
+//
+//               // Filter subcategories to show only those marked for homepage
+//               final homepageSubcategories = allSubcategories
+//                   .where((subcategory) => subcategory.showInHomepage == true)
+//                   .toList();
+//
+//               print(
+//                   '[MART HOME] 🏷️ Horizontal section - Total subcategories: ${allSubcategories.length}');
+//               print(
+//                   '[MART HOME] 🏷️ Horizontal section - Homepage subcategories: ${homepageSubcategories.length}');
+//
+//               if (homepageSubcategories.isEmpty) {
+//                 return const SizedBox(
+//                   height: 80,
+//                   child: Center(
+//                     child: Text(
+//                       'No subcategories available for homepage',
+//                       style: TextStyle(
+//                         fontFamily: 'Montserrat',
+//                         fontSize: 14,
+//                         color: Colors.grey,
+//                       ),
+//                     ),
+//                   ),
+//                 );
+//               }
+//
+//               // Display subcategories in horizontal scroll
+//               print(
+//                   '[MART HOME] 🏷️ Horizontal section - Displaying ${homepageSubcategories.length} subcategories');
+//               homepageSubcategories.forEach((subcategory) {
+//                 print(
+//                     '[MART HOME] 🏷️ Horizontal - Subcategory: ${subcategory.title}');
+//                 print('[MART HOME] 🏷️   - ID: ${subcategory.id}');
+//                 print('[MART HOME] 🏷️   - Photo: ${subcategory.photo}');
+//                 print(
+//                     '[MART HOME] 🏷️   - Valid Image URL: ${subcategory.validImageUrl}');
+//                 print(
+//                     '[MART HOME] 🏷️   - Parent Category ID: ${subcategory.parentCategoryId}');
+//                 print(
+//                     '[MART HOME] 🏷️   - Is Empty URL: ${subcategory.validImageUrl.isEmpty}');
+//                 print(
+//                     '[MART HOME] 🏷️   - Show in Homepage: ${subcategory.showInHomepage}');
+//               });
+//
+//               return SizedBox(
+//                 height: 120,
+//                 child: ListView.builder(
+//                   scrollDirection: Axis.horizontal,
+//                   itemCount: homepageSubcategories.length,
+//                   itemBuilder: (context, index) {
+//                     final subcategory = homepageSubcategories[index];
+//                     return Container(
+//                       margin: const EdgeInsets.only(right: 16),
+//                       child: InkWell(
+//                         onTap: () {
+//                           // Use the subcategory's parent category for navigation
+//                           if (subcategory.parentCategoryId != null &&
+//                               subcategory.parentCategoryId!.isNotEmpty) {
+//                             Get.to(() => const MartCategoryDetailScreen(),
+//                                 arguments: {
+//                                   'categoryId': subcategory.parentCategoryId!,
+//                                   'categoryName':
+//                                       subcategory.parentCategoryTitle ??
+//                                           'Category',
+//                                   'subcategoryId': subcategory.id ?? '',
+//                                 });
+//                           } else {
+//                             print(
+//                                 '[MART HOME] 🏷️ Horizontal section - Warning: Subcategory ${subcategory.title} has no parent category ID');
+//                           }
+//                         },
+//                         borderRadius: BorderRadius.circular(20),
+//                         child: Column(
+//                           children: [
+//                             Container(
+//                               width: 60,
+//                               height: 60,
+//                               decoration: const BoxDecoration(
+//                                 color: Color(0xFF00998a),
+//                                 shape: BoxShape.circle,
+//                               ),
+//                               child: ClipRRect(
+//                                 borderRadius: BorderRadius.circular(30),
+//                                 child: (subcategory.validImageUrl.isNotEmpty ||
+//                                         (subcategory.photo != null &&
+//                                             subcategory.photo!.isNotEmpty))
+//                                     ? NetworkImageWidget(
+//                                         imageUrl:
+//                                             subcategory.validImageUrl.isNotEmpty
+//                                                 ? subcategory.validImageUrl
+//                                                 : subcategory.photo!,
+//                                         width: 60,
+//                                         height: 60,
+//                                         fit: BoxFit.cover,
+//                                         errorWidget: Container(
+//                                           width: 60,
+//                                           height: 60,
+//                                           decoration: const BoxDecoration(
+//                                             color: Color(0xFF00998a),
+//                                             shape: BoxShape.circle,
+//                                           ),
+//                                           child: Icon(
+//                                             _getSubcategoryIcon(
+//                                                 subcategory.title ?? ''),
+//                                             color: Colors.white,
+//                                             size: 28,
+//                                           ),
+//                                         ),
+//                                       )
+//                                     : Container(
+//                                         width: 60,
+//                                         height: 60,
+//                                         decoration: const BoxDecoration(
+//                                           color: Color(0xFF00998a),
+//                                           shape: BoxShape.circle,
+//                                         ),
+//                                         child: Icon(
+//                                           _getSubcategoryIcon(
+//                                               subcategory.title ?? ''),
+//                                           color: Colors.white,
+//                                           size: 28,
+//                                         ),
+//                                       ),
+//                               ),
+//                             ),
+//                             const SizedBox(height: 6), // Reduced from 8 to 6
+//                             SizedBox(
+//                               width: 60,
+//                               child: Text(
+//                                 subcategory.title ?? 'Subcategory',
+//                                 style: const TextStyle(
+//                                   fontFamily: 'Montserrat',
+//                                   fontSize: 11, // Reduced from 12 to 11
+//                                   fontWeight: FontWeight.w600,
+//                                   color: Color(0xFF000000),
+//                                 ),
+//                                 textAlign: TextAlign.center,
+//                                 maxLines: 1,
+//                                 overflow: TextOverflow.ellipsis,
+//                               ),
+//                             ),
+//                           ],
+//                         ),
+//                       ),
+//                     );
+//                   },
+//                 ),
+//               );
+//             },
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 class MartStealsOfMoment extends StatelessWidget {
   final double screenWidth;

@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:customer/controllers/mart_controller.dart';
-import 'package:customer/models/mart_category_model.dart';
-import 'package:customer/utils/network_image_widget.dart';
 import 'package:customer/app/mart/mart_category_detail_screen.dart';
+import 'package:customer/app/mart/mart_home_screen/controller/mart_controller.dart';
+import 'package:customer/models/mart_category_model.dart';
 import 'package:customer/themes/app_them_data.dart';
 import 'package:customer/themes/mart_theme.dart';
+import 'package:customer/utils/network_image_widget.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class MartCategoriesScreen extends StatefulWidget {
   const MartCategoriesScreen({super.key});
@@ -24,7 +24,7 @@ class _MartCategoriesScreenState extends State<MartCategoriesScreen> {
     super.initState();
     _martController = Get.find<MartController>();
     _searchController = TextEditingController();
-    
+
     // Add a small delay to ensure controller is fully initialized
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadCategories();
@@ -82,15 +82,19 @@ class _MartCategoriesScreenState extends State<MartCategoriesScreen> {
     final statusBarHeight = MediaQuery.of(context).padding.top;
 
     return Scaffold(
-      backgroundColor: AppThemeData.homeScreenBackground, // Reusable home screen background
+      backgroundColor:
+          AppThemeData.homeScreenBackground, // Reusable home screen background
       body: Column(
         children: [
           // Header with gradient background - Fill entire top area
           Container(
             width: screenWidth,
-            height: screenWidth < 480 ? 120 + statusBarHeight : 136 + statusBarHeight, // Responsive height
+            height: screenWidth < 480
+                ? 120 + statusBarHeight
+                : 136 + statusBarHeight, // Responsive height
             decoration: const BoxDecoration(
-              color: MartTheme.jippyMartButton, // Use solid jippyMartButton color
+              color:
+                  MartTheme.jippyMartButton, // Use solid jippyMartButton color
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(10),
                 bottomRight: Radius.circular(10),
@@ -101,7 +105,9 @@ class _MartCategoriesScreenState extends State<MartCategoriesScreen> {
                 // Search bar container - Responsive width
                 Positioned(
                   left: 16,
-                  top: screenWidth < 480 ? 56 + statusBarHeight : 64 + statusBarHeight, // Responsive top position
+                  top: screenWidth < 480
+                      ? 56 + statusBarHeight
+                      : 64 + statusBarHeight, // Responsive top position
                   child: Container(
                     width: screenWidth - 32, // Responsive width
                     height: screenWidth < 480 ? 48 : 52, // Responsive height
@@ -119,14 +125,17 @@ class _MartCategoriesScreenState extends State<MartCategoriesScreen> {
                     child: Row(
                       children: [
                         SizedBox(width: screenWidth < 480 ? 16 : 19),
-                        Icon(Icons.search, color: const Color(0xFF6B6B6B), size: screenWidth < 480 ? 20 : 24),
+                        Icon(Icons.search,
+                            color: const Color(0xFF6B6B6B),
+                            size: screenWidth < 480 ? 20 : 24),
                         SizedBox(width: screenWidth < 480 ? 10 : 12),
                         Expanded(
                           child: TextField(
                             controller: _searchController,
                             onChanged: (value) {
                               // Debounce search to avoid too many API calls
-                              Future.delayed(const Duration(milliseconds: 500), () {
+                              Future.delayed(const Duration(milliseconds: 500),
+                                  () {
                                 if (_searchController.text == value) {
                                   _performSearch(value);
                                 }
@@ -178,7 +187,9 @@ class _MartCategoriesScreenState extends State<MartCategoriesScreen> {
                 Positioned(
                   left: 0,
                   right: 0,
-                  top: screenWidth < 480 ? 16 + statusBarHeight : 20 + statusBarHeight, // Responsive top position
+                  top: screenWidth < 480
+                      ? 16 + statusBarHeight
+                      : 20 + statusBarHeight, // Responsive top position
                   child: Text(
                     _isSearching ? 'Search Results' : 'All Categories',
                     textAlign: TextAlign.center,
@@ -204,7 +215,7 @@ class _MartCategoriesScreenState extends State<MartCategoriesScreen> {
                     ),
                   );
                 }
-                
+
                 if (controller.errorMessage.value.isNotEmpty) {
                   return Center(
                     child: Column(
@@ -240,7 +251,8 @@ class _MartCategoriesScreenState extends State<MartCategoriesScreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF5D56F3),
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 32, vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -257,7 +269,7 @@ class _MartCategoriesScreenState extends State<MartCategoriesScreen> {
                     ),
                   );
                 }
-                
+
                 if (controller.martCategories.isEmpty) {
                   // Show different messages based on whether we're searching or not
                   if (_isSearching) {
@@ -330,14 +342,15 @@ class _MartCategoriesScreenState extends State<MartCategoriesScreen> {
                     );
                   }
                 }
-                
+
                 return RefreshIndicator(
                   onRefresh: _loadCategories,
                   child: SingleChildScrollView(
                     padding: EdgeInsets.zero,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
-                      child: _buildCategoriesBySections(controller.martCategories),
+                      child:
+                          _buildCategoriesBySections(controller.martCategories),
                     ),
                   ),
                 );
@@ -353,27 +366,29 @@ class _MartCategoriesScreenState extends State<MartCategoriesScreen> {
     // Group categories by section
     Map<String, List<MartCategoryModel>> sections = {};
     Map<String, int> sectionOrders = {};
-    
+
     for (var category in categories) {
       String sectionName = category.section ?? 'Other';
       if (!sections.containsKey(sectionName)) {
         sections[sectionName] = [];
-        sectionOrders[sectionName] = category.sectionOrder ?? 999; // Default high order for sections without order
+        sectionOrders[sectionName] = category.sectionOrder ??
+            999; // Default high order for sections without order
       }
       sections[sectionName]!.add(category);
     }
-    
+
     // Sort sections by section_order field
     List<String> sortedSections = sections.keys.toList()
-      ..sort((a, b) => (sectionOrders[a] ?? 999).compareTo(sectionOrders[b] ?? 999));
-    
+      ..sort((a, b) =>
+          (sectionOrders[a] ?? 999).compareTo(sectionOrders[b] ?? 999));
+
     return Column(
       children: [
         ...sortedSections.asMap().entries.map((entry) {
           final index = entry.key;
           final sectionName = entry.value;
           final sectionCategories = sections[sectionName]!;
-          
+
           return Column(
             children: [
               // Add balanced spacing between sections (except for the first one)
@@ -385,11 +400,13 @@ class _MartCategoriesScreenState extends State<MartCategoriesScreen> {
       ],
     );
   }
-  
-  Widget _buildSection(String sectionName, List<MartCategoryModel> sectionCategories) {
+
+  Widget _buildSection(
+      String sectionName, List<MartCategoryModel> sectionCategories) {
     // Sort categories within section by order
-    sectionCategories.sort((a, b) => (a.categoryOrder ?? 0).compareTo(b.categoryOrder ?? 0));
-    
+    sectionCategories
+        .sort((a, b) => (a.categoryOrder ?? 0).compareTo(b.categoryOrder ?? 0));
+
     return LayoutBuilder(
       builder: (context, constraints) {
         // Responsive grid configuration
@@ -398,7 +415,7 @@ class _MartCategoriesScreenState extends State<MartCategoriesScreen> {
         double childAspectRatio;
         double crossAxisSpacing;
         double mainAxisSpacing;
-        
+
         if (screenWidth < 360) {
           // Small phones
           crossAxisCount = 3;
@@ -430,7 +447,7 @@ class _MartCategoriesScreenState extends State<MartCategoriesScreen> {
           crossAxisSpacing = 16;
           mainAxisSpacing = 16;
         }
-        
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -479,16 +496,17 @@ class _MartCategoriesScreenState extends State<MartCategoriesScreen> {
     double borderRadius = 18;
     double titleFontSize = 12;
     double titleLineHeight = 15;
-    
+
     return InkWell(
       onTap: () {
         print('Tapped on category: ${category.title}');
         // Navigate to category products screen
-        final currentVendorId = _martController.selectedVendorId.value.isNotEmpty 
-            ? _martController.selectedVendorId.value 
-            : '';
+        final currentVendorId =
+            _martController.selectedVendorId.value.isNotEmpty
+                ? _martController.selectedVendorId.value
+                : '';
         final vendorName = _martController.currentVendorName;
-        
+
         Get.to(() => const MartCategoryDetailScreen(), arguments: {
           'categoryId': category.id,
           'categoryName': category.title ?? 'Category',
@@ -530,29 +548,29 @@ class _MartCategoriesScreenState extends State<MartCategoriesScreen> {
                     ),
             ),
           ),
-                                  // Text Container - No background
-            Container(
-              width: cardWidth,
-              height: textHeight,
-              // 🔑 Removed white background color
-              child: Center(
-                child: Text(
-                  category.title ?? 'Unknown Category',
-                  style: TextStyle(
-                    fontFamily: 'Montserrat',
-                    fontSize: titleFontSize,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
-                    height: titleLineHeight / titleFontSize,
-                  ),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+          // Text Container - No background
+          Container(
+            width: cardWidth,
+            height: textHeight,
+            // 🔑 Removed white background color
+            child: Center(
+              child: Text(
+                category.title ?? 'Unknown Category',
+                style: TextStyle(
+                  fontFamily: 'Montserrat',
+                  fontSize: titleFontSize,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
+                  height: titleLineHeight / titleFontSize,
                 ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
+          ),
         ],
       ),
-      );
+    );
   }
 }

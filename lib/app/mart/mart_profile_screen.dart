@@ -1,16 +1,14 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:customer/controllers/mart_controller.dart';
-import 'package:customer/constant/constant.dart';
-import 'package:customer/models/user_model.dart';
+import 'package:customer/app/auth_screen/phone_number_screen.dart';
 import 'package:customer/app/mart/mart_address_screen.dart';
 import 'package:customer/app/mart/mart_edit_profile_screen.dart';
-import 'package:customer/app/auth_screen/phone_number_screen.dart';
-import 'package:customer/models/mart_subcategory_model.dart';
-
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:customer/app/mart/mart_home_screen/controller/mart_controller.dart';
+import 'package:customer/constant/constant.dart';
+import 'package:customer/models/user_model.dart';
 import 'package:customer/utils/preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 class MartProfileScreen extends StatelessWidget {
@@ -33,7 +31,7 @@ class MartProfileScreen extends StatelessWidget {
                 expandedHeight: 120,
                 floating: false,
                 pinned: true,
-        backgroundColor: const Color(0xFF5D56F3),
+                backgroundColor: const Color(0xFF5D56F3),
                 automaticallyImplyLeading: false, // Remove back arrow
                 flexibleSpace: FlexibleSpaceBar(
                   title: const Padding(
@@ -80,11 +78,11 @@ class MartProfileScreen extends StatelessWidget {
                       // Profile Header
                       _buildProfileHeader(),
                       const SizedBox(height: 24),
-                      
+
                       // Quick Stats
                       _buildQuickStats(),
                       const SizedBox(height: 24),
-                      
+
                       // Menu Items
                       _buildMenuItems(),
                     ],
@@ -100,7 +98,7 @@ class MartProfileScreen extends StatelessWidget {
 
   Widget _buildProfileHeader() {
     final userModel = Constant.userModel;
-    
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -116,31 +114,33 @@ class MartProfileScreen extends StatelessWidget {
       ),
       child: Row(
         children: [
-                                // Profile Picture with Initials
-                      CircleAvatar(
-                        radius: 40,
-                        backgroundColor: const Color(0xFF5D56F3),
-                        backgroundImage: userModel?.profilePictureURL != null && userModel!.profilePictureURL!.isNotEmpty
-                            ? NetworkImage(userModel.profilePictureURL!)
-                            : null,
-                        child: userModel?.profilePictureURL == null || userModel!.profilePictureURL!.isEmpty
-                            ? Text(
-                                _getUserInitials(userModel),
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : null,
-                      ),
+          // Profile Picture with Initials
+          CircleAvatar(
+            radius: 40,
+            backgroundColor: const Color(0xFF5D56F3),
+            backgroundImage: userModel?.profilePictureURL != null &&
+                    userModel!.profilePictureURL!.isNotEmpty
+                ? NetworkImage(userModel.profilePictureURL!)
+                : null,
+            child: userModel?.profilePictureURL == null ||
+                    userModel!.profilePictureURL!.isEmpty
+                ? Text(
+                    _getUserInitials(userModel),
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  )
+                : null,
+          ),
           const SizedBox(width: 16),
-          
+
           // User Info
           Expanded(
-        child: Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+              children: [
                 Text(
                   userModel?.fullName() ?? 'User',
                   style: const TextStyle(
@@ -151,7 +151,9 @@ class MartProfileScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  userModel?.email ?? userModel?.phoneNumber ?? 'No contact info',
+                  userModel?.email ??
+                      userModel?.phoneNumber ??
+                      'No contact info',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey[600],
@@ -159,7 +161,8 @@ class MartProfileScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
                     color: const Color(0xFF5D56F3).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -176,7 +179,7 @@ class MartProfileScreen extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // Edit Button
           IconButton(
             onPressed: () {
@@ -194,7 +197,7 @@ class MartProfileScreen extends StatelessWidget {
 
   Widget _buildQuickStats() {
     final userModel = Constant.userModel;
-    
+
     return Row(
       children: [
         Expanded(
@@ -254,18 +257,18 @@ class MartProfileScreen extends StatelessWidget {
             size: 24,
           ),
           const SizedBox(height: 8),
-            Text(
+          Text(
             value,
-              style: TextStyle(
+            style: TextStyle(
               fontSize: 20,
-                fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.bold,
               color: color,
             ),
           ),
           const SizedBox(height: 4),
-            Text(
+          Text(
             title,
-              style: TextStyle(
+            style: TextStyle(
               fontSize: 12,
               color: Colors.grey[600],
             ),
@@ -466,27 +469,29 @@ class MartProfileScreen extends StatelessWidget {
       // 1. Clear user data from memory
       Constant.userModel = null;
       Constant.selectedLocation = ShippingAddress();
-      
+
       // 2. Sign out from Firebase Auth
       await FirebaseAuth.instance.signOut();
-      
+
       // 3. Clear all secure storage
       const storage = FlutterSecureStorage();
       await storage.deleteAll(); // Clear all secure storage
-      
+
       // 4. Clear all SharedPreferences
       await Preferences.clearSharPreference();
-      
+
       // 5. Clear GetStorage
       final box = GetStorage();
       await box.erase();
-      
+
       // 6. Clear any GetX stored data
       Get.deleteAll();
-      
+
       // 7. Navigate to login screen with fresh start
-      Get.offAll(() => const PhoneNumberScreen(), transition: Transition.fadeIn, duration: const Duration(milliseconds: 1200));
-      
+      Get.offAll(() => const PhoneNumberScreen(),
+          transition: Transition.fadeIn,
+          duration: const Duration(milliseconds: 1200));
+
       // 8. Show success message after navigation
       Future.delayed(const Duration(milliseconds: 1500), () {
         Get.snackbar(
@@ -523,20 +528,23 @@ class MartProfileScreen extends StatelessWidget {
         );
       } else {
         // No user logged in, redirect to login
-        Get.offAll(() => const PhoneNumberScreen(), transition: Transition.fadeIn, duration: const Duration(milliseconds: 1200));
+        Get.offAll(() => const PhoneNumberScreen(),
+            transition: Transition.fadeIn,
+            duration: const Duration(milliseconds: 1200));
       }
     }
   }
 
   String _getUserInitials(UserModel? userModel) {
     if (userModel == null) return 'U';
-    
+
     String firstName = userModel.firstName?.trim() ?? '';
     String lastName = userModel.lastName?.trim() ?? '';
-    
-    String firstInitial = firstName.isNotEmpty ? firstName[0].toUpperCase() : '';
+
+    String firstInitial =
+        firstName.isNotEmpty ? firstName[0].toUpperCase() : '';
     String lastInitial = lastName.isNotEmpty ? lastName[0].toUpperCase() : '';
-    
+
     if (firstInitial.isNotEmpty && lastInitial.isNotEmpty) {
       return '$firstInitial$lastInitial';
     } else if (firstInitial.isNotEmpty) {

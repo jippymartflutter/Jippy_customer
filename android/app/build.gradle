@@ -48,7 +48,8 @@ android {
 
     signingConfigs {
         release {
-            storeFile file("/Users/jippymart/StudioProjects/Jippy_customer/android/jippy_mart_keystore.jks")
+//            storeFile file("/Users/jippymart/StudioProjects/Jippy_customer/android/jippy_mart_keystore.jks")
+            storeFile file("jippy_mart_keystore.jks")
             storePassword "Jippy@2024"
             keyAlias "jippy_mart"
             keyPassword "Jippy@2024"
@@ -57,7 +58,7 @@ android {
 
     defaultConfig {
         applicationId = "com.jippymart.customer"
-        minSdkVersion = flutter.minSdkVersion
+        minSdkVersion = 23
         targetSdk = 34  // Android 14 - More stable for SDK compatibility
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName

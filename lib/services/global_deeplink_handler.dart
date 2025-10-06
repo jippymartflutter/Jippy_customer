@@ -4,7 +4,7 @@ import 'package:customer/app/mart/mart_navigation_screen.dart';
 import 'package:customer/app/mart/mart_product_details_screen.dart';
 import 'package:customer/app/restaurant_details_screen/restaurant_details_screen.dart';
 import 'package:customer/controllers/cart_controller.dart';
-import 'package:customer/controllers/mart_controller.dart';
+import 'package:customer/app/mart/mart_home_screen/controller/mart_controller.dart';
 import 'package:customer/controllers/restaurant_details_controller.dart';
 import 'package:customer/models/mart_category_model.dart';
 import 'package:customer/utils/crash_prevention.dart';

@@ -9,7 +9,7 @@ import 'package:customer/constant/constant.dart';
 import 'package:customer/controllers/dash_board_controller.dart';
 import 'package:customer/controllers/global_setting_controller.dart';
 import 'package:customer/controllers/login_controller.dart';
-import 'package:customer/controllers/mart_controller.dart';
+import 'package:customer/app/mart/mart_home_screen/controller/mart_controller.dart';
 import 'package:customer/controllers/otp_controller.dart';
 import 'package:customer/firebase_options.dart';
 import 'package:customer/models/language_model.dart';
@@ -51,24 +51,24 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // 🔗 CRITICAL: Initialize GlobalDeeplinkHandler FIRST - before any other services
-  print('🔗 [MAIN] Initializing GlobalDeeplinkHandler FIRST...');
+  print('🔗 [MAIN] Initializing GlobalDeeplinkHandler FIRST...',);
   GlobalDeeplinkHandler.init();
   // Register GlobalDeeplinkHandler as a permanent GetX dependency
-  Get.put(GlobalDeeplinkHandler.instance, permanent: true);
+  Get.put(GlobalDeeplinkHandler.instance, permanent: true,);
   print(
       '🔗 [MAIN] GlobalDeeplinkHandler initialized and registered successfully');
 
   // 🛡️ CRASH PREVENTION: Initialize crash prevention system
-  print('🛡️ [MAIN] Initializing crash prevention system...');
+  print('🛡️ [MAIN] Initializing crash prevention system...',);
   CrashPrevention();
-  print('🛡️ [MAIN] Crash prevention system initialized');
+  print('🛡️ [MAIN] Crash prevention system initialized',);
 
   // 🚨 ANR PREVENTION: Initialize ANR prevention systems
-  print('🚨 [MAIN] Initializing ANR prevention systems...');
+  print('🚨 [MAIN] Initializing ANR prevention systems...',);
   await SmartlookANRFix.configureSmartlook();
   await PlatformANRPrevention.preventMIUIANR();
   await PlatformANRPrevention.preventCiscoANR();
-  print('🚨 [MAIN] ANR prevention systems initialized');
+  print('🚨 [MAIN] ANR prevention systems initialized',);
 
   log('🔗 [MAIN] 🚀 MAIN FUNCTION CALLED!');
 
@@ -151,9 +151,10 @@ void _initializeHeavyServicesInBackground() {
     try {
       // Initialize heavy services with timeouts
       await Future.wait([
-        Get.putAsync(() => ApiService().init())
-            .timeout(const Duration(seconds: 5)),
-        Get.putAsync(() => MartFirestoreService().init())
+        Get.putAsync(
+          () => ApiService().init(),
+        ).timeout(const Duration(seconds: 5,),),
+        Get.putAsync(() => MartFirestoreService().init(),)
             .timeout(const Duration(seconds: 5)),
         CacheManager.initialize().timeout(const Duration(seconds: 3)),
         PerformanceOptimizer.initialize().timeout(const Duration(seconds: 2)),

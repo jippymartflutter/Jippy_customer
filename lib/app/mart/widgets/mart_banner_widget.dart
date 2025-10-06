@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:customer/models/mart_banner_model.dart';
-import 'package:customer/controllers/mart_controller.dart';
+import 'package:customer/app/mart/mart_home_screen/controller/mart_controller.dart';
 
 class MartBannerWidget extends StatelessWidget {
   final String position;

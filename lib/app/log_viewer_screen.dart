@@ -5,6 +5,12 @@ import 'package:customer/utils/production_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart' show SharePlus, ShareParams, XFile;
 
+void showSnackBar(String message, BuildContext context) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text(message)),
+  );
+}
+
 class LogViewerScreen extends StatefulWidget {
   const LogViewerScreen({Key? key}) : super(key: key);
 

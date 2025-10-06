@@ -689,9 +689,11 @@ class MartController extends GetxController {
 
   /// Load all homepage subcategories directly from Firestore
   Future<void> loadAllHomepageSubcategories() async {
+    print('loadAllHomepageSubcategories');
     try {
       print(
-          '[MART CONTROLLER] 🔄 Loading all homepage subcategories directly from Firestore...');
+        '[MART CONTROLLER] 🔄 Loading all homepage subcategories directly from Firestore...',
+      );
       isSubcategoryLoading.value = true;
 
       // Clear existing subcategories
@@ -2063,7 +2065,9 @@ class MartController extends GetxController {
               '[MART CONTROLLER] ✅ Streaming: All categories loaded from Firestore (${categories.length})');
 
           // Load subcategories for categories that have them
-          await _loadSubcategoriesStreaming();
+          // await _loadSubcategoriesStreaming();
+          // await loadAllHomepageSubcategories();
+          await loadFirstPageHomepageSubcategories();
           return;
         } else {
           print(
@@ -2083,6 +2087,7 @@ class MartController extends GetxController {
     }
   }
 
+//changed here _loadSubcategoriesStreaming
   /// Load subcategories with streaming updates
   Future<void> _loadSubcategoriesStreaming() async {
     try {
@@ -2753,4 +2758,136 @@ class MartController extends GetxController {
       update();
     });
   }
+
+  //////[MART SUB CATEGORY CONTROLLER]
+// New pagination properties
+  final _lastDocuments = <DocumentSnapshot>[];
+  final _hasMoreSubcategories = true.obs;
+  final _currentPage = 0.obs;
+
+  bool get hasMoreSubcategories => _hasMoreSubcategories.value;
+  int get currentPageAll => _currentPage.value;
+  int get loadedSubcategoriesCount {
+    int total = 0;
+    subcategoriesMap.forEach((key, value) {
+      total += value.length;
+    });
+    return total;
+  }
+
+  /// Load first page of homepage subcategories
+  Future<void> loadFirstPageHomepageSubcategories() async {
+    try {
+      print('[MART] 🔄 Loading first page of subcategories...');
+      _lastDocuments.clear();
+      _currentPage.value = 0;
+      _hasMoreSubcategories.value = true;
+
+      final result =
+          await _firestoreService.getHomepageSubcategoriesPaginated(limit: 10);
+
+      final subcategories =
+          result['subcategories'] as List<MartSubcategoryModel>;
+      final lastDoc = result['lastDocument'] as DocumentSnapshot?;
+
+      if (subcategories.isNotEmpty) {
+        _groupAndAddSubcategories(subcategories);
+
+        // 🔧 Store last document for pagination
+        if (lastDoc != null) _lastDocuments.add(lastDoc);
+
+        _currentPage.value = 1;
+        _hasMoreSubcategories.value = (subcategories.length == 10);
+
+        print('[MART] ✅ Loaded first ${subcategories.length} subcategories.');
+      } else {
+        _hasMoreSubcategories.value = false;
+        print('[MART] ⚠️ No subcategories found.');
+      }
+    } catch (e) {
+      print('[MART] ❌ Error loading first page: $e');
+    }
+  }
+
+  /// Load next page
+  Future<void> loadMoreHomepageSubcategories() async {
+    if (!_hasMoreSubcategories.value) {
+      print('[MART] ⚠️ No more pages left.');
+      return;
+    }
+
+    try {
+      print('[MART] 🔄 Loading page ${_currentPage.value + 1}...');
+
+      final result = await _firestoreService.getHomepageSubcategoriesPaginated(
+        limit: 10,
+        lastDocument: _lastDocuments.isNotEmpty ? _lastDocuments.last : null,
+      );
+
+      final nextPageSubcategories =
+          result['subcategories'] as List<MartSubcategoryModel>;
+      final lastDoc = result['lastDocument'] as DocumentSnapshot?;
+
+      if (nextPageSubcategories.isNotEmpty) {
+        _groupAndAddSubcategories(nextPageSubcategories);
+
+        // 🔧 Update last document for next page
+        if (lastDoc != null) _lastDocuments.add(lastDoc);
+
+        _currentPage.value += 1;
+        _hasMoreSubcategories.value = (nextPageSubcategories.length == 10);
+
+        print('[MART] ✅ Page ${_currentPage.value} loaded.');
+      } else {
+        _hasMoreSubcategories.value = false;
+        print('[MART] ⚠️ No more subcategories to load.');
+      }
+    } catch (e) {
+      print('[MART] ❌ Error loading next page: $e');
+    }
+  }
+
+  /// Grouping function (example)
+  void _groupAndAddSubcategories(List<MartSubcategoryModel> subcategories) {
+    for (final subcategory in subcategories) {
+      // Use the correct field from your model:
+      final parentId = subcategory.parentCategoryId ?? 'unknown';
+
+      // Ensure list exists for this parent
+      subcategoriesMap.putIfAbsent(parentId, () => <MartSubcategoryModel>[]);
+      // Avoid duplicates (by id)
+      final exists = subcategoriesMap[parentId]!
+          .any((existing) => existing.id == subcategory.id);
+      if (!exists) {
+        subcategoriesMap[parentId]!.add(subcategory);
+      }
+    }
+    // If subcategoriesMap is an RxMap, force update
+    if (subcategoriesMap is RxMap) {
+      (subcategoriesMap as RxMap).refresh();
+    }
+  }
+
+  /// Get all homepage subcategories from the map (for UI display)
+  List<MartSubcategoryModel> get allHomepageSubcategories {
+    final allSubcategories = <MartSubcategoryModel>[];
+    subcategoriesMap.forEach((parentId, subcategoryList) {
+      allSubcategories.addAll(subcategoryList);
+    });
+
+    // Sort by order to maintain consistency
+    allSubcategories.sort(
+        (a, b) => (a.subcategoryOrder ?? 0).compareTo(b.subcategoryOrder ?? 0));
+
+    return allSubcategories;
+  }
+
+  /// Get homepage subcategories filtered by show_in_homepage flag
+  List<MartSubcategoryModel> get homepageSubcategories {
+    return allHomepageSubcategories
+        .where((subcategory) => subcategory.showInHomepage == true)
+        .toList();
+  }
+
+  // Keep your existing method for backward compatibility, but mark as deprecated
 }

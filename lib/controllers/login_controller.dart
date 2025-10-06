@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:customer/app/auth_screen/otp_screen.dart';
+import 'package:customer/app/auth_screen/phone_number_screen.dart';
 import 'package:customer/app/auth_screen/signup_screen.dart';
 import 'package:customer/app/dash_board_screens/dash_board_screen.dart';
 import 'package:customer/app/location_permission_screen/location_permission_screen.dart';
@@ -435,7 +436,7 @@ class LoginController extends GetxController {
     );
   }
 
-  Future<void> verifyOtp() async {
+  Future<void> verifyOtp(BuildContext context) async {
     print(
         '[DEBUG] verifyOtp() called with phone: ${phoneEditingController.value.text.trim()}, otp: ${otpEditingController.value.text.trim()}');
     ShowToastDialog.showLoader("Verifying OTP...".tr);
@@ -448,6 +449,16 @@ class LoginController extends GetxController {
           'otp': otpEditingController.value.text.trim(),
         },
       );
+      // final response = await Dio().post(
+      //   'https://jippymart.in/api/verify-otp',
+      //   data: {
+      //     'phone': phoneEditingController.value.text.trim(),
+      //     'otp': otpEditingController.value.text.trim(),
+      //   },
+      //   options: Options(
+      //     headers: {'Accept': 'application/json'},
+      //   ),
+      // );
       print(
           '[DEBUG] verifyOtp() response: ${response.statusCode} ${response.data}');
       if (response.statusCode == 200 && response.data['success'] == true) {
@@ -478,15 +489,33 @@ class LoginController extends GetxController {
             userModel.active != true ||
             userModel.role?.toLowerCase() !=
                 Constant.userRoleCustomer.toLowerCase()) {
-          // User not found, inactive, or not customer
-          UserModel newUser = UserModel();
-          newUser.phoneNumber = phone;
-          newUser.countryCode = countryCode.value;
-          newUser.email = response.data['user']?['email']?.toString();
-          ShowToastDialog.closeLoader();
-          Get.offAll(() => SignupScreen(),
-              arguments: {"userModel": newUser, "type": "mobileNumber"});
-          return;
+          if (userModel?.role?.toLowerCase() == 'customer') {
+            // User not found, inactive, or not customer
+            UserModel newUser = UserModel();
+            newUser.phoneNumber = phone;
+            newUser.countryCode = countryCode.value;
+            newUser.email = response.data['user']?['email']?.toString();
+            ShowToastDialog.closeLoader();
+            Get.offAll(() => SignupScreen(),
+                arguments: {"userModel": newUser, "type": "mobileNumber"});
+            print(" user not exited ");
+            return;
+          } else {
+            print('[DEBUG] Firebase sign-in failed, forcing logout');
+
+            await FirebaseAuth.instance.signOut();
+            FireStoreUtils.backendUserId = null;
+            ShowToastDialog.closeLoader();
+            ShowToastDialog.showToast(
+              "${userModel?.role?.toUpperCase()} Account Already Exited",
+            );
+            Get.offAll(
+              () => const PhoneNumberScreen(),
+              transition: Transition.fadeIn,
+              duration: const Duration(milliseconds: 1200),
+            );
+            return;
+          }
         }
         if ((userModel.firstName == null || userModel.firstName!.isEmpty) ||
             (userModel.email == null || userModel.email!.isEmpty)) {

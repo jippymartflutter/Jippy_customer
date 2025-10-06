@@ -33,7 +33,6 @@ class DashBoardController extends GetxController {
   void onInit() {
     getTaxList();
     loadUserData();
-
     // Initialize theme and page list
     currentTheme.value = Constant.theme;
     _updatePageList();
@@ -264,8 +263,8 @@ class DashBoardController extends GetxController {
             await FireStoreUtils.getUserProfile(FireStoreUtils.getCurrentUid());
         if (userModel != null) {
           Constant.userModel = userModel;
-          print('[DASHBOARD] User model loaded: ${userModel.toJson()}');
-
+          print(' [DASHBOARD] User model loaded: ${userModel.toJson()}');
+          update();
           // Log auth state change with complete profile data
           await AppLifecycleLogger().logUserProfileLoaded();
         } else {
