@@ -1,13 +1,15 @@
 import 'dart:async';
 import 'dart:developer' as developer;
+
 import 'package:app_links/app_links.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Mobile Deep Link Service for handling incoming deep links
 /// Supports both HTTPS and custom scheme links
 class MobileDeepLinkService {
-  static final MobileDeepLinkService _instance = MobileDeepLinkService._internal();
+  static final MobileDeepLinkService _instance =
+      MobileDeepLinkService._internal();
   factory MobileDeepLinkService() => _instance;
   MobileDeepLinkService._internal();
 
@@ -23,18 +25,19 @@ class MobileDeepLinkService {
       return;
     }
 
-    developer.log('🔗 [MOBILE_DEEP_LINK] Initializing Mobile Deep Link Service...');
-    
+    developer
+        .log('🔗 [MOBILE_DEEP_LINK] Initializing Mobile Deep Link Service...');
+
     try {
       // Handle incoming links when app is running
       _handleIncomingLinks();
-      
+
       // Handle initial link when app is opened from a deep link
       await _handleInitialLink();
-      
+
       // Check for pending deep links from web page
       await _checkPendingDeepLinks();
-      
+
       _isInitialized = true;
       developer.log('🔗 [MOBILE_DEEP_LINK] Service initialized successfully');
     } catch (e) {
@@ -77,14 +80,15 @@ class MobileDeepLinkService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final pendingLink = prefs.getString('pendingDeepLink');
-      
+
       if (pendingLink != null && pendingLink.isNotEmpty) {
-        developer.log('🔗 [MOBILE_DEEP_LINK] Found pending deep link: $pendingLink');
-        
+        developer
+            .log('🔗 [MOBILE_DEEP_LINK] Found pending deep link: $pendingLink');
+
         // Clear the pending link
         await prefs.remove('pendingDeepLink');
         await prefs.remove('pendingProductId');
-        
+
         // Process the pending link
         _processDeepLink(pendingLink);
       }
@@ -96,7 +100,7 @@ class MobileDeepLinkService {
   /// Process a deep link and determine the action
   void _processDeepLink(String link) {
     developer.log('🔗 [MOBILE_DEEP_LINK] Processing deep link: $link');
-    
+
     try {
       if (link.startsWith('jippymart://')) {
         // Custom scheme: jippymart://product/123
@@ -115,19 +119,21 @@ class MobileDeepLinkService {
   /// Handle custom scheme links (jippymart://)
   void _handleCustomScheme(String link) {
     developer.log('🔗 [MOBILE_DEEP_LINK] Handling custom scheme: $link');
-    
+
     try {
       final uri = Uri.parse(link);
       final segments = uri.pathSegments;
-      
+
       if (segments.length >= 2) {
         final type = segments[0]; // product, restaurant, mart
-        final id = segments[1];   // 123
-        
-        developer.log('🔗 [MOBILE_DEEP_LINK] Custom scheme - Type: $type, ID: $id');
+        final id = segments[1]; // 123
+
+        developer
+            .log('🔗 [MOBILE_DEEP_LINK] Custom scheme - Type: $type, ID: $id');
         _navigateToContent(type, id);
       } else {
-        developer.log('❌ [MOBILE_DEEP_LINK] Invalid custom scheme format: $link');
+        developer
+            .log('❌ [MOBILE_DEEP_LINK] Invalid custom scheme format: $link');
       }
     } catch (e) {
       developer.log('❌ [MOBILE_DEEP_LINK] Error parsing custom scheme: $e');
@@ -137,19 +143,21 @@ class MobileDeepLinkService {
   /// Handle HTTPS scheme links (https://jippymart.in)
   void _handleHttpsScheme(String link) {
     developer.log('🔗 [MOBILE_DEEP_LINK] Handling HTTPS scheme: $link');
-    
+
     try {
       final uri = Uri.parse(link);
       final pathSegments = uri.pathSegments;
-      
+
       if (pathSegments.length >= 2) {
         final type = pathSegments[0]; // product, restaurant, mart
-        final id = pathSegments[1];   // 123
-        
-        developer.log('🔗 [MOBILE_DEEP_LINK] HTTPS scheme - Type: $type, ID: $id');
+        final id = pathSegments[1]; // 123
+
+        developer
+            .log('🔗 [MOBILE_DEEP_LINK] HTTPS scheme - Type: $type, ID: $id');
         _navigateToContent(type, id);
       } else {
-        developer.log('❌ [MOBILE_DEEP_LINK] Invalid HTTPS scheme format: $link');
+        developer
+            .log('❌ [MOBILE_DEEP_LINK] Invalid HTTPS scheme format: $link');
       }
     } catch (e) {
       developer.log('❌ [MOBILE_DEEP_LINK] Error parsing HTTPS scheme: $e');
@@ -159,7 +167,7 @@ class MobileDeepLinkService {
   /// Navigate to the appropriate screen based on link type
   void _navigateToContent(String type, String id) {
     developer.log('🔗 [MOBILE_DEEP_LINK] Navigating to $type with ID: $id');
-    
+
     try {
       switch (type.toLowerCase()) {
         case 'product':
@@ -182,7 +190,7 @@ class MobileDeepLinkService {
   /// Navigate to product details screen
   void _navigateToProduct(String productId) {
     developer.log('🔗 [MOBILE_DEEP_LINK] Navigating to product: $productId');
-    
+
     // Add a small delay to ensure the app is fully loaded
     Future.delayed(Duration(milliseconds: 500), () {
       try {
@@ -198,15 +206,18 @@ class MobileDeepLinkService {
 
   /// Navigate to restaurant details screen
   void _navigateToRestaurant(String restaurantId) {
-    developer.log('🔗 [MOBILE_DEEP_LINK] Navigating to restaurant: $restaurantId');
-    
+    developer
+        .log('🔗 [MOBILE_DEEP_LINK] Navigating to restaurant: $restaurantId');
+
     Future.delayed(Duration(milliseconds: 500), () {
       try {
         // Navigate to restaurant details screen
         Get.toNamed('/restaurant-detail', arguments: {'id': restaurantId});
-        developer.log('✅ [MOBILE_DEEP_LINK] Navigated to restaurant: $restaurantId');
+        developer
+            .log('✅ [MOBILE_DEEP_LINK] Navigated to restaurant: $restaurantId');
       } catch (e) {
-        developer.log('❌ [MOBILE_DEEP_LINK] Error navigating to restaurant: $e');
+        developer
+            .log('❌ [MOBILE_DEEP_LINK] Error navigating to restaurant: $e');
       }
     });
   }
@@ -214,7 +225,7 @@ class MobileDeepLinkService {
   /// Navigate to mart/category screen
   void _navigateToMart(String martId) {
     developer.log('🔗 [MOBILE_DEEP_LINK] Navigating to mart: $martId');
-    
+
     Future.delayed(Duration(milliseconds: 500), () {
       try {
         // Navigate to mart/category screen

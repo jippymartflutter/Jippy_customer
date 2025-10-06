@@ -1,38 +1,40 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
+import 'package:customer/app/auth_screen/otp_screen.dart';
 import 'package:customer/app/auth_screen/signup_screen.dart';
 import 'package:customer/app/dash_board_screens/dash_board_screen.dart';
 import 'package:customer/app/location_permission_screen/location_permission_screen.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
-import 'package:customer/models/user_model.dart';
-import 'package:customer/utils/fire_store_utils.dart';
-import 'package:customer/utils/notification_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:get/get.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:customer/app/dash_board_screens/dash_board_controller.dart';
 import 'package:customer/controllers/cart_controller.dart';
+import 'package:customer/models/user_model.dart';
 import 'package:customer/services/database_helper.dart';
 import 'package:customer/services/final_deep_link_service.dart';
+import 'package:customer/utils/fire_store_utils.dart';
+import 'package:customer/utils/notification_service.dart';
 import 'package:dio/dio.dart';
-import 'package:customer/app/auth_screen/otp_screen.dart';
-import 'package:http/http.dart' as http;
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get/get.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class LoginController extends GetxController {
-  Rx<TextEditingController> emailEditingController = TextEditingController().obs;
-  Rx<TextEditingController> passwordEditingController = TextEditingController().obs;
+  Rx<TextEditingController> emailEditingController =
+      TextEditingController().obs;
+  Rx<TextEditingController> passwordEditingController =
+      TextEditingController().obs;
 
   RxBool passwordVisible = true.obs;
 
   // --- OTP Login Logic (Custom Backend) ---
-  Rx<TextEditingController> phoneEditingController = TextEditingController().obs;
+  Rx<TextEditingController> phoneEditingController =
+      TextEditingController().obs;
   Rx<TextEditingController> otpEditingController = TextEditingController().obs;
   RxBool isOtpSent = false.obs;
   RxBool isVerifying = false.obs;
@@ -73,15 +75,21 @@ class LoginController extends GetxController {
         email: emailEditingController.value.text.trim(),
         password: passwordEditingController.value.text.trim(),
       );
-      UserModel? userModel = await FireStoreUtils.getUserProfile(credential.user!.uid);
+      UserModel? userModel =
+          await FireStoreUtils.getUserProfile(credential.user!.uid);
       log("Login :: ${userModel?.toJson()}");
       if (userModel?.role == Constant.userRoleCustomer) {
         if (userModel?.active == true) {
           userModel?.fcmToken = await NotificationService.getToken();
           await FireStoreUtils.updateUser(userModel!);
-          if (userModel.shippingAddress != null && userModel.shippingAddress!.isNotEmpty) {
-            if (userModel.shippingAddress!.where((element) => element.isDefault == true).isNotEmpty) {
-              Constant.selectedLocation = userModel.shippingAddress!.where((element) => element.isDefault == true).single;
+          if (userModel.shippingAddress != null &&
+              userModel.shippingAddress!.isNotEmpty) {
+            if (userModel.shippingAddress!
+                .where((element) => element.isDefault == true)
+                .isNotEmpty) {
+              Constant.selectedLocation = userModel.shippingAddress!
+                  .where((element) => element.isDefault == true)
+                  .single;
             } else {
               Constant.selectedLocation = userModel.shippingAddress!.first;
             }
@@ -92,10 +100,10 @@ class LoginController extends GetxController {
             } catch (e) {
               print('DEBUG: Login - Error clearing cart: $e');
             }
-            
+
             // DashBoardController already registered in main.dart
             Get.offAll(const DashBoardScreen());
-            
+
             // Process any pending deep links after successful login
             try {
               final deepLinkService = FinalDeepLinkService();
@@ -109,7 +117,8 @@ class LoginController extends GetxController {
           }
         } else {
           await FirebaseAuth.instance.signOut();
-          ShowToastDialog.showToast("This user is disable please contact to administrator".tr);
+          ShowToastDialog.showToast(
+              "This user is disable please contact to administrator".tr);
         }
       } else {
         await FirebaseAuth.instance.signOut();
@@ -149,19 +158,27 @@ class LoginController extends GetxController {
             "type": "google",
           });
         } else {
-          await FireStoreUtils.userExistOrNot(value.user!.uid).then((userExit) async {
+          await FireStoreUtils.userExistOrNot(value.user!.uid)
+              .then((userExit) async {
             ShowToastDialog.closeLoader();
             if (userExit == true) {
-              UserModel? userModel = await FireStoreUtils.getUserProfile(value.user!.uid);
+              UserModel? userModel =
+                  await FireStoreUtils.getUserProfile(value.user!.uid);
               if (userModel!.role == Constant.userRoleCustomer) {
                 if (userModel.active == true) {
                   userModel.fcmToken = await NotificationService.getToken();
                   await FireStoreUtils.updateUser(userModel);
-                  if (userModel.shippingAddress != null && userModel.shippingAddress!.isNotEmpty) {
-                    if (userModel.shippingAddress!.where((element) => element.isDefault == true).isNotEmpty) {
-                      Constant.selectedLocation = userModel.shippingAddress!.where((element) => element.isDefault == true).single;
+                  if (userModel.shippingAddress != null &&
+                      userModel.shippingAddress!.isNotEmpty) {
+                    if (userModel.shippingAddress!
+                        .where((element) => element.isDefault == true)
+                        .isNotEmpty) {
+                      Constant.selectedLocation = userModel.shippingAddress!
+                          .where((element) => element.isDefault == true)
+                          .single;
                     } else {
-                      Constant.selectedLocation = userModel.shippingAddress!.first;
+                      Constant.selectedLocation =
+                          userModel.shippingAddress!.first;
                     }
                     Get.offAll(const DashBoardScreen());
                   } else {
@@ -169,7 +186,9 @@ class LoginController extends GetxController {
                   }
                 } else {
                   await FirebaseAuth.instance.signOut();
-                  ShowToastDialog.showToast("This user is disable please contact to administrator".tr);
+                  ShowToastDialog.showToast(
+                      "This user is disable please contact to administrator"
+                          .tr);
                 }
               } else {
                 await FirebaseAuth.instance.signOut();
@@ -216,19 +235,27 @@ class LoginController extends GetxController {
             "type": "apple",
           });
         } else {
-          await FireStoreUtils.userExistOrNot(userCredential.user!.uid).then((userExit) async {
+          await FireStoreUtils.userExistOrNot(userCredential.user!.uid)
+              .then((userExit) async {
             ShowToastDialog.closeLoader();
             if (userExit == true) {
-              UserModel? userModel = await FireStoreUtils.getUserProfile(userCredential.user!.uid);
+              UserModel? userModel =
+                  await FireStoreUtils.getUserProfile(userCredential.user!.uid);
               if (userModel!.role == Constant.userRoleCustomer) {
                 if (userModel.active == true) {
                   userModel.fcmToken = await NotificationService.getToken();
                   await FireStoreUtils.updateUser(userModel);
-                  if (userModel.shippingAddress != null && userModel.shippingAddress!.isNotEmpty) {
-                    if (userModel.shippingAddress!.where((element) => element.isDefault == true).isNotEmpty) {
-                      Constant.selectedLocation = userModel.shippingAddress!.where((element) => element.isDefault == true).single;
+                  if (userModel.shippingAddress != null &&
+                      userModel.shippingAddress!.isNotEmpty) {
+                    if (userModel.shippingAddress!
+                        .where((element) => element.isDefault == true)
+                        .isNotEmpty) {
+                      Constant.selectedLocation = userModel.shippingAddress!
+                          .where((element) => element.isDefault == true)
+                          .single;
                     } else {
-                      Constant.selectedLocation = userModel.shippingAddress!.first;
+                      Constant.selectedLocation =
+                          userModel.shippingAddress!.first;
                     }
                     Get.offAll(const DashBoardScreen());
                   } else {
@@ -236,7 +263,9 @@ class LoginController extends GetxController {
                   }
                 } else {
                   await FirebaseAuth.instance.signOut();
-                  ShowToastDialog.showToast("This user is disable please contact to administrator".tr);
+                  ShowToastDialog.showToast(
+                      "This user is disable please contact to administrator"
+                          .tr);
                 }
               } else {
                 await FirebaseAuth.instance.signOut();
@@ -267,10 +296,10 @@ class LoginController extends GetxController {
       final GoogleSignIn googleSignIn = GoogleSignIn(
         scopes: ['email', 'profile'],
       );
-      
+
       // Sign in using the correct API
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-      
+
       if (googleUser == null) {
         ShowToastDialog.closeLoader();
         ShowToastDialog.showToast("something_went_wrong".tr);
@@ -278,7 +307,8 @@ class LoginController extends GetxController {
       }
 
       // Obtain the auth details from the request
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
       // Create a new credential using the correct API
       final credential = GoogleAuthProvider.credential(
@@ -306,7 +336,8 @@ class LoginController extends GetxController {
       final nonce = sha256ofString(rawNonce);
 
       // Request credential for the currently signed in Apple account.
-      AuthorizationCredentialAppleID appleCredential = await SignInWithApple.getAppleIDCredential(
+      AuthorizationCredentialAppleID appleCredential =
+          await SignInWithApple.getAppleIDCredential(
         scopes: [
           AppleIDAuthorizationScopes.email,
           AppleIDAuthorizationScopes.fullName,
@@ -324,8 +355,12 @@ class LoginController extends GetxController {
 
       // Sign in the user with Firebase. If the nonce we generated earlier does
       // not match the nonce in `appleCredential.identityToken`, sign in will fail.
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
-      return {"appleCredential": appleCredential, "userCredential": userCredential};
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+      return {
+        "appleCredential": appleCredential,
+        "userCredential": userCredential
+      };
     } catch (e) {
       debugPrint(e.toString());
     }
@@ -358,7 +393,8 @@ class LoginController extends GetxController {
   // await FirebaseAuth.instance.signInWithCredential(credential);
 
   Future<void> sendOtp() async {
-    print('[DEBUG] sendOtp() called with phone: ${phoneEditingController.value.text.trim()}');
+    print(
+        '[DEBUG] sendOtp() called with phone: ${phoneEditingController.value.text.trim()}');
     ShowToastDialog.showLoader("Please wait".tr);
     try {
       phoneNumber.value = phoneEditingController.value.text.trim();
@@ -366,7 +402,8 @@ class LoginController extends GetxController {
         'https://jippymart.in/api/send-otp',
         data: {'phone': phoneEditingController.value.text.trim()},
       );
-      print('[DEBUG] sendOtp() response: ${response.statusCode} ${response.data}');
+      print(
+          '[DEBUG] sendOtp() response: ${response.statusCode} ${response.data}');
       if (response.statusCode == 200 && response.data['success'] == true) {
         isOtpSent.value = true;
         ShowToastDialog.closeLoader();
@@ -374,7 +411,8 @@ class LoginController extends GetxController {
         Get.to(() => OtpScreen());
       } else {
         ShowToastDialog.closeLoader();
-        ShowToastDialog.showToast(response.data['message'] ?? "Failed to send OTP".tr);
+        ShowToastDialog.showToast(
+            response.data['message'] ?? "Failed to send OTP".tr);
       }
     } catch (e) {
       print('[DEBUG] sendOtp() error: ${e.toString()}');
@@ -398,7 +436,8 @@ class LoginController extends GetxController {
   }
 
   Future<void> verifyOtp() async {
-    print('[DEBUG] verifyOtp() called with phone: ${phoneEditingController.value.text.trim()}, otp: ${otpEditingController.value.text.trim()}');
+    print(
+        '[DEBUG] verifyOtp() called with phone: ${phoneEditingController.value.text.trim()}, otp: ${otpEditingController.value.text.trim()}');
     ShowToastDialog.showLoader("Verifying OTP...".tr);
     isVerifying.value = true;
     try {
@@ -409,12 +448,14 @@ class LoginController extends GetxController {
           'otp': otpEditingController.value.text.trim(),
         },
       );
-      print('[DEBUG] verifyOtp() response: ${response.statusCode} ${response.data}');
+      print(
+          '[DEBUG] verifyOtp() response: ${response.statusCode} ${response.data}');
       if (response.statusCode == 200 && response.data['success'] == true) {
         authToken.value = response.data['token'] ?? '';
         await secureStorage.write(key: 'api_token', value: authToken.value);
         if (response.data['firebase_custom_token'] != null) {
-          await FirebaseAuth.instance.signInWithCustomToken(response.data['firebase_custom_token']);
+          await FirebaseAuth.instance
+              .signInWithCustomToken(response.data['firebase_custom_token']);
         }
         final firebaseUser = FirebaseAuth.instance.currentUser;
         if (firebaseUser == null) {
@@ -426,42 +467,47 @@ class LoginController extends GetxController {
           Get.offAllNamed('/LoginScreen');
           return;
         }
-        if (response.data['user'] != null && response.data['user']['id'] != null) {
+        if (response.data['user'] != null &&
+            response.data['user']['id'] != null) {
           FireStoreUtils.backendUserId = response.data['user']['id'].toString();
         }
         // Check Firestore for user profile by phone number
         final phone = phoneEditingController.value.text.trim();
         UserModel? userModel = await FireStoreUtils.getUserByPhoneNumber(phone);
-        if (userModel == null || userModel.active != true || userModel.role?.toLowerCase() != Constant.userRoleCustomer.toLowerCase()) {
+        if (userModel == null ||
+            userModel.active != true ||
+            userModel.role?.toLowerCase() !=
+                Constant.userRoleCustomer.toLowerCase()) {
           // User not found, inactive, or not customer
           UserModel newUser = UserModel();
           newUser.phoneNumber = phone;
           newUser.countryCode = countryCode.value;
           newUser.email = response.data['user']?['email']?.toString();
           ShowToastDialog.closeLoader();
-          Get.offAll(() => SignupScreen(), arguments: {
-            "userModel": newUser,
-            "type": "mobileNumber"
-          });
+          Get.offAll(() => SignupScreen(),
+              arguments: {"userModel": newUser, "type": "mobileNumber"});
           return;
         }
         if ((userModel.firstName == null || userModel.firstName!.isEmpty) ||
             (userModel.email == null || userModel.email!.isEmpty)) {
           // Profile incomplete
           ShowToastDialog.closeLoader();
-          Get.offAll(() => SignupScreen(), arguments: {
-            "userModel": userModel,
-            "type": "mobileNumber"
-          });
+          Get.offAll(() => SignupScreen(),
+              arguments: {"userModel": userModel, "type": "mobileNumber"});
           return;
         }
         // Profile exists and complete
         userModel.fcmToken = await NotificationService.getToken();
         await FireStoreUtils.updateUser(userModel);
         Constant.userModel = userModel;
-        if (userModel.shippingAddress != null && userModel.shippingAddress!.isNotEmpty) {
-          if (userModel.shippingAddress!.where((element) => element.isDefault == true).isNotEmpty) {
-            Constant.selectedLocation = userModel.shippingAddress!.where((element) => element.isDefault == true).single;
+        if (userModel.shippingAddress != null &&
+            userModel.shippingAddress!.isNotEmpty) {
+          if (userModel.shippingAddress!
+              .where((element) => element.isDefault == true)
+              .isNotEmpty) {
+            Constant.selectedLocation = userModel.shippingAddress!
+                .where((element) => element.isDefault == true)
+                .single;
           } else {
             Constant.selectedLocation = userModel.shippingAddress!.first;
           }
@@ -470,24 +516,31 @@ class LoginController extends GetxController {
         Get.offAll(() => const DashBoardScreen());
       } else {
         ShowToastDialog.closeLoader();
-        ShowToastDialog.showToast(response.data['message'] ?? 'OTP verification failed');
+        ShowToastDialog.showToast(
+            response.data['message'] ?? 'OTP verification failed');
       }
     } catch (e) {
       print('[DEBUG] verifyOtp() error: ${e.toString()}');
       ShowToastDialog.closeLoader();
-      
+
       // Enhanced error handling with more specific messages
       if (e is DioException) {
         if (e.response != null) {
-          print('[DEBUG] API Error Response: ${e.response?.statusCode} - ${e.response?.data}');
-          String errorMessage = e.response?.data?['message'] ?? 'Server error occurred';
+          print(
+              '[DEBUG] API Error Response: ${e.response?.statusCode} - ${e.response?.data}');
+          String errorMessage =
+              e.response?.data?['message'] ?? 'Server error occurred';
           ShowToastDialog.showToast("Error: $errorMessage");
-        } else if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.receiveTimeout) {
-          ShowToastDialog.showToast("Connection timeout. Please check your internet connection.");
+        } else if (e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.receiveTimeout) {
+          ShowToastDialog.showToast(
+              "Connection timeout. Please check your internet connection.");
         } else if (e.type == DioExceptionType.connectionError) {
-          ShowToastDialog.showToast("No internet connection. Please check your network.");
+          ShowToastDialog.showToast(
+              "No internet connection. Please check your network.");
         } else {
-          ShowToastDialog.showToast("Network error occurred. Please try again.");
+          ShowToastDialog.showToast(
+              "Network error occurred. Please try again.");
         }
       } else {
         ShowToastDialog.showToast("Error verifying OTP. Please try again.");
@@ -498,20 +551,23 @@ class LoginController extends GetxController {
   }
 
   Future<void> resendOtp() async {
-    print('[DEBUG] resendOtp() called with phone: ${phoneEditingController.value.text.trim()}');
+    print(
+        '[DEBUG] resendOtp() called with phone: ${phoneEditingController.value.text.trim()}');
     ShowToastDialog.showLoader("Resending OTP...".tr);
     try {
       final response = await Dio().post(
         'https://jippymart.in/api/resend-otp',
         data: {'phone': phoneEditingController.value.text.trim()},
       );
-      print('[DEBUG] resendOtp() response: ${response.statusCode} ${response.data}');
+      print(
+          '[DEBUG] resendOtp() response: ${response.statusCode} ${response.data}');
       if (response.statusCode == 200 && response.data['success'] == true) {
         ShowToastDialog.closeLoader();
         ShowToastDialog.showToast("OTP resent successfully".tr);
       } else {
         ShowToastDialog.closeLoader();
-        ShowToastDialog.showToast(response.data['message'] ?? "Failed to resend OTP".tr);
+        ShowToastDialog.showToast(
+            response.data['message'] ?? "Failed to resend OTP".tr);
       }
     } catch (e) {
       print('[DEBUG] resendOtp() error: ${e.toString()}');
@@ -540,7 +596,8 @@ class LoginController extends GetxController {
       );
       if (response.statusCode != 200) {
         ShowToastDialog.closeLoader();
-        ShowToastDialog.showToast('Failed to get custom token: \n${response.body}');
+        ShowToastDialog.showToast(
+            'Failed to get custom token: \n${response.body}');
         return;
       }
       final data = jsonDecode(response.body);
@@ -548,13 +605,12 @@ class LoginController extends GetxController {
       final uid = data['uid'];
 
       // 2. Sign in with custom token
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithCustomToken(customToken);
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCustomToken(customToken);
 
       // 3. Check if user exists in Firestore
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .get();
+      final userDoc =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
       UserModel? userModel;
       if (userDoc.exists) {
@@ -598,7 +654,8 @@ class LoginController extends GetxController {
     print('DEBUG: LoginController logout - Starting cart clearing process');
     try {
       if (Get.isRegistered<CartController>()) {
-        print('DEBUG: LoginController logout - CartController found, clearing cart');
+        print(
+            'DEBUG: LoginController logout - CartController found, clearing cart');
         final cartController = Get.find<CartController>();
         await cartController.clearCart();
         print('DEBUG: LoginController logout - Cart cleared successfully');
@@ -608,7 +665,7 @@ class LoginController extends GetxController {
     } catch (e) {
       print('DEBUG: LoginController logout - Error clearing cart: $e');
     }
-    
+
     // Sign out from Firebase
     await FirebaseAuth.instance.signOut();
     // Remove API token from secure storage

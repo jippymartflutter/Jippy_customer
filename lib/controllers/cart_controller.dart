@@ -113,7 +113,7 @@ class CartController extends GetxController
   Future<Map<String, dynamic>> getSurgeRules() async {
     final doc = await FirebaseFirestore.instance
         .collection("surge_rules")
-        .doc("BwjarOOhU13IgBzXJxJy")
+        .doc("surge_settings")
         .get();
     if (doc.exists) {
       print(" doc data ${doc.data()}");
@@ -134,7 +134,7 @@ class CartController extends GetxController
     double temp = weather['main']['temp'];
     if (temp > 35) surge += rules["summer"]; // hot weather
     if (temp < 10) surge += rules["bad_weather"]; // cold/winter
-
+    print(" newvaluevalue ${surge}");
     return surge; // percentage
   }
 

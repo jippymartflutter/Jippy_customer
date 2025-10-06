@@ -1,14 +1,15 @@
 import 'dart:developer';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:dio/dio.dart';
+
 import 'package:customer/utils/preferences.dart';
 import 'package:customer/utils/production_logger.dart';
+import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthHelper {
   static const FlutterSecureStorage _secureStorage = FlutterSecureStorage();
   static final Dio _dio = Dio();
-  
+
   // **DEVICE-SPECIFIC AUTHENTICATION ENHANCEMENTS**
   static const String _deviceIdKey = 'device_id';
   static const String _lastAuthCheckKey = 'last_auth_check';
@@ -21,20 +22,22 @@ class AuthHelper {
     try {
       // Initialize production logger if not already done
       await ProductionLogger.initialize();
-      
+
       ProductionLogger.info('AUTH_HELPER', 'Starting authentication check');
-      
+
       // Check if we should skip auth check (rate limiting)
       if (_shouldSkipAuthCheck()) {
-        ProductionLogger.info('AUTH_HELPER', 'Skipping auth check due to rate limiting');
+        ProductionLogger.info(
+            'AUTH_HELPER', 'Skipping auth check due to rate limiting');
         log('[AUTH_HELPER] Skipping auth check due to rate limiting');
         return FirebaseAuth.instance.currentUser;
       }
 
       User? user = FirebaseAuth.instance.currentUser;
-      
+
       if (user != null) {
-        ProductionLogger.info('AUTH_HELPER', 'Firebase user found: ${user.uid}');
+        ProductionLogger.info(
+            'AUTH_HELPER', 'Firebase user found: ${user.uid}');
         // Update last auth check time
         await _updateLastAuthCheck();
         return user;
@@ -43,20 +46,23 @@ class AuthHelper {
       // Try to restore session with enhanced retry logic
       for (int i = 0; i < retryCount; i++) {
         try {
-          ProductionLogger.info('AUTH_HELPER', 'Attempt ${i + 1} to restore session');
+          ProductionLogger.info(
+              'AUTH_HELPER', 'Attempt ${i + 1} to restore session');
           log('[AUTH_HELPER] Attempt ${i + 1} to restore session');
-          
+
           final apiToken = await _secureStorage.read(key: 'api_token');
           if (apiToken == null || apiToken.isEmpty) {
-            ProductionLogger.warning('AUTH_HELPER', 'No API token found in secure storage');
+            ProductionLogger.warning(
+                'AUTH_HELPER', 'No API token found in secure storage');
             log('[AUTH_HELPER] No API token found');
             break;
           }
 
           // Try to refresh Firebase token with device-specific handling
           final deviceId = await _getDeviceId();
-          ProductionLogger.info('AUTH_HELPER', 'Refreshing Firebase token with device ID: $deviceId');
-          
+          ProductionLogger.info('AUTH_HELPER',
+              'Refreshing Firebase token with device ID: $deviceId');
+
           final response = await _dio.post(
             'https://jippymart.in/api/refresh-firebase-token',
             options: Options(
@@ -70,28 +76,34 @@ class AuthHelper {
             ),
           );
 
-          if (response.statusCode == 200 && response.data['firebase_custom_token'] != null) {
-            ProductionLogger.info('AUTH_HELPER', 'Firebase custom token received, signing in');
-            await FirebaseAuth.instance.signInWithCustomToken(response.data['firebase_custom_token']);
+          if (response.statusCode == 200 &&
+              response.data['firebase_custom_token'] != null) {
+            ProductionLogger.info(
+                'AUTH_HELPER', 'Firebase custom token received, signing in');
+            await FirebaseAuth.instance
+                .signInWithCustomToken(response.data['firebase_custom_token']);
             user = FirebaseAuth.instance.currentUser;
-            
+
             if (user != null) {
-              ProductionLogger.info('AUTH_HELPER', 'Successfully restored session for user: ${user.uid}');
+              ProductionLogger.info('AUTH_HELPER',
+                  'Successfully restored session for user: ${user.uid}');
               log('[AUTH_HELPER] Successfully restored session');
               await _updateLastAuthCheck();
               await _resetRetryCount();
               return user;
             } else {
-              ProductionLogger.error('AUTH_HELPER', 'Firebase sign-in failed - no user returned');
+              ProductionLogger.error(
+                  'AUTH_HELPER', 'Firebase sign-in failed - no user returned');
             }
           } else {
-            ProductionLogger.warning('AUTH_HELPER', 'Invalid response from token refresh: ${response.statusCode}');
+            ProductionLogger.warning('AUTH_HELPER',
+                'Invalid response from token refresh: ${response.statusCode}');
           }
         } catch (e) {
           ProductionLogger.error('AUTH_HELPER', 'Error in attempt ${i + 1}', e);
           log('[AUTH_HELPER] Error in attempt ${i + 1}: $e');
           await _incrementRetryCount();
-          
+
           if (i < retryCount - 1) {
             // Exponential backoff with device-specific delays
             final delay = Duration(milliseconds: 1000 * (i + 1));
@@ -100,7 +112,8 @@ class AuthHelper {
         }
       }
 
-      ProductionLogger.error('AUTH_HELPER', 'Failed to restore session after $retryCount attempts');
+      ProductionLogger.error('AUTH_HELPER',
+          'Failed to restore session after $retryCount attempts');
       log('[AUTH_HELPER] Failed to restore session after $retryCount attempts');
       return null;
     } catch (e) {
@@ -118,10 +131,10 @@ class AuthHelper {
       // Check if token is about to expire
       final tokenResult = await user.getIdTokenResult();
       final expirationTime = tokenResult.expirationTime;
-      
+
       if (expirationTime != null) {
         final timeUntilExpiry = expirationTime.difference(DateTime.now());
-        
+
         // If token expires in less than 5 minutes, refresh it
         if (timeUntilExpiry.inMinutes < 5) {
           log('[AUTH_HELPER] Token expiring soon, refreshing...');
@@ -155,8 +168,8 @@ class AuthHelper {
       String? deviceId = await _secureStorage.read(key: _deviceIdKey);
       if (deviceId == null || deviceId.isEmpty) {
         // Generate a unique device ID
-        deviceId = DateTime.now().millisecondsSinceEpoch.toString() + 
-                   (1000 + (DateTime.now().millisecondsSinceEpoch % 9000)).toString();
+        deviceId = DateTime.now().millisecondsSinceEpoch.toString() +
+            (1000 + (DateTime.now().millisecondsSinceEpoch % 9000)).toString();
         await _secureStorage.write(key: _deviceIdKey, value: deviceId);
       }
       return deviceId;
@@ -172,19 +185,19 @@ class AuthHelper {
       final lastCheck = Preferences.getInt(_lastAuthCheckKey);
       final currentTime = DateTime.now().millisecondsSinceEpoch;
       final timeDiff = Duration(milliseconds: currentTime - lastCheck);
-      
+
       // Skip if last check was too recent
       if (timeDiff < _authCheckInterval) {
         return true;
       }
-      
+
       // Skip if too many retries recently
       final retryCount = Preferences.getInt(_authRetryCountKey);
       if (retryCount > _maxRetryCount) {
         log('[AUTH_HELPER] Too many auth retries, skipping check');
         return true;
       }
-      
+
       return false;
     } catch (e) {
       log('[AUTH_HELPER] Error checking auth rate limit: $e');
@@ -242,7 +255,7 @@ class AuthHelper {
         'app_version': '2.2.1', // Add your app version
         'timestamp': DateTime.now().toIso8601String(),
       };
-      
+
       log('[AUTH_HELPER] Auth diagnostics: $diagnostics');
       return diagnostics;
     } catch (e) {
@@ -255,11 +268,11 @@ class AuthHelper {
   static Future<bool> forceAuthRefresh() async {
     try {
       log('[AUTH_HELPER] Force refreshing authentication...');
-      
+
       // Clear rate limiting
       await _clearLastAuthCheck();
       await _resetRetryCount();
-      
+
       // Force token refresh
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
@@ -267,11 +280,11 @@ class AuthHelper {
         log('[AUTH_HELPER] Force auth refresh successful');
         return true;
       }
-      
+
       return false;
     } catch (e) {
       log('[AUTH_HELPER] Force auth refresh failed: $e');
       return false;
     }
   }
-} 
+}
