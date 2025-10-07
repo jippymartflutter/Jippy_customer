@@ -408,7 +408,6 @@ class RestaurantDetailsController extends GetxController {
           final products = await FireStoreUtils.getProductByVendorId(
               vendorModel.value.id.toString());
           print("DEBUG: Loaded ${products.length} products");
-
           if ((Constant.isSubscriptionModelApplied == true ||
                   Constant.adminCommission?.isEnabled == true) &&
               vendorModel.value.subscriptionPlan != null) {

@@ -6074,7 +6074,7 @@ class _SearchAndCategoriesStickyDelegate
                                         color: Color(0xFF000000),
                                       ),
                                       textAlign: TextAlign.center,
-                                      maxLines: 2,
+                                      maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
