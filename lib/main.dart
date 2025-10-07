@@ -6,7 +6,7 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:customer/config/smartlook_config.dart';
 import 'package:customer/constant/constant.dart';
 // import 'package:firebase_app_check/firebase_app_check.dart';  // TEMPORARILY DISABLED
-import 'package:customer/controllers/dash_board_controller.dart';
+import 'package:customer/app/dash_board_screens/controller/dash_board_controller.dart';
 import 'package:customer/controllers/global_setting_controller.dart';
 import 'package:customer/controllers/login_controller.dart';
 import 'package:customer/app/mart/mart_home_screen/controller/mart_controller.dart';
@@ -44,6 +44,8 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
 
+import 'app/category_service/category__service_screen.dart'
+    show CateringServiceScreen;
 import 'app/category_service/controller/cetegory_service_controller.dart';
 import 'app/video_splash_screen.dart';
 
@@ -51,24 +53,36 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // 🔗 CRITICAL: Initialize GlobalDeeplinkHandler FIRST - before any other services
-  print('🔗 [MAIN] Initializing GlobalDeeplinkHandler FIRST...',);
+  print(
+    '🔗 [MAIN] Initializing GlobalDeeplinkHandler FIRST...',
+  );
   GlobalDeeplinkHandler.init();
   // Register GlobalDeeplinkHandler as a permanent GetX dependency
-  Get.put(GlobalDeeplinkHandler.instance, permanent: true,);
+  Get.put(
+    GlobalDeeplinkHandler.instance,
+    permanent: true,
+  );
   print(
       '🔗 [MAIN] GlobalDeeplinkHandler initialized and registered successfully');
 
   // 🛡️ CRASH PREVENTION: Initialize crash prevention system
-  print('🛡️ [MAIN] Initializing crash prevention system...',);
+  print(
+    '🛡️ [MAIN] Initializing crash prevention system...',
+  );
   CrashPrevention();
-  print('🛡️ [MAIN] Crash prevention system initialized',);
-
-  // 🚨 ANR PREVENTION: Initialize ANR prevention systems
-  print('🚨 [MAIN] Initializing ANR prevention systems...',);
+  print(
+    '🛡️ [MAIN] Crash prevention system initialized',
+  );
+  // 🚨 ANR PREVENTION:  Initialize ANR prevention systems
+  print(
+    '🚨 [MAIN] Initializing ANR prevention systems...',
+  );
   await SmartlookANRFix.configureSmartlook();
   await PlatformANRPrevention.preventMIUIANR();
   await PlatformANRPrevention.preventCiscoANR();
-  print('🚨 [MAIN] ANR prevention systems initialized',);
+  print(
+    '🚨 [MAIN] ANR prevention systems initialized',
+  );
 
   log('🔗 [MAIN] 🚀 MAIN FUNCTION CALLED!');
 
@@ -153,9 +167,14 @@ void _initializeHeavyServicesInBackground() {
       await Future.wait([
         Get.putAsync(
           () => ApiService().init(),
-        ).timeout(const Duration(seconds: 5,),),
-        Get.putAsync(() => MartFirestoreService().init(),)
-            .timeout(const Duration(seconds: 5)),
+        ).timeout(
+          const Duration(
+            seconds: 5,
+          ),
+        ),
+        Get.putAsync(
+          () => MartFirestoreService().init(),
+        ).timeout(const Duration(seconds: 5)),
         CacheManager.initialize().timeout(const Duration(seconds: 3)),
         PerformanceOptimizer.initialize().timeout(const Duration(seconds: 2)),
         ProductionLogger.initialize().timeout(const Duration(seconds: 2)),

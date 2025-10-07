@@ -78,7 +78,10 @@ class CategoryServiceController extends GetxController {
     );
   }
 
-  void showSuccessDialog({required BuildContext context, String message = ''}) {
+  void showSuccessDialog(
+      {required BuildContext context,
+      String message = '',
+      void Function()? onPressed}) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -92,7 +95,7 @@ class CategoryServiceController extends GetxController {
           actions: [
             TextButton(
               child: const Text('OK'),
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: onPressed,
             ),
           ],
         );
@@ -145,17 +148,13 @@ class CategoryServiceController extends GetxController {
       print("${response.body} ${response.statusCode} submitCateringRequest ");
 
       if (response.statusCode == 201 || response.statusCode == 200) {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-            builder: (context) => VideoSplashScreen(),
-          ),
-          (Route<dynamic> route) => false, // condition to stop removing
-        );
-        // Navigator.of(context).push(
+        // Navigator.of(context).pushAndRemoveUntil(
         //   MaterialPageRoute(
-        //     builder: (context) => DashBoardScreen(),
+        //     builder: (context) => VideoSplashScreen(),
         //   ),
+        //   (Route<dynamic> route) => false, // condition to stop removing
         // );
+
         return {
           'success': true,
           'message': 'Catering request submitted successfully!',
@@ -258,10 +257,23 @@ class CategoryServiceController extends GetxController {
       print("$result final result ");
       if (result['success']) {
         // Success flow
+        // Navigator.of(context).pushAndRemoveUntil(
+        //   MaterialPageRoute(
+        //     builder: (context) => VideoSplashScreen(),
+        //   ),
+        //   (Route<dynamic> route) => false, // condition to stop removing
+        // );
         showSuccessDialog(
-          message: result['message'],
-          context: context,
-        );
+            message: result['message'],
+            context: context,
+            onPressed: () {
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                  builder: (context) => VideoSplashScreen(),
+                ),
+                (Route<dynamic> route) => false, // condition to stop removing
+              );
+            });
         resetForm();
       } else {
         // Error flow

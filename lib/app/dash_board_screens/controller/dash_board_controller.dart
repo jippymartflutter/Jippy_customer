@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:customer/app/address_screens/address_list_screen.dart';
+import 'package:customer/app/favourite_screens/controller/favourite_controller.dart';
 import 'package:customer/app/favourite_screens/favourite_screen.dart';
 import 'package:customer/app/home_screen/home_screen.dart';
 import 'package:customer/app/home_screen/home_screen_two.dart';
@@ -10,6 +11,7 @@ import 'package:customer/app/order_list_screen/order_screen.dart';
 import 'package:customer/app/profile_screen/profile_screen.dart';
 import 'package:customer/app/wallet_screen/wallet_screen.dart';
 import 'package:customer/constant/constant.dart';
+import 'package:customer/controllers/order_controller.dart';
 import 'package:customer/utils/app_lifecycle_logger.dart';
 import 'package:customer/utils/fire_store_utils.dart';
 import 'package:flutter/material.dart';
@@ -265,7 +267,8 @@ class DashBoardController extends GetxController {
           Constant.userModel = userModel;
           print(' [DASHBOARD] User model loaded: ${userModel.toJson()}');
           update();
-          // Log auth state change with complete profile data
+          Get.find<FavouriteController>().refreshDataAfterUserLoaded();
+          Get.find<OrderController>().refreshDataAfterUserLoaded();
           await AppLifecycleLogger().logUserProfileLoaded();
         } else {
           print('[DASHBOARD] Failed to load user model');

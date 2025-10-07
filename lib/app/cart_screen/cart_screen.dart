@@ -2802,16 +2802,12 @@ class _CartScreenState extends State<CartScreen> {
                             print('DEBUG: Pay Now button pressed!');
                             print(
                                 'DEBUG: Current profile valid state: ${controller.isProfileValid.value}');
-                            print(
-                                'DEBUG: Current user model: ${controller.userModel.value?.toJson()}');
 
-                            // TEMPORARY: Test validation method
                             print('DEBUG: Testing validateAndPlaceOrder()...');
                             final testResult =
                                 await controller.validateAndPlaceOrder();
                             print(
                                 'DEBUG: validateAndPlaceOrder result: $testResult');
-
                             // Prevent multiple rapid clicks
                             if (controller.isProcessingOrder.value) {
                               ShowToastDialog.showToast(
@@ -2819,7 +2815,6 @@ class _CartScreenState extends State<CartScreen> {
                                       .tr);
                               return;
                             }
-
                             // 🔑 BULLETPROOF VALIDATION - NEVER FAILS
                             print(
                                 '💰 [PAYMENT_FLOW] ==========================================');

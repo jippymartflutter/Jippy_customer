@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:customer/constant/constant.dart';
-import 'package:customer/controllers/dash_board_controller.dart';
+import 'package:customer/app/dash_board_screens/controller/dash_board_controller.dart';
 import 'package:customer/models/BannerModel.dart';
 import 'package:customer/models/advertisement_model.dart';
 import 'package:customer/models/coupon_model.dart';

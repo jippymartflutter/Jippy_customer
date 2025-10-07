@@ -16,7 +16,7 @@ import 'package:customer/constant/constant.dart';
 import 'package:customer/widgets/app_loading_widget.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
 import 'package:customer/widgets/coming_soon_dialog.dart';
-import 'package:customer/controllers/dash_board_controller.dart';
+import 'package:customer/app/dash_board_screens/controller/dash_board_controller.dart';
 import 'package:customer/controllers/home_controller.dart';
 import 'package:customer/controllers/map_view_controller.dart';
 import 'package:customer/models/BannerModel.dart';
@@ -72,26 +72,32 @@ class HomeScreen extends StatelessWidget {
     try {
       print('\n🚀 [HOME_SCREEN] ===== MART NAVIGATION ATTEMPTED =====');
       print('📍 [HOME_SCREEN] User tapped JippyMart button');
-      print('📍 [HOME_SCREEN] Current Zone: ${Constant.selectedZone?.id ?? "NULL"} (${Constant.selectedZone?.name ?? "NULL"})');
-      print('📍 [HOME_SCREEN] User Location: ${Constant.selectedLocation.location?.latitude ?? "NULL"}, ${Constant.selectedLocation.location?.longitude ?? "NULL"}');
-      
+      print(
+          '📍 [HOME_SCREEN] Current Zone: ${Constant.selectedZone?.id ?? "NULL"} (${Constant.selectedZone?.name ?? "NULL"})');
+      print(
+          '📍 [HOME_SCREEN] User Location: ${Constant.selectedLocation.location?.latitude ?? "NULL"}, ${Constant.selectedLocation.location?.longitude ?? "NULL"}');
+
       // First check if there are any mart vendors in the zone (regardless of open/closed status)
       final martVendors = await MartZoneUtils.getMartVendorsForCurrentZone();
-      
+
       if (martVendors.isEmpty) {
-        print('❌ [HOME_SCREEN] No mart vendors in zone - Showing COMING SOON dialog');
+        print(
+            '❌ [HOME_SCREEN] No mart vendors in zone - Showing COMING SOON dialog');
         // Show coming soon dialog for zones without mart
         ComingSoonDialogHelper.show(
           title: "COMING SOON".tr,
-          message: "We're working hard to bring Jippy Mart to your area. Stay tuned for updates!",
+          message:
+              "We're working hard to bring Jippy Mart to your area. Stay tuned for updates!",
         );
         print('📱 [HOME_SCREEN] COMING SOON dialog displayed to user');
       } else {
         // Mart vendors exist, now check if they're temporarily closed
-        final isMartTemporarilyClosed = await MartZoneUtils.isMartTemporarilyClosedInCurrentZone();
-        
+        final isMartTemporarilyClosed =
+            await MartZoneUtils.isMartTemporarilyClosedInCurrentZone();
+
         if (isMartTemporarilyClosed) {
-          print('⚠️ [HOME_SCREEN] Mart is temporarily closed - Showing MART AVAILABLE dialog');
+          print(
+              '⚠️ [HOME_SCREEN] Mart is temporarily closed - Showing MART AVAILABLE dialog');
           // Show mart available hours dialog
           ComingSoonDialogHelper.show(
             title: "MART AVAILABLE".tr,
@@ -99,14 +105,16 @@ class HomeScreen extends StatelessWidget {
           );
           print('📱 [HOME_SCREEN] MART AVAILABLE dialog displayed to user');
         } else {
-          print('✅ [HOME_SCREEN] Mart is available and open - Navigating to MartNavigationScreen');
-          print('🎯 [HOME_SCREEN] Navigation: HomeScreen -> MartNavigationScreen');
+          print(
+              '✅ [HOME_SCREEN] Mart is available and open - Navigating to MartNavigationScreen');
+          print(
+              '🎯 [HOME_SCREEN] Navigation: HomeScreen -> MartNavigationScreen');
           // Navigate to mart navigation screen
           Get.to(() => const MartNavigationScreen());
           print('✅ [HOME_SCREEN] Navigation completed successfully');
         }
       }
-      
+
       print('🚀 [HOME_SCREEN] ===== MART NAVIGATION COMPLETED =====\n');
     } catch (e) {
       print('❌ [HOME_SCREEN] Error checking mart availability: $e');
@@ -114,7 +122,8 @@ class HomeScreen extends StatelessWidget {
       // Show coming soon dialog on error
       ComingSoonDialogHelper.show(
         title: "COMING SOON".tr,
-        message: "We're working hard to bring Jippy Mart to your area. Stay tuned for updates!",
+        message:
+            "We're working hard to bring Jippy Mart to your area. Stay tuned for updates!",
       );
       print('🚀 [HOME_SCREEN] ===== MART NAVIGATION COMPLETED (ERROR) =====\n');
     }
@@ -128,7 +137,8 @@ class HomeScreen extends StatelessWidget {
       builder: (controller) {
         // Add a local state for the selected filter
         Set<FilterType> selectedFilters = {};
-        List<VendorModel> filteredList = List.from(controller.popularRestaurantList);
+        List<VendorModel> filteredList =
+            List.from(controller.popularRestaurantList);
 
         void onFilterToggled(FilterType filter) {
           if (selectedFilters.contains(filter)) {
@@ -144,20 +154,26 @@ class HomeScreen extends StatelessWidget {
           for (var selected in selectedFilters) {
             switch (selected) {
               case FilterType.distance:
-                filteredList.sort((a, b) => (a.distance ?? 0).compareTo(b.distance ?? 0));
+                filteredList.sort(
+                    (a, b) => (a.distance ?? 0).compareTo(b.distance ?? 0));
                 break;
               case FilterType.priceLowToHigh:
-                filteredList.sort((a, b) => (a.restaurantCost != null && b.restaurantCost != null)
-                    ? double.parse(a.restaurantCost!).compareTo(double.parse(b.restaurantCost!))
-                    : 0);
+                filteredList.sort((a, b) =>
+                    (a.restaurantCost != null && b.restaurantCost != null)
+                        ? double.parse(a.restaurantCost!)
+                            .compareTo(double.parse(b.restaurantCost!))
+                        : 0);
                 break;
               case FilterType.priceHighToLow:
-                filteredList.sort((a, b) => (a.restaurantCost != null && b.restaurantCost != null)
-                    ? double.parse(b.restaurantCost!).compareTo(double.parse(a.restaurantCost!))
-                    : 0);
+                filteredList.sort((a, b) =>
+                    (a.restaurantCost != null && b.restaurantCost != null)
+                        ? double.parse(b.restaurantCost!)
+                            .compareTo(double.parse(a.restaurantCost!))
+                        : 0);
                 break;
               case FilterType.rating:
-                filteredList.sort((a, b) => (b.reviewsSum ?? 0).compareTo(a.reviewsSum ?? 0));
+                filteredList.sort(
+                    (a, b) => (b.reviewsSum ?? 0).compareTo(a.reviewsSum ?? 0));
                 break;
             }
           }
@@ -201,7 +217,7 @@ class HomeScreen extends StatelessWidget {
                               height: 12,
                             ),
                             Text(
-                              Constant.isZoneAvailable == false 
+                              Constant.isZoneAvailable == false
                                   ? "Service Not Available in Your Area".tr
                                   : "No Restaurants Found in Your Area".tr,
                               style: TextStyle(
@@ -227,7 +243,7 @@ class HomeScreen extends StatelessWidget {
                                       : AppThemeData.grey500,
                                   fontSize: 16,
                                   fontFamily: AppThemeData.bold),
-                           ),
+                            ),
                             const SizedBox(
                               height: 20,
                             ),
@@ -238,7 +254,8 @@ class HomeScreen extends StatelessWidget {
                               color: AppThemeData.primary300,
                               textColor: AppThemeData.grey50,
                               onPress: () async {
-                                Get.offAll(() => const LocationPermissionScreen());
+                                Get.offAll(
+                                    () => const LocationPermissionScreen());
                               },
                             ),
                           ],
@@ -252,8 +269,8 @@ class HomeScreen extends StatelessWidget {
                             : Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                                                  children: [
-                                    Padding(
+                                children: [
+                                  Padding(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 16),
                                     child: Column(
@@ -263,14 +280,17 @@ class HomeScreen extends StatelessWidget {
                                         ),
                                         // Header Toggle for Food vs Mart
                                         Container(
-                                          margin: const EdgeInsets.only(top: 16, bottom: 16),
+                                          margin: const EdgeInsets.only(
+                                              top: 16, bottom: 16),
                                           height: 48,
                                           decoration: BoxDecoration(
                                             color: Colors.white,
-                                            borderRadius: BorderRadius.circular(24),
+                                            borderRadius:
+                                                BorderRadius.circular(24),
                                             boxShadow: [
                                               BoxShadow(
-                                                color: Colors.black.withOpacity(0.1),
+                                                color: Colors.black
+                                                    .withOpacity(0.1),
                                                 blurRadius: 8,
                                                 offset: const Offset(0, 2),
                                               ),
@@ -280,17 +300,21 @@ class HomeScreen extends StatelessWidget {
                                             children: [
                                               Expanded(
                                                 child: Container(
-                                                  margin: const EdgeInsets.all(4),
+                                                  margin:
+                                                      const EdgeInsets.all(4),
                                                   decoration: BoxDecoration(
                                                     color: Colors.orange,
-                                                    borderRadius: BorderRadius.circular(20),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
                                                   ),
                                                   child: const Center(
                                                     child: Text(
                                                       'FOOD',
                                                       style: TextStyle(
                                                         color: Colors.white,
-                                                        fontWeight: FontWeight.w600,
+                                                        fontWeight:
+                                                            FontWeight.w600,
                                                         fontSize: 14,
                                                       ),
                                                     ),
@@ -299,22 +323,28 @@ class HomeScreen extends StatelessWidget {
                                               ),
                                               Expanded(
                                                 child: GestureDetector(
-                                                                                                  onTap: () {
-                                                  // Check if mart is available in current zone
-                                                  HomeScreen._checkMartAvailability();
-                                                },
+                                                  onTap: () {
+                                                    // Check if mart is available in current zone
+                                                    HomeScreen
+                                                        ._checkMartAvailability();
+                                                  },
                                                   child: Container(
-                                                    margin: const EdgeInsets.all(4),
+                                                    margin:
+                                                        const EdgeInsets.all(4),
                                                     decoration: BoxDecoration(
                                                       color: Colors.white,
-                                                      borderRadius: BorderRadius.circular(20),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20),
                                                     ),
                                                     child: Center(
                                                       child: Text(
                                                         'MART',
                                                         style: TextStyle(
-                                                          color: Colors.grey[600],
-                                                          fontWeight: FontWeight.w600,
+                                                          color:
+                                                              Colors.grey[600],
+                                                          fontWeight:
+                                                              FontWeight.w600,
                                                           fontSize: 14,
                                                         ),
                                                       ),
@@ -325,7 +355,7 @@ class HomeScreen extends StatelessWidget {
                                             ],
                                           ),
                                         ),
-                                        
+
                                         Row(
                                           children: [
                                             InkWell(
@@ -652,15 +682,27 @@ class HomeScreen extends StatelessWidget {
                                     ),
                                   ),
                                   Expanded(
-                                    child: NotificationListener<ScrollNotification>(
+                                    child: NotificationListener<
+                                        ScrollNotification>(
                                       onNotification: (notification) {
-                                        if (notification is ScrollUpdateNotification) {
-                                          if (notification.scrollDelta != null && notification.scrollDelta! > 0) {
+                                        if (notification
+                                            is ScrollUpdateNotification) {
+                                          if (notification.scrollDelta !=
+                                                  null &&
+                                              notification.scrollDelta! > 0) {
                                             // Scrolling down (content moves up) => hide nav bar
-                                            if (controller.isNavBarVisible.value) controller.isNavBarVisible.value = false;
-                                          } else if (notification.scrollDelta != null && notification.scrollDelta! < 0) {
+                                            if (controller
+                                                .isNavBarVisible.value)
+                                              controller.isNavBarVisible.value =
+                                                  false;
+                                          } else if (notification.scrollDelta !=
+                                                  null &&
+                                              notification.scrollDelta! < 0) {
                                             // Scrolling up (content moves down) => show nav bar
-                                            if (!controller.isNavBarVisible.value) controller.isNavBarVisible.value = true;
+                                            if (!controller
+                                                .isNavBarVisible.value)
+                                              controller.isNavBarVisible.value =
+                                                  true;
                                           }
                                         }
                                         return false;
@@ -674,7 +716,8 @@ class HomeScreen extends StatelessWidget {
                                               CrossAxisAlignment.start,
                                           children: [
                                             controller.storyList.isEmpty ||
-                                                    Constant.storyEnable == false
+                                                    Constant.storyEnable ==
+                                                        false
                                                 ? const SizedBox()
                                                 : Padding(
                                                     padding: const EdgeInsets
@@ -684,13 +727,15 @@ class HomeScreen extends StatelessWidget {
                                                         controller: controller),
                                                   ),
                                             SizedBox(
-                                              height: controller.storyList.isEmpty
-                                                  ? 0
-                                                  : 20,
+                                              height:
+                                                  controller.storyList.isEmpty
+                                                      ? 0
+                                                      : 20,
                                             ),
                                             Padding(
-                                              padding: const EdgeInsets.symmetric(
-                                                  horizontal: 16),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 16),
                                               child: Column(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.start,
@@ -724,10 +769,8 @@ class HomeScreen extends StatelessWidget {
                                                         controller: controller),
                                                   ),
 
-
-
-                                            controller
-                                                    .couponRestaurantList.isEmpty
+                                            controller.couponRestaurantList
+                                                    .isEmpty
                                                 ? const SizedBox()
                                                 : Padding(
                                                     padding: const EdgeInsets
@@ -735,7 +778,8 @@ class HomeScreen extends StatelessWidget {
                                                         horizontal: 16),
                                                     child: Column(
                                                       mainAxisAlignment:
-                                                          MainAxisAlignment.start,
+                                                          MainAxisAlignment
+                                                              .start,
                                                       crossAxisAlignment:
                                                           CrossAxisAlignment
                                                               .start,
@@ -774,8 +818,11 @@ class HomeScreen extends StatelessWidget {
                                                 ? const SizedBox()
                                                 : Container(
                                                     decoration: BoxDecoration(
-                                                      color: const Color(0xFFE0E0E0),
-                                                      borderRadius: BorderRadius.circular(16),
+                                                      color: const Color(
+                                                          0xFFE0E0E0),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              16),
                                                     ),
                                                     child: Padding(
                                                       padding: const EdgeInsets
@@ -804,8 +851,10 @@ class HomeScreen extends StatelessWidget {
                                                                     fontFamily:
                                                                         AppThemeData
                                                                             .semiBold,
-                                                                    fontSize: 16,
-                                                                    color: AppThemeData.grey900,
+                                                                    fontSize:
+                                                                        16,
+                                                                    color: AppThemeData
+                                                                        .grey900,
                                                                   ),
                                                                 ),
                                                               ),
@@ -815,8 +864,7 @@ class HomeScreen extends StatelessWidget {
                                                                       const RestaurantListScreen(),
                                                                       arguments: {
                                                                         "vendorList":
-                                                                            controller
-                                                                                .newArrivalRestaurantList,
+                                                                            controller.newArrivalRestaurantList,
                                                                         "title":
                                                                             "New Arrival"
                                                                       })?.then(
@@ -835,7 +883,8 @@ class HomeScreen extends StatelessWidget {
                                                                     fontFamily:
                                                                         AppThemeData
                                                                             .regular,
-                                                                    color: AppThemeData.primary300,
+                                                                    color: AppThemeData
+                                                                        .primary300,
                                                                   ),
                                                                 ),
                                                               )
@@ -864,11 +913,11 @@ class HomeScreen extends StatelessWidget {
                                                         controller: controller),
                                                   ),
                                             Visibility(
-                                              visible:
-                                                  (Constant.isEnableAdsFeature ==
-                                                          true &&
-                                                      controller.advertisementList
-                                                          .isNotEmpty),
+                                              visible: (Constant
+                                                          .isEnableAdsFeature ==
+                                                      true &&
+                                                  controller.advertisementList
+                                                      .isNotEmpty),
                                               child: const SizedBox(
                                                 height: 20,
                                               ),
@@ -891,7 +940,8 @@ class HomeScreen extends StatelessWidget {
                                                                     .symmetric(
                                                                     horizontal:
                                                                         16,
-                                                                    vertical: 16),
+                                                                    vertical:
+                                                                        16),
                                                             child: Column(
                                                               mainAxisAlignment:
                                                                   MainAxisAlignment
@@ -903,12 +953,12 @@ class HomeScreen extends StatelessWidget {
                                                                 Row(
                                                                   children: [
                                                                     Expanded(
-                                                                      child: Text(
+                                                                      child:
+                                                                          Text(
                                                                         "Highlights for you"
                                                                             .tr,
                                                                         textAlign:
-                                                                            TextAlign
-                                                                                .start,
+                                                                            TextAlign.start,
                                                                         style:
                                                                             TextStyle(
                                                                           fontFamily:
@@ -922,20 +972,20 @@ class HomeScreen extends StatelessWidget {
                                                                       ),
                                                                     ),
                                                                     InkWell(
-                                                                      onTap: () {
+                                                                      onTap:
+                                                                          () {
                                                                         Get.to(AllAdvertisementScreen())
-                                                                            ?.then(
-                                                                                (value) {
+                                                                            ?.then((value) {
                                                                           controller
                                                                               .getFavouriteRestaurant();
                                                                         });
                                                                       },
-                                                                      child: Text(
+                                                                      child:
+                                                                          Text(
                                                                         "View all"
                                                                             .tr,
                                                                         textAlign:
-                                                                            TextAlign
-                                                                                .center,
+                                                                            TextAlign.center,
                                                                         style:
                                                                             TextStyle(
                                                                           fontFamily:
@@ -959,9 +1009,7 @@ class HomeScreen extends StatelessWidget {
                                                                         const BouncingScrollPhysics(),
                                                                     scrollDirection:
                                                                         Axis.horizontal,
-                                                                    itemCount: controller
-                                                                                .advertisementList
-                                                                                .length >=
+                                                                    itemCount: controller.advertisementList.length >=
                                                                             10
                                                                         ? 10
                                                                         : controller
@@ -969,8 +1017,7 @@ class HomeScreen extends StatelessWidget {
                                                                             .length,
                                                                     padding:
                                                                         EdgeInsets
-                                                                            .all(
-                                                                                0),
+                                                                            .all(0),
                                                                     itemBuilder:
                                                                         (BuildContext
                                                                                 context,
@@ -978,8 +1025,8 @@ class HomeScreen extends StatelessWidget {
                                                                       return AdvertisementHomeCard(
                                                                           controller:
                                                                               controller,
-                                                                          model: controller
-                                                                              .advertisementList[index]);
+                                                                          model:
+                                                                              controller.advertisementList[index]);
                                                                     },
                                                                   ),
                                                                 ),
@@ -992,8 +1039,9 @@ class HomeScreen extends StatelessWidget {
                                               height: 20,
                                             ),
                                             Padding(
-                                              padding: const EdgeInsets.symmetric(
-                                                  horizontal: 16),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 16),
                                               child: Container(
                                                 decoration: ShapeDecoration(
                                                   color: themeChange.getThem()
@@ -1024,7 +1072,7 @@ class HomeScreen extends StatelessWidget {
                                                                 ? null
                                                                 : ShapeDecoration(
                                                                     color: AppThemeData
-                                                                            .grey900,
+                                                                        .grey900,
                                                                     shape:
                                                                         RoundedRectangleBorder(
                                                                       borderRadius:
@@ -1046,7 +1094,8 @@ class HomeScreen extends StatelessWidget {
                                                                 textAlign:
                                                                     TextAlign
                                                                         .center,
-                                                                style: TextStyle(
+                                                                style:
+                                                                    TextStyle(
                                                                   fontFamily:
                                                                       AppThemeData
                                                                           .semiBold,
@@ -1075,7 +1124,7 @@ class HomeScreen extends StatelessWidget {
                                                                 ? null
                                                                 : ShapeDecoration(
                                                                     color: AppThemeData
-                                                                            .grey900,
+                                                                        .grey900,
                                                                     shape:
                                                                         RoundedRectangleBorder(
                                                                       borderRadius:
@@ -1097,7 +1146,8 @@ class HomeScreen extends StatelessWidget {
                                                                 textAlign:
                                                                     TextAlign
                                                                         .center,
-                                                                style: TextStyle(
+                                                                style:
+                                                                    TextStyle(
                                                                   fontFamily:
                                                                       AppThemeData
                                                                           .semiBold,
@@ -1129,14 +1179,18 @@ class HomeScreen extends StatelessWidget {
                                               ),
                                             ),
                                             Padding(
-                                              padding: const EdgeInsets.symmetric(
-                                                  horizontal: 16.0, vertical: 8.0),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 16.0,
+                                                      vertical: 8.0),
                                               child: FilterBar(
-                                                selectedFilters: selectedFilters,
-                                                onFilterToggled: onFilterToggled,
+                                                selectedFilters:
+                                                    selectedFilters,
+                                                onFilterToggled:
+                                                    onFilterToggled,
                                               ),
                                             ),
-                                            
+
                                             // // Spotlight Selections Section
                                             // Container(
                                             //   margin: const EdgeInsets.symmetric(vertical: 16),
@@ -1166,15 +1220,18 @@ class HomeScreen extends StatelessWidget {
                                             //     ],
                                             //   ),
                                             // ),
-                                            
+
                                             Padding(
-                                              padding: const EdgeInsets.symmetric(
-                                                  horizontal: 16, vertical: 20),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 16,
+                                                      vertical: 20),
                                               child: RefreshIndicator(
                                                 onRefresh: () async {
                                                   await controller.getData();
                                                 },
-                                                child: controller.isPopular.value
+                                                child: controller
+                                                        .isPopular.value
                                                     ? PopularRestaurant(
                                                         controller: controller)
                                                     : AllRestaurant(
@@ -1201,7 +1258,8 @@ class HomeScreen extends StatelessWidget {
                       : AppThemeData.grey100,
                   borderRadius: const BorderRadius.all(Radius.circular(30))),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -1306,21 +1364,24 @@ class HomeScreen extends StatelessWidget {
                     InkWell(
                       onTap: () async {
                         // WhatsApp number - you can change this to your desired number
-                        const String phoneNumber = '+919876543210'; // Replace with your actual WhatsApp number
-                        const String message = 'Hello! I need help with my order.'; // Customize the message
-                        
+                        const String phoneNumber =
+                            '+919876543210'; // Replace with your actual WhatsApp number
+                        const String message =
+                            'Hello! I need help with my order.'; // Customize the message
+
                         final Uri whatsappUrl = Uri.parse(
-                          'https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}'
-                        );
-                        
+                            'https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}');
+
                         try {
                           if (await canLaunchUrl(whatsappUrl)) {
-                            await launchUrl(whatsappUrl, mode: LaunchMode.externalApplication);
+                            await launchUrl(whatsappUrl,
+                                mode: LaunchMode.externalApplication);
                           } else {
                             // Fallback to regular phone call if WhatsApp is not available
                             final Uri phoneUrl = Uri.parse('tel:$phoneNumber');
                             if (await canLaunchUrl(phoneUrl)) {
-                              await launchUrl(phoneUrl, mode: LaunchMode.externalApplication);
+                              await launchUrl(phoneUrl,
+                                  mode: LaunchMode.externalApplication);
                             }
                           }
                         } catch (e) {
@@ -1356,7 +1417,8 @@ class HomeScreen extends StatelessWidget {
                       underline: const SizedBox(),
                       value: controller.selectedOrderTypeValue.value.tr,
                       icon: const Icon(Icons.keyboard_arrow_down),
-                      items: <String>['Delivery', 'TakeAway'].map((String value) {
+                      items:
+                          <String>['Delivery', 'TakeAway'].map((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(
@@ -1415,44 +1477,47 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           bottomNavigationBar: Obx(() => controller.isNavBarVisible.value
-            ? Container(
-                color: themeChange.getThem()
-                    ? AppThemeData.surfaceDark
-                    : AppThemeData.surface,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        Get.to(() => const SwiggySearchScreen());
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 50.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: AppThemeData.primary200,
-                              width: 2,
+              ? Container(
+                  color: themeChange.getThem()
+                      ? AppThemeData.surfaceDark
+                      : AppThemeData.surface,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          Get.to(() => const SwiggySearchScreen());
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: AppThemeData.primary200,
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: TextFieldWidget(
-                            hintText: 'Search the dish, restaurant, food, meals'.tr,
-                            controller: null,
-                            enable: false,
-                            prefix: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
-                              child: SvgPicture.asset("assets/icons/ic_search.svg"),
+                            child: TextFieldWidget(
+                              hintText:
+                                  'Search the dish, restaurant, food, meals'.tr,
+                              controller: null,
+                              enable: false,
+                              prefix: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                child: SvgPicture.asset(
+                                    "assets/icons/ic_search.svg"),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                  ],
-                ),
-              )
-            : SizedBox.shrink()),
+                      const SizedBox(height: 10),
+                    ],
+                  ),
+                )
+              : SizedBox.shrink()),
         );
       },
     );
@@ -1517,7 +1582,6 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-
 class PopularRestaurant extends StatelessWidget {
   final HomeController controller;
 
@@ -1526,10 +1590,11 @@ class PopularRestaurant extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
-    
+
     // **SORT RESTAURANTS - CLOSED AT BOTTOM**
-    final sortedRestaurants = sortRestaurantsWithClosedAtBottom(controller.popularRestaurantList);
-    
+    final sortedRestaurants =
+        sortRestaurantsWithClosedAtBottom(controller.popularRestaurantList);
+
     return ListView.builder(
       shrinkWrap: true,
       padding: EdgeInsets.zero,
@@ -1542,7 +1607,8 @@ class PopularRestaurant extends StatelessWidget {
           onTap: !RestaurantStatusUtils.canAcceptOrders(vendorModel)
               ? () {
                   // Show closed message
-                  final status = RestaurantStatusUtils.getRestaurantStatus(vendorModel);
+                  final status =
+                      RestaurantStatusUtils.getRestaurantStatus(vendorModel);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(status['reason'])),
                   );
@@ -1598,7 +1664,8 @@ class PopularRestaurant extends StatelessWidget {
                             Positioned(
                               left: 10,
                               top: 10,
-                              child: RestaurantStatusUtils.getStatusWidget(vendorModel),
+                              child: RestaurantStatusUtils.getStatusWidget(
+                                  vendorModel),
                             ),
                             Positioned(
                               right: 10,
@@ -1824,7 +1891,6 @@ class PopularRestaurant extends StatelessWidget {
   }
 }
 
-
 class AllRestaurant extends StatelessWidget {
   final HomeController controller;
 
@@ -1833,10 +1899,11 @@ class AllRestaurant extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
-    
+
     // **SORT RESTAURANTS - CLOSED AT BOTTOM**
-    final sortedRestaurants = sortRestaurantsWithClosedAtBottom(controller.allNearestRestaurant);
-    
+    final sortedRestaurants =
+        sortRestaurantsWithClosedAtBottom(controller.allNearestRestaurant);
+
     return ListView.builder(
       shrinkWrap: true,
       padding: EdgeInsets.zero,
@@ -1849,7 +1916,8 @@ class AllRestaurant extends StatelessWidget {
           onTap: !RestaurantStatusUtils.canAcceptOrders(vendorModel)
               ? () {
                   // Show closed message
-                  final status = RestaurantStatusUtils.getRestaurantStatus(vendorModel);
+                  final status =
+                      RestaurantStatusUtils.getRestaurantStatus(vendorModel);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(status['reason'])),
                   );
@@ -1905,7 +1973,8 @@ class AllRestaurant extends StatelessWidget {
                             Positioned(
                               left: 10,
                               top: 10,
-                              child: RestaurantStatusUtils.getStatusWidget(vendorModel),
+                              child: RestaurantStatusUtils.getStatusWidget(
+                                  vendorModel),
                             ),
                             Positioned(
                               right: 10,
@@ -2130,7 +2199,6 @@ class AllRestaurant extends StatelessWidget {
     );
   }
 }
-
 
 class NewArrival extends StatelessWidget {
   final HomeController controller;
@@ -2364,7 +2432,6 @@ class NewArrival extends StatelessWidget {
   }
 }
 
-
 class AdvertisementHomeCard extends StatelessWidget {
   final AdvertisementModel model;
   final HomeController controller;
@@ -2594,7 +2661,6 @@ class AdvertisementHomeCard extends StatelessWidget {
   }
 }
 
-
 class OfferView extends StatelessWidget {
   final HomeController controller;
 
@@ -2781,7 +2847,6 @@ class OfferView extends StatelessWidget {
   }
 }
 
-
 class BannerView extends StatelessWidget {
   final HomeController controller;
 
@@ -2896,7 +2961,6 @@ class BannerView extends StatelessWidget {
     );
   }
 }
-
 
 class BannerBottomView extends StatelessWidget {
   final HomeController controller;
@@ -3013,7 +3077,6 @@ class BannerBottomView extends StatelessWidget {
   }
 }
 
-
 class CategoryView extends StatelessWidget {
   final HomeController controller;
 
@@ -3029,7 +3092,8 @@ class CategoryView extends StatelessWidget {
         padding: EdgeInsets.zero,
         itemCount: controller.vendorCategoryModel.length,
         itemBuilder: (context, index) {
-          VendorCategoryModel vendorCategoryModel = controller.vendorCategoryModel[index];
+          VendorCategoryModel vendorCategoryModel =
+              controller.vendorCategoryModel[index];
           return InkWell(
             onTap: () {
               Get.to(const CategoryRestaurantScreen(), arguments: {
@@ -3060,7 +3124,9 @@ class CategoryView extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+                      color: themeChange.getThem()
+                          ? AppThemeData.grey50
+                          : AppThemeData.grey900,
                       fontFamily: AppThemeData.medium,
                       fontSize: 12,
                     ),
@@ -3074,7 +3140,6 @@ class CategoryView extends StatelessWidget {
     );
   }
 }
-
 
 class StoryView extends StatelessWidget {
   final HomeController controller;
@@ -3211,7 +3276,6 @@ class StoryView extends StatelessWidget {
     );
   }
 }
-
 
 class MapView extends StatelessWidget {
   const MapView({super.key});
@@ -3696,6 +3760,4 @@ class MapView extends StatelessWidget {
       },
     );
   }
-
 }
-

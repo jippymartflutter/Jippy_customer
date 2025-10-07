@@ -58,7 +58,7 @@ android {
 
     defaultConfig {
         applicationId = "com.jippymart.customer"
-        minSdkVersion = 23
+        minSdkVersion = flutter.minSdkVersion
         targetSdk = 34  // Android 14 - More stable for SDK compatibility
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName

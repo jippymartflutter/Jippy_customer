@@ -18,7 +18,7 @@ class FavouriteController extends GetxController {
   RxList<ProductModel> favouriteFoodList = <ProductModel>[].obs;
 
   RxBool isLoading = true.obs;
-  
+
   // **STREAMING VARIABLES FOR FAST LOADING**
   StreamSubscription<QuerySnapshot>? _favouriteRestaurantStream;
   StreamSubscription<QuerySnapshot>? _favouriteItemStream;
@@ -30,7 +30,7 @@ class FavouriteController extends GetxController {
     // TODO: implement onInit
     // Ensure loading state is true when controller initializes
     isLoading.value = true;
-    
+
     // Try streaming first, fallback to legacy if needed
     try {
       startStreamingData();
@@ -38,7 +38,7 @@ class FavouriteController extends GetxController {
       print('[ERROR] Streaming failed, falling back to legacy method: $e');
       getData();
     }
-    
+
     super.onInit();
   }
 
@@ -54,11 +54,16 @@ class FavouriteController extends GetxController {
     super.onClose();
   }
 
+  void refreshDataAfterUserLoaded() {
+    print('[DEBUG] Refreshing favourites after user data loaded');
+    startStreamingData();
+  }
+
   // **ULTRA-FAST STREAMING DATA LOADING**
   void startStreamingData() {
     print('[DEBUG] FavouriteController: Starting streaming data loading...');
     isLoading.value = true;
-    
+
     if (Constant.userModel == null) {
       print('[DEBUG] User not logged in, skipping data loading');
       isLoading.value = false;
@@ -73,7 +78,7 @@ class FavouriteController extends GetxController {
 
     // Start streaming favourite restaurants
     _startFavouriteRestaurantStream();
-    
+
     // Start streaming favourite items
     _startFavouriteItemStream();
   }
@@ -86,17 +91,18 @@ class FavouriteController extends GetxController {
         .where('user_id', isEqualTo: FireStoreUtils.getCurrentUid())
         .snapshots()
         .listen((snapshot) {
-      print('[DEBUG] Favourite restaurant stream update: ${snapshot.docs.length} items');
-      
+      print(
+          '[DEBUG] Favourite restaurant stream update: ${snapshot.docs.length} items');
+
       favouriteList.clear();
       for (var doc in snapshot.docs) {
         print('[DEBUG] Processing favourite doc: ${doc.data()}');
         favouriteList.add(FavouriteModel.fromJson(doc.data()));
       }
-      
+
       // Start streaming vendor data for each restaurant
       _startVendorStreams();
-      
+
       // Hide loading after first data arrives
       if (isLoading.value) {
         isLoading.value = false;
@@ -115,16 +121,17 @@ class FavouriteController extends GetxController {
         .where('user_id', isEqualTo: FireStoreUtils.getCurrentUid())
         .snapshots()
         .listen((snapshot) {
-      print('[DEBUG] Favourite item stream update: ${snapshot.docs.length} items');
-      
+      print(
+          '[DEBUG] Favourite item stream update: ${snapshot.docs.length} items');
+
       favouriteItemList.clear();
       for (var doc in snapshot.docs) {
         favouriteItemList.add(FavouriteItemModel.fromJson(doc.data()));
       }
-      
+
       // Start streaming product data for each item
       _startProductStreams();
-      
+
       // Hide loading after first data arrives
       if (isLoading.value) {
         isLoading.value = false;
@@ -137,16 +144,17 @@ class FavouriteController extends GetxController {
   }
 
   void _startVendorStreams() {
-    print('[DEBUG] Starting vendor streams for ${favouriteList.length} restaurants...');
-    
+    print(
+        '[DEBUG] Starting vendor streams for ${favouriteList.length} restaurants...');
+
     // Cancel existing vendor streams
     _vendorStreams.values.forEach((stream) => stream.cancel());
     _vendorStreams.clear();
     favouriteVendorList.clear();
-    
+
     for (var favourite in favouriteList) {
       final restaurantId = favourite.restaurantId.toString();
-      
+
       if (!_vendorStreams.containsKey(restaurantId)) {
         _vendorStreams[restaurantId] = FirebaseFirestore.instance
             .collection(CollectionName.vendors)
@@ -155,13 +163,14 @@ class FavouriteController extends GetxController {
             .listen((snapshot) {
           if (snapshot.exists) {
             final vendor = VendorModel.fromJson(snapshot.data()!);
-            
+
             // Check subscription status
             if (_isVendorAvailable(vendor)) {
               // Remove if already exists and add new
               favouriteVendorList.removeWhere((v) => v.id == vendor.id);
               favouriteVendorList.add(vendor);
               print('[DEBUG] Added vendor: ${vendor.title}');
+              update();
             }
           }
         }, onError: (error) {
@@ -172,16 +181,17 @@ class FavouriteController extends GetxController {
   }
 
   void _startProductStreams() {
-    print('[DEBUG] Starting product streams for ${favouriteItemList.length} items...');
-    
+    print(
+        '[DEBUG] Starting product streams for ${favouriteItemList.length} items...');
+
     // Cancel existing product streams
     _productStreams.values.forEach((stream) => stream.cancel());
     _productStreams.clear();
     favouriteFoodList.clear();
-    
+
     for (var favourite in favouriteItemList) {
       final productId = favourite.productId.toString();
-      
+
       if (!_productStreams.containsKey(productId)) {
         _productStreams[productId] = FirebaseFirestore.instance
             .collection(CollectionName.vendorProducts)
@@ -190,27 +200,30 @@ class FavouriteController extends GetxController {
             .listen((snapshot) async {
           if (snapshot.exists) {
             final product = ProductModel.fromJson(snapshot.data()!);
-            
+
             // Check vendor subscription status
-            if (Constant.isSubscriptionModelApplied == true || Constant.adminCommission?.isEnabled == true) {
+            if (Constant.isSubscriptionModelApplied == true ||
+                Constant.adminCommission?.isEnabled == true) {
               final vendorDoc = await FirebaseFirestore.instance
                   .collection(CollectionName.vendors)
                   .doc(product.vendorID.toString())
                   .get();
-              
+
               if (vendorDoc.exists) {
                 final vendor = VendorModel.fromJson(vendorDoc.data()!);
                 if (_isVendorAvailable(vendor)) {
                   // Remove if already exists and add new
                   favouriteFoodList.removeWhere((p) => p.id == product.id);
                   favouriteFoodList.add(product);
-                  print('[DEBUG] Added product: ${product.name}');
+                  update();
+                  print('¸ ${product.name}');
                 }
               }
             } else {
               // Remove if already exists and add new
               favouriteFoodList.removeWhere((p) => p.id == product.id);
               favouriteFoodList.add(product);
+              update();
               print('[DEBUG] Added product: ${product.name}');
             }
           }
@@ -222,11 +235,17 @@ class FavouriteController extends GetxController {
   }
 
   bool _isVendorAvailable(VendorModel vendor) {
-    if ((Constant.isSubscriptionModelApplied == true || Constant.adminCommission?.isEnabled == true) && vendor.subscriptionPlan != null) {
+    if ((Constant.isSubscriptionModelApplied == true ||
+            Constant.adminCommission?.isEnabled == true) &&
+        vendor.subscriptionPlan != null) {
       if (vendor.subscriptionTotalOrders == "-1") {
         return true;
       } else {
-        if ((vendor.subscriptionExpiryDate != null && vendor.subscriptionExpiryDate!.toDate().isBefore(DateTime.now()) == false) ||
+        if ((vendor.subscriptionExpiryDate != null &&
+                vendor.subscriptionExpiryDate!
+                        .toDate()
+                        .isBefore(DateTime.now()) ==
+                    false) ||
             vendor.subscriptionPlan?.expiryDay == '-1') {
           return vendor.subscriptionTotalOrders != '0';
         }
@@ -239,19 +258,22 @@ class FavouriteController extends GetxController {
   // **LEGACY METHOD FOR BACKWARD COMPATIBILITY**
   getData() async {
     print('[DEBUG] FavouriteController: Using legacy getData method...');
-    
+
     // Fallback to old implementation if streaming fails
     try {
       if (Constant.userModel != null) {
         print('[DEBUG] Using legacy getFavouriteRestaurant method...');
-        final restaurantFavourites = await FireStoreUtils.getFavouriteRestaurant();
+        final restaurantFavourites =
+            await FireStoreUtils.getFavouriteRestaurant();
         favouriteList.value = restaurantFavourites;
-        print('[DEBUG] Legacy method found ${restaurantFavourites.length} restaurant favourites');
-        
+        print(
+            '[DEBUG] Legacy method found ${restaurantFavourites.length} restaurant favourites');
+
         final itemFavourites = await FireStoreUtils.getFavouriteItem();
         favouriteItemList.value = itemFavourites;
-        print('[DEBUG] Legacy method found ${itemFavourites.length} item favourites');
-        
+        print(
+            '[DEBUG] Legacy method found ${itemFavourites.length} item favourites');
+
         // Load vendor and product data
         await _loadVendorAndProductData();
       }
@@ -262,13 +284,34 @@ class FavouriteController extends GetxController {
     }
   }
 
+/* <<<<<<<<<<<<<<  ✨ Windsurf Command ⭐ >>>>>>>>>>>>>>>> */
+  /// Loads vendor and product data for the favourite items and restaurants.
+  ///
+  /// This method iterates over the favourite restaurants and items, loading
+  /// vendor and product data respectively. It checks the vendor's
+  /// subscription status before adding the product to the list.
+  ///
+  /// If the vendor's subscription status is unavailable, the product is
+  /// not added to the list.
+  ///
+  /// If an error occurs while loading the vendor or product data, an
+  /// error message is printed to the console.
+  ///
+  /// This method is used as a fallback when the streaming data method fails.
+  ///
+  /// Returns a Future<void> which completes when the vendor and product data
+  /// has been loaded successfully.
+  ///
+/* <<<<<<<<<<  d1b16885-51cf-4603-bf78-4282c9a37cb5  >>>>>>>>>>> */
   Future<void> _loadVendorAndProductData() async {
     // Load vendor data for restaurants
     for (var element in favouriteList) {
       try {
-        final vendor = await FireStoreUtils.getVendorById(element.restaurantId.toString());
+        final vendor =
+            await FireStoreUtils.getVendorById(element.restaurantId.toString());
         if (vendor != null && _isVendorAvailable(vendor)) {
           favouriteVendorList.add(vendor);
+          update();
           print('[DEBUG] Added vendor: ${vendor.title}');
         }
       } catch (e) {
@@ -279,11 +322,14 @@ class FavouriteController extends GetxController {
     // Load product data for items
     for (var element in favouriteItemList) {
       try {
-        final product = await FireStoreUtils.getProductById(element.productId.toString());
+        final product =
+            await FireStoreUtils.getProductById(element.productId.toString());
         if (product != null) {
           // Check vendor subscription status
-          if (Constant.isSubscriptionModelApplied == true || Constant.adminCommission?.isEnabled == true) {
-            final vendor = await FireStoreUtils.getVendorById(product.vendorID.toString());
+          if (Constant.isSubscriptionModelApplied == true ||
+              Constant.adminCommission?.isEnabled == true) {
+            final vendor =
+                await FireStoreUtils.getVendorById(product.vendorID.toString());
             if (vendor != null && _isVendorAvailable(vendor)) {
               favouriteFoodList.add(product);
               print('[DEBUG] Added product: ${product.name}');

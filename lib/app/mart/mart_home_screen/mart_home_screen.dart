@@ -5763,8 +5763,8 @@ class _MartDynamicSectionsState extends State<MartDynamicSections> {
   int _calculateDiscount(MartItemModel product) {
     if (product.disPrice != null &&
         product.price != null &&
-        product.price! > product.disPrice!) {
-      return ((product.price! - product.disPrice!) / product.price! * 100)
+        product.price > product.disPrice!) {
+      return ((product.price - product.disPrice!) / product.price! * 100)
           .round();
     }
     return 0;
@@ -6074,7 +6074,7 @@ class _SearchAndCategoriesStickyDelegate
                                         color: Color(0xFF000000),
                                       ),
                                       textAlign: TextAlign.center,
-                                      maxLines: 1,
+                                      maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
