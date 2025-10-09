@@ -3299,6 +3299,25 @@ class FireStoreUtils {
       return [];
     }
   }
+
+  static Future<List<VendorCategoryModel>> getVendorCategoryIdUsed(
+      String categoryId) async {
+    List<VendorCategoryModel> list = [];
+    await fireStore
+        .collection(CollectionName.vendorCategories)
+        .where("id", isEqualTo: categoryId)
+        .get()
+        .then((value) {
+      for (var element in value.docs) {
+        VendorCategoryModel walletTransactionModel =
+            VendorCategoryModel.fromJson(element.data());
+        list.add(walletTransactionModel);
+      }
+    }).catchError((error) {
+      log(error.toString());
+    });
+    return list;
+  }
 }
 
 // import 'dart:async';

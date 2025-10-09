@@ -9,7 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class CategoryServiceController extends GetxController {
-  String baseUrl = 'https://customer.jippymart.in/api/catering/';
+  String baseUrl = 'https://jippymart.in/api/catering/';
   @override
   void onInit() {
     super.onInit();
@@ -267,12 +267,14 @@ class CategoryServiceController extends GetxController {
             message: result['message'],
             context: context,
             onPressed: () {
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(
-                  builder: (context) => VideoSplashScreen(),
-                ),
-                (Route<dynamic> route) => false, // condition to stop removing
-              );
+              Get.back();
+              Get.back();
+              // Navigator.of(context).pushAndRemoveUntil(
+              //   MaterialPageRoute(
+              //     builder: (context) => VideoSplashScreen(),
+              //   ),
+              //   (Route<dynamic> route) => false, // condition to stop removing
+              // );
             });
         resetForm();
       } else {

@@ -11,302 +11,286 @@ import 'package:url_launcher/url_launcher.dart';
 import 'controller/cetegory_service_controller.dart';
 
 class CateringServiceScreen extends StatelessWidget {
+  const CateringServiceScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(
+      CategoryServiceController(),
+    );
     return Scaffold(
       body: GetBuilder<CategoryServiceController>(
           init: CategoryServiceController(),
           builder: (controller) {
-            return PopScope(
-              canPop: true,
-              onPopInvoked: (didPop) {
-                if (didPop) return; // If already popped, don't handle again
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(
-                    builder: (context) => SplashScreen(),
-                  ),
-                  (Route<dynamic> route) => false, // condition to stop removing
-                );
-              },
-              child:
-                  // controller.isLoading
-                  //     ? const Center(child: CircularProgressIndicator())
-                  //     :
-                  Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Color(0xFFFFE8E8),
-                      Color(0xFFE8F4FF),
-                      Color(0xFFE8FFE8),
-                    ],
-                  ),
+            return Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFFFFE8E8),
+                    Color(0xFFE8F4FF),
+                    Color(0xFFE8FFE8),
+                  ],
                 ),
-                child: Form(
-                  key: controller.formKey,
-                  child: Column(
-                    children: [
-                      _buildHeaderSection(context),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              top: 0, right: 16, bottom: 16, left: 16.0),
-                          child: ListView(
-                            children: [
-                              // const SizedBox(height: 10),
-                              // Title with improved design
-                              // _buildTitleSection(),
-                              // const SizedBox(height: 30),
-                              // Form Fields in Card
-                              Card(
-                                elevation: 8,
-                                // color: Color(0xFFE8FFE8),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(20.0),
-                                  child: Column(
-                                    children: [
-                                      // Name Field
-                                      _buildTextField(
-                                        controller: controller.nameController,
-                                        label: 'Name *',
-                                        icon: Icons.person_outline,
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Please enter your name';
-                                          }
-                                          return null;
-                                        },
-                                      ),
+              ),
+              child: Form(
+                key: controller.formKey,
+                child: Column(
+                  children: [
+                    _buildHeaderSection(context),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                            top: 0, right: 16, bottom: 16, left: 16.0),
+                        child: ListView(
+                          children: [
+                            // const SizedBox(height: 10),
+                            // Title with improved design
+                            // _buildTitleSection(),
+                            // const SizedBox(height: 30),
+                            // Form Fields in Card
+                            Card(
+                              elevation: 8,
+                              // color: Color(0xFFE8FFE8),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(20.0),
+                                child: Column(
+                                  children: [
+                                    // Name Field
+                                    _buildTextField(
+                                      controller: controller.nameController,
+                                      label: 'Name *',
+                                      icon: Icons.person_outline,
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Please enter your name';
+                                        }
+                                        return null;
+                                      },
+                                    ),
 
-                                      // Mobile Field
-                                      _buildTextField(
-                                        controller: controller.mobileController,
-                                        label: 'Mobile Number *',
-                                        keyboardType: TextInputType.phone,
-                                        icon: Icons.phone_android_outlined,
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Please enter mobile number';
-                                          }
-                                          if (!RegExp(r'^[0-9]{10}$')
-                                              .hasMatch(value)) {
-                                            return 'Please enter valid 10-digit mobile number';
-                                          }
-                                          return null;
-                                        },
-                                      ),
+                                    // Mobile Field
+                                    _buildTextField(
+                                      controller: controller.mobileController,
+                                      label: 'Mobile Number *',
+                                      keyboardType: TextInputType.phone,
+                                      icon: Icons.phone_android_outlined,
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Please enter mobile number';
+                                        }
+                                        if (!RegExp(r'^[0-9]{10}$')
+                                            .hasMatch(value)) {
+                                          return 'Please enter valid 10-digit mobile number';
+                                        }
+                                        return null;
+                                      },
+                                    ),
 
-                                      _buildTextField(
-                                        controller:
-                                            controller.alterMobileNumber,
-                                        label: 'Alternative Mobile Number ',
-                                        keyboardType: TextInputType.phone,
-                                        icon: Icons.phone_android_outlined,
-                                        validator: (value) {
-                                          if (value != null &&
-                                              value.isNotEmpty &&
-                                              !RegExp(r'^[0-9]{10}$')
-                                                  .hasMatch(value ?? '')) {
-                                            return 'Please enter valid 10-digit mobile number';
-                                          }
+                                    _buildTextField(
+                                      controller: controller.alterMobileNumber,
+                                      label: 'Alternative Mobile Number ',
+                                      keyboardType: TextInputType.phone,
+                                      icon: Icons.phone_android_outlined,
+                                      validator: (value) {
+                                        if (value != null &&
+                                            value.isNotEmpty &&
+                                            !RegExp(r'^[0-9]{10}$')
+                                                .hasMatch(value ?? '')) {
+                                          return 'Please enter valid 10-digit mobile number';
+                                        }
 
-                                          return null;
-                                        },
-                                      ),
+                                        return null;
+                                      },
+                                    ),
 
-                                      // Email Field
-                                      _buildTextField(
-                                        controller: controller.emailController,
-                                        label: 'Email (Optional)',
-                                        keyboardType:
-                                            TextInputType.emailAddress,
-                                        icon: Icons.email_outlined,
-                                        validator: (value) {
-                                          if (value != null &&
-                                              value.isNotEmpty &&
-                                              !value.contains('@')) {
-                                            return 'Please enter valid email';
-                                          }
-                                          return null;
-                                        },
-                                      ),
+                                    // Email Field
+                                    _buildTextField(
+                                      controller: controller.emailController,
+                                      label: 'Email (Optional)',
+                                      keyboardType: TextInputType.emailAddress,
+                                      icon: Icons.email_outlined,
+                                      validator: (value) {
+                                        if (value != null &&
+                                            value.isNotEmpty &&
+                                            !value.contains('@')) {
+                                          return 'Please enter valid email';
+                                        }
+                                        return null;
+                                      },
+                                    ),
 
-                                      // Place/Address Field
-                                      _buildTextField(
-                                        controller: controller.placeController,
-                                        label: 'Place / Address *',
-                                        maxLines: 3,
-                                        icon: Icons.location_on_outlined,
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Please enter place/address';
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                      // Function Type Dropdown
-                                      _buildFunctionTypeDropdown(
-                                          controller: controller),
+                                    // Place/Address Field
+                                    _buildTextField(
+                                      controller: controller.placeController,
+                                      label: 'Place / Address *',
+                                      maxLines: 3,
+                                      icon: Icons.location_on_outlined,
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Please enter place/address';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                    // Function Type Dropdown
+                                    _buildFunctionTypeDropdown(
+                                        controller: controller),
 
-                                      // Date Field
-                                      _buildDateField(
-                                          controller: controller,
-                                          context: context),
+                                    // Date Field
+                                    _buildDateField(
+                                        controller: controller,
+                                        context: context),
 
-                                      // Guests Field
-                                      _buildTextField(
-                                        controller: controller.guestsController,
-                                        label: 'No. of Guests *',
-                                        keyboardType: TextInputType.number,
-                                        icon: Icons.people_outline,
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Please enter number of guests';
-                                          }
-                                          final guests = int.tryParse(value);
-                                          if (guests == null || guests < 1) {
-                                            return 'Please enter valid number of guests (min 1)';
-                                          }
-                                          return null;
-                                        },
-                                        onChanged: (value) =>
-                                            controller.updateGuestCounts(),
-                                      ),
+                                    // Guests Field
+                                    _buildTextField(
+                                      controller: controller.guestsController,
+                                      label: 'No. of Guests *',
+                                      keyboardType: TextInputType.number,
+                                      icon: Icons.people_outline,
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Please enter number of guests';
+                                        }
+                                        final guests = int.tryParse(value);
+                                        if (guests == null || guests < 1) {
+                                          return 'Please enter valid number of guests (min 1)';
+                                        }
+                                        return null;
+                                      },
+                                      onChanged: (value) =>
+                                          controller.updateGuestCounts(),
+                                    ),
 
-                                      // Meal Preference Radio
-                                      _buildMealPreferenceRadio(
-                                          controller: controller),
+                                    // Meal Preference Radio
+                                    _buildMealPreferenceRadio(
+                                        controller: controller),
 
-                                      // Veg/Non-Veg Counts
-                                      if (controller.mealPreference ==
-                                          'Both') ...[
-                                        Container(
-                                          padding: const EdgeInsets.all(12),
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey[50],
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                            border: Border.all(
-                                                color: Colors.grey[300]!),
-                                          ),
-                                          child: Column(
-                                            children: [
-                                              Text(
-                                                'Guest Distribution',
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.grey[700],
-                                                ),
-                                              ),
-                                              const SizedBox(height: 10),
-                                              Row(
-                                                children: [
-                                                  Expanded(
-                                                    child: _buildTextField(
-                                                      controller: controller
-                                                          .vegCountController,
-                                                      label: 'No. of Veg',
-                                                      keyboardType:
-                                                          TextInputType.number,
-                                                      icon: Icons.eco_outlined,
-                                                      validator: (value) {
-                                                        final guests =
-                                                            int.tryParse(controller
-                                                                    .guestsController
-                                                                    .text) ??
-                                                                0;
-                                                        final veg =
-                                                            int.tryParse(
-                                                                    value ??
-                                                                        '0') ??
-                                                                0;
-                                                        final nonveg =
-                                                            int.tryParse(controller
-                                                                    .nonvegCountController
-                                                                    .text) ??
-                                                                0;
-                                                        if (veg + nonveg !=
-                                                            guests) {
-                                                          return 'Veg + Non-Veg must equal total guests';
-                                                        }
-                                                        return null;
-                                                      },
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 10),
-                                                  Expanded(
-                                                    child: _buildTextField(
-                                                      controller: controller
-                                                          .nonvegCountController,
-                                                      label: 'No. of Non-Veg',
-                                                      keyboardType:
-                                                          TextInputType.number,
-                                                      icon: Icons
-                                                          .restaurant_outlined,
-                                                      validator: (value) {
-                                                        final guests =
-                                                            int.tryParse(controller
-                                                                    .guestsController
-                                                                    .text) ??
-                                                                0;
-                                                        final veg = int.tryParse(
-                                                                controller
-                                                                    .vegCountController
-                                                                    .text) ??
-                                                            0;
-                                                        final nonveg =
-                                                            int.tryParse(
-                                                                    value ??
-                                                                        '0') ??
-                                                                0;
-                                                        if (veg + nonveg !=
-                                                            guests) {
-                                                          return 'Veg + Non-Veg must equal total guests';
-                                                        }
-                                                        return null;
-                                                      },
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
+                                    // Veg/Non-Veg Counts
+                                    if (controller.mealPreference ==
+                                        'Both') ...[
+                                      Container(
+                                        padding: const EdgeInsets.all(12),
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey[50],
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          border: Border.all(
+                                              color: Colors.grey[300]!),
                                         ),
-                                        const SizedBox(height: 16),
-                                      ],
-
-                                      // Special Requirements
-                                      _buildTextField(
-                                        controller: controller
-                                            .specialRequirementsController,
-                                        label: 'Special Requirements',
-                                        maxLines: 3,
-                                        icon: Icons.note_alt_outlined,
+                                        child: Column(
+                                          children: [
+                                            Text(
+                                              'Guest Distribution',
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600,
+                                                color: Colors.grey[700],
+                                              ),
+                                            ),
+                                            const SizedBox(height: 10),
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child: _buildTextField(
+                                                    controller: controller
+                                                        .vegCountController,
+                                                    label: 'No. of Veg',
+                                                    keyboardType:
+                                                        TextInputType.number,
+                                                    icon: Icons.eco_outlined,
+                                                    validator: (value) {
+                                                      final guests =
+                                                          int.tryParse(controller
+                                                                  .guestsController
+                                                                  .text) ??
+                                                              0;
+                                                      final veg = int.tryParse(
+                                                              value ?? '0') ??
+                                                          0;
+                                                      final nonveg =
+                                                          int.tryParse(controller
+                                                                  .nonvegCountController
+                                                                  .text) ??
+                                                              0;
+                                                      if (veg + nonveg !=
+                                                          guests) {
+                                                        return 'Veg + Non-Veg must equal total guests';
+                                                      }
+                                                      return null;
+                                                    },
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 10),
+                                                Expanded(
+                                                  child: _buildTextField(
+                                                    controller: controller
+                                                        .nonvegCountController,
+                                                    label: 'No. of Non-Veg',
+                                                    keyboardType:
+                                                        TextInputType.number,
+                                                    icon: Icons
+                                                        .restaurant_outlined,
+                                                    validator: (value) {
+                                                      final guests =
+                                                          int.tryParse(controller
+                                                                  .guestsController
+                                                                  .text) ??
+                                                              0;
+                                                      final veg = int.tryParse(
+                                                              controller
+                                                                  .vegCountController
+                                                                  .text) ??
+                                                          0;
+                                                      final nonveg =
+                                                          int.tryParse(value ??
+                                                                  '0') ??
+                                                              0;
+                                                      if (veg + nonveg !=
+                                                          guests) {
+                                                        return 'Veg + Non-Veg must equal total guests';
+                                                      }
+                                                      return null;
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                       ),
+                                      const SizedBox(height: 16),
                                     ],
-                                  ),
+
+                                    // Special Requirements
+                                    _buildTextField(
+                                      controller: controller
+                                          .specialRequirementsController,
+                                      label: 'Special Requirements',
+                                      maxLines: 3,
+                                      icon: Icons.note_alt_outlined,
+                                    ),
+                                  ],
                                 ),
                               ),
+                            ),
 
-                              const SizedBox(height: 30),
+                            const SizedBox(height: 30),
 
-                              // Submit Button
-                              _buildSubmitButton(
-                                  controller: controller, context: context),
+                            // Submit Button
+                            _buildSubmitButton(
+                                controller: controller, context: context),
 
-                              const SizedBox(height: 20),
-                            ],
-                          ),
+                            const SizedBox(height: 20),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             );
@@ -319,7 +303,7 @@ class CateringServiceScreen extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.only(
         top: 60.0,
-        bottom: 10.0,
+        bottom: 20.0,
         left: 20.0,
         right: 20.0,
       ),
@@ -345,51 +329,41 @@ class CateringServiceScreen extends StatelessWidget {
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               InkWell(
                 onTap: () {
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(
-                      builder: (context) => VideoSplashScreen(),
-                    ),
-                    (Route<dynamic> route) =>
-                        false, // condition to stop removing
-                  );
+                  Get.back();
                 },
-                child: Icon(
+                child: const Icon(
                   Icons.arrow_back_ios_new,
                   color: Colors.white,
                 ),
               ),
-              SizedBox(
-                width: 10,
-              ),
-              const Text(
-                'JippyMart Catering Service',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+              const SizedBox(width: 10),
+              const Expanded(
+                child: Text(
+                  'JippyMart Catering Service',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
             ],
           ),
-          SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 10),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Spacer(),
-              Padding(
-                padding: const EdgeInsets.only(
-                  right: 10,
-                ),
-                child: const Text(
-                  'Contact Us ', // Replace with actual user name
+              const Padding(
+                padding: EdgeInsets.only(right: 8),
+                child: Text(
+                  'Contact Us',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -397,62 +371,51 @@ class CateringServiceScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              // WhatsApp Button
-              Positioned(
-                bottom: MediaQuery.of(context).padding.bottom +
-                    120, // Above bottom navigation
-                right: 16,
-                child: GestureDetector(
-                  onTap: () async {
-                    // WhatsApp number - you can change this to your desired number
-                    const String phoneNumber =
-                        '+919390579864'; // Your actual WhatsApp number
-                    const String message =
-                        'Hello! I need help with my JippyMart order.'; // Customize the message
+              GestureDetector(
+                onTap: () async {
+                  const String phoneNumber = '+919390579864';
+                  const String message =
+                      'Hello! I need help with my JippyMart order.';
 
-                    final Uri whatsappUrl = Uri.parse(
-                        'https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}');
+                  final Uri whatsappUrl = Uri.parse(
+                      'https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}');
 
-                    try {
-                      if (await canLaunchUrl(whatsappUrl)) {
-                        await launchUrl(whatsappUrl,
+                  try {
+                    if (await canLaunchUrl(whatsappUrl)) {
+                      await launchUrl(whatsappUrl,
+                          mode: LaunchMode.externalApplication);
+                    } else {
+                      final Uri phoneUrl = Uri.parse('tel:$phoneNumber');
+                      if (await canLaunchUrl(phoneUrl)) {
+                        await launchUrl(phoneUrl,
                             mode: LaunchMode.externalApplication);
-                      } else {
-                        // Fallback to regular phone call if WhatsApp is not available
-                        final Uri phoneUrl = Uri.parse('tel:$phoneNumber');
-                        if (await canLaunchUrl(phoneUrl)) {
-                          await launchUrl(phoneUrl,
-                              mode: LaunchMode.externalApplication);
-                        }
                       }
-                    } catch (e) {
-                      print('Error launching WhatsApp: $e');
                     }
-                  },
-                  child: Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: Colors.green, // WhatsApp green color
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(0.0),
-                      child: SvgPicture.asset(
-                        'assets/images/whatsapp.svg',
-                        width: 20,
-                        height: 20,
-                        colorFilter: const ColorFilter.mode(
-                          Colors.white,
-                          BlendMode.srcIn,
-                        ),
+                  } catch (e) {
+                    debugPrint('Error launching WhatsApp: $e');
+                  }
+                },
+                child: Container(
+                  width: 45,
+                  height: 45,
+                  decoration: BoxDecoration(
+                    color: Colors.green,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SvgPicture.asset(
+                      'assets/images/whatsapp.svg',
+                      colorFilter: const ColorFilter.mode(
+                        Colors.white,
+                        BlendMode.srcIn,
                       ),
                     ),
                   ),
@@ -464,6 +427,259 @@ class CateringServiceScreen extends StatelessWidget {
       ),
     );
   }
+
+  // Widget _buildHeaderSection(BuildContext context) {
+  //   return Container(
+  //     width: double.infinity,
+  //     height: 190,
+  //     padding: const EdgeInsets.only(
+  //       top: 60.0,
+  //       bottom: 10.0,
+  //       left: 20.0,
+  //       right: 20.0,
+  //     ),
+  //     decoration: BoxDecoration(
+  //       gradient: LinearGradient(
+  //         begin: Alignment.topLeft,
+  //         end: Alignment.bottomRight,
+  //         colors: [
+  //           Colors.deepOrange.shade400,
+  //           Colors.orange.shade600,
+  //         ],
+  //       ),
+  //       borderRadius: const BorderRadius.only(
+  //         bottomLeft: Radius.circular(30),
+  //         bottomRight: Radius.circular(30),
+  //       ),
+  //       boxShadow: [
+  //         BoxShadow(
+  //           color: Colors.deepOrange.withOpacity(0.3),
+  //           blurRadius: 10,
+  //           offset: const Offset(0, 4),
+  //         ),
+  //       ],
+  //     ),
+  //     child: Stack(
+  //       children: [
+  //         Row(
+  //           children: [
+  //             InkWell(
+  //               onTap: () => Get.back(),
+  //               child:
+  //                   const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+  //             ),
+  //             const SizedBox(width: 10),
+  //             const Expanded(
+  //               child: Text(
+  //                 'JippyMart Catering Service',
+  //                 style: TextStyle(
+  //                   fontSize: 22,
+  //                   fontWeight: FontWeight.bold,
+  //                   color: Colors.white,
+  //                 ),
+  //                 textAlign: TextAlign.center,
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //         Positioned(
+  //           right: 16,
+  //           bottom: 0,
+  //           child: GestureDetector(
+  //             onTap: () async {
+  //               const String phoneNumber = '+919390579864';
+  //               const String message =
+  //                   'Hello! I need help with my JippyMart order.';
+  //               final Uri whatsappUrl = Uri.parse(
+  //                   'https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}');
+  //               try {
+  //                 if (await canLaunchUrl(whatsappUrl)) {
+  //                   await launchUrl(whatsappUrl,
+  //                       mode: LaunchMode.externalApplication);
+  //                 } else {
+  //                   final Uri phoneUrl = Uri.parse('tel:$phoneNumber');
+  //                   if (await canLaunchUrl(phoneUrl)) {
+  //                     await launchUrl(phoneUrl,
+  //                         mode: LaunchMode.externalApplication);
+  //                   }
+  //                 }
+  //               } catch (e) {
+  //                 debugPrint('Error launching WhatsApp: $e');
+  //               }
+  //             },
+  //             child: Container(
+  //               width: 50,
+  //               height: 50,
+  //               decoration: BoxDecoration(
+  //                 color: Colors.green,
+  //                 shape: BoxShape.circle,
+  //                 boxShadow: [
+  //                   BoxShadow(
+  //                     color: Colors.black.withOpacity(0.2),
+  //                     blurRadius: 8,
+  //                     offset: const Offset(0, 4),
+  //                   ),
+  //                 ],
+  //               ),
+  //               child: Padding(
+  //                 padding: const EdgeInsets.all(10.0),
+  //                 child: SvgPicture.asset(
+  //                   'assets/images/whatsapp.svg',
+  //                   colorFilter:
+  //                       const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  // Widget _buildHeaderSection(BuildContext context) {
+  //   return Container(
+  //     width: double.infinity,
+  //     padding: const EdgeInsets.only(
+  //       top: 60.0,
+  //       bottom: 10.0,
+  //       left: 20.0,
+  //       right: 20.0,
+  //     ),
+  //     decoration: BoxDecoration(
+  //       gradient: LinearGradient(
+  //         begin: Alignment.topLeft,
+  //         end: Alignment.bottomRight,
+  //         colors: [
+  //           Colors.deepOrange.shade400,
+  //           Colors.orange.shade600,
+  //         ],
+  //       ),
+  //       borderRadius: const BorderRadius.only(
+  //         bottomLeft: Radius.circular(30),
+  //         bottomRight: Radius.circular(30),
+  //       ),
+  //       boxShadow: [
+  //         BoxShadow(
+  //           color: Colors.deepOrange.withOpacity(0.3),
+  //           blurRadius: 10,
+  //           offset: const Offset(0, 4),
+  //         ),
+  //       ],
+  //     ),
+  //     child: Column(
+  //       children: [
+  //         Row(
+  //           children: [
+  //             InkWell(
+  //               onTap: () {
+  //                 Get.back();
+  //               },
+  //               child: Icon(
+  //                 Icons.arrow_back_ios_new,
+  //                 color: Colors.white,
+  //               ),
+  //             ),
+  //             SizedBox(
+  //               width: 10,
+  //             ),
+  //             const Text(
+  //               'JippyMart Catering Service',
+  //               style: TextStyle(
+  //                 fontSize: 22,
+  //                 fontWeight: FontWeight.bold,
+  //                 color: Colors.white,
+  //               ),
+  //               textAlign: TextAlign.center,
+  //             ),
+  //           ],
+  //         ),
+  //         SizedBox(
+  //           height: 10,
+  //         ),
+  //         Row(
+  //           mainAxisAlignment: MainAxisAlignment.end,
+  //           children: [
+  //             Padding(
+  //               padding: const EdgeInsets.only(
+  //                 right: 10,
+  //               ),
+  //               child: const Text(
+  //                 'Contact Us ', // Replace with actual user name
+  //                 style: TextStyle(
+  //                   color: Colors.white,
+  //                   fontSize: 16,
+  //                   fontWeight: FontWeight.bold,
+  //                 ),
+  //               ),
+  //             ),
+  //             // WhatsApp Button
+  //             Positioned(
+  //               bottom: MediaQuery.of(context).padding.bottom +
+  //                   120, // Above bottom navigation
+  //               right: 16,
+  //               child: GestureDetector(
+  //                 onTap: () async {
+  //                   // WhatsApp number - you can change this to your desired number
+  //                   const String phoneNumber =
+  //                       '+919390579864'; // Your actual WhatsApp number
+  //                   const String message =
+  //                       'Hello! I need help with my JippyMart order.'; // Customize the message
+  //
+  //                   final Uri whatsappUrl = Uri.parse(
+  //                       'https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}');
+  //
+  //                   try {
+  //                     if (await canLaunchUrl(whatsappUrl)) {
+  //                       await launchUrl(whatsappUrl,
+  //                           mode: LaunchMode.externalApplication);
+  //                     } else {
+  //                       // Fallback to regular phone call if WhatsApp is not available
+  //                       final Uri phoneUrl = Uri.parse('tel:$phoneNumber');
+  //                       if (await canLaunchUrl(phoneUrl)) {
+  //                         await launchUrl(phoneUrl,
+  //                             mode: LaunchMode.externalApplication);
+  //                       }
+  //                     }
+  //                   } catch (e) {
+  //                     print('Error launching WhatsApp: $e');
+  //                   }
+  //                 },
+  //                 child: Container(
+  //                   width: 50,
+  //                   height: 50,
+  //                   decoration: BoxDecoration(
+  //                     color: Colors.green, // WhatsApp green color
+  //                     shape: BoxShape.circle,
+  //                     boxShadow: [
+  //                       BoxShadow(
+  //                         color: Colors.black.withOpacity(0.2),
+  //                         blurRadius: 8,
+  //                         offset: const Offset(0, 4),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                   child: Padding(
+  //                     padding: const EdgeInsets.all(0.0),
+  //                     child: SvgPicture.asset(
+  //                       'assets/images/whatsapp.svg',
+  //                       width: 20,
+  //                       height: 20,
+  //                       colorFilter: const ColorFilter.mode(
+  //                         Colors.white,
+  //                         BlendMode.srcIn,
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   // Widget _buildTitleSection() {
   //   return Column(
@@ -892,8 +1108,8 @@ class CateringServiceScreen extends StatelessWidget {
         ),
         child: controller.isLoading
             ? SpinKitWave(
-                color: Colors.blue, // customize color
-                size: 20.0, // customize size
+                color: Colors.white, // customize color
+                size: 30.0, // customize size
                 duration: const Duration(
                   seconds: 1,
                 ), // optional speed
