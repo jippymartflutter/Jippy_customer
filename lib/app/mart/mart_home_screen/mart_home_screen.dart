@@ -134,12 +134,14 @@ class MartHomeScreen extends StatelessWidget {
                           }),
                         ),
 
-                        // Search and Categories Section (Sticky)
-                        SliverPersistentHeader(
-                          pinned: true,
-                          delegate: _SearchAndCategoriesStickyDelegate(),
+                        // // Search and Categories Section (Sticky)
+                        // SliverPersistentHeader(
+                        //   pinned: true,
+                        //   delegate: _SearchAndCategoriesStickyDelegate(),
+                        // ),
+                        SliverToBoxAdapter(
+                          child: searchWidgetMain(),
                         ),
-
                         // Spotlight Selections
                         // SliverToBoxAdapter(
                         //   child: MartSpotlightSelections(screenWidth: screenWidth),
@@ -2958,42 +2960,50 @@ class MartTrendingDealsPersonalCare extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(
-          horizontal: 16, vertical: 12), // Reduced from 16 to 12
+      padding: const EdgeInsets.only(
+          // left: 16,
+          // right: 16,
+          ), // Reduced from 16 to 12
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Section Header with Title and See All
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Trending deals',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2D1B69),
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  // Navigate to category detail screen with trending filter
-                  Get.to(() => MartCategoryDetailScreen(), arguments: {
-                    'categoryId': 'trending',
-                    'categoryName': 'Trending Deals',
-                    'initialFilter': 'trending',
-                  });
-                },
-                child: const Text(
-                  'See All >',
+          Padding(
+            padding: const EdgeInsets.only(
+              left: 16,
+              right: 16,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Trending deals',
                   style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.blue,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2D1B69),
                   ),
                 ),
-              ),
-            ],
+                GestureDetector(
+                  onTap: () {
+                    // Navigate to category detail screen with trending filter
+                    Get.to(() => MartCategoryDetailScreen(), arguments: {
+                      'categoryId': 'trending',
+                      'categoryName': 'Trending Deals',
+                      'initialFilter': 'trending',
+                    });
+                  },
+                  child: const Text(
+                    'See All >',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.blue,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 12), // Reduced from 16 to 12
 
@@ -3047,24 +3057,32 @@ class MartTrendingDealsPersonalCare extends StatelessWidget {
                       isTablet ? 200.0 : (isLargePhone ? 180.0 : 160.0);
 
                   // 🔑 Auto-adjustable layout using Wrap for truly flexible card heights
-                  return SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Wrap(
-                      alignment: WrapAlignment.start,
-                      crossAxisAlignment: WrapCrossAlignment.start,
-                      runAlignment: WrapAlignment.start,
-                      spacing: 16.0,
-                      runSpacing: 16.0,
-                      children: controller.filteredTrendingItems.map((product) {
-                        return SizedBox(
-                          width: cardWidth,
-                          child: MartProductCard(
-                            product: product,
-                            controller: _getMockController(),
-                            screenWidth: screenWidth,
-                          ),
-                        );
-                      }).toList(),
+                  return Padding(
+                    padding: const EdgeInsets.only(
+                      left: 16,
+                      // right: 16,
+                    ),
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.zero,
+                      scrollDirection: Axis.horizontal,
+                      child: Wrap(
+                        alignment: WrapAlignment.start,
+                        crossAxisAlignment: WrapCrossAlignment.start,
+                        runAlignment: WrapAlignment.start,
+                        spacing: 0,
+                        runSpacing: 16.0,
+                        children:
+                            controller.filteredTrendingItems.map((product) {
+                          return SizedBox(
+                            width: cardWidth,
+                            child: MartProductCard(
+                              product: product,
+                              controller: _getMockController(),
+                              screenWidth: screenWidth,
+                            ),
+                          );
+                        }).toList(),
+                      ),
                     ),
                   );
                 },
@@ -4418,7 +4436,10 @@ class MartProductDealsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      padding: const EdgeInsets.only(
+        left: 16,
+        right: 16,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -5461,8 +5482,10 @@ class MartFeaturedProducts extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(
-              horizontal: 16.0, vertical: 8), // Reduced from 16 to 8
+          padding: const EdgeInsets.only(
+            left: 16,
+            right: 16,
+          ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -5543,24 +5566,30 @@ class MartFeaturedProducts extends StatelessWidget {
                     isTablet ? 200.0 : (isLargePhone ? 180.0 : 160.0);
 
                 // 🔑 Auto-adjustable layout using Wrap for truly flexible card heights
-                return SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Wrap(
-                    alignment: WrapAlignment.start,
-                    crossAxisAlignment: WrapCrossAlignment.start,
-                    runAlignment: WrapAlignment.start,
-                    spacing: 16.0,
-                    runSpacing: 16.0,
-                    children: controller.featuredItems.map((product) {
-                      return SizedBox(
-                        width: cardWidth,
-                        child: MartProductCard(
-                            product: product,
-                            controller: _getMockController(),
-                            screenWidth: screenWidth),
-                      );
-                    }).toList(),
+                return Padding(
+                  padding: const EdgeInsets.only(
+                    left: 16,
+                    // right: 16,
+                  ),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.only(),
+                    child: Wrap(
+                      alignment: WrapAlignment.start,
+                      crossAxisAlignment: WrapCrossAlignment.start,
+                      runAlignment: WrapAlignment.start,
+                      spacing: 0,
+                      runSpacing: 16.0,
+                      children: controller.featuredItems.map((product) {
+                        return SizedBox(
+                          width: cardWidth,
+                          child: MartProductCard(
+                              product: product,
+                              controller: _getMockController(),
+                              screenWidth: screenWidth),
+                        );
+                      }).toList(),
+                    ),
                   ),
                 );
               },
@@ -5672,7 +5701,11 @@ class _MartDynamicSectionsState extends State<MartDynamicSections> {
   Widget _buildSection(MartController controller, String sectionName) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      // padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.only(
+        left: 16,
+        right: 16,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -5808,14 +5841,570 @@ Widget _getSpotlightPlaceholder(String title) {
 }
 
 // Search and Categories Sticky Delegate
-class _SearchAndCategoriesStickyDelegate
-    extends SliverPersistentHeaderDelegate {
-  @override
-  double get minExtent => 180.0;
+// class _SearchAndCategoriesStickyDelegate
+//     extends SliverPersistentHeaderDelegate {
+//   @override
+//   double get minExtent => 180.0;
+//
+//   @override
+//   double get maxExtent => 180.0;
+//
+//   /// Get appropriate icon for category based on name
+//   IconData _getCategoryIcon(String categoryName) {
+//     final name = categoryName.toLowerCase();
+//
+//     if (name.contains('grocery') ||
+//         name.contains('food') ||
+//         name.contains('vegetable') ||
+//         name.contains('fruit') ||
+//         name.contains('dairy') ||
+//         name.contains('meat')) {
+//       return Icons.shopping_basket;
+//     } else if (name.contains('medicine') ||
+//         name.contains('health') ||
+//         name.contains('pharmacy') ||
+//         name.contains('medical') ||
+//         name.contains('drug')) {
+//       return Icons.local_pharmacy;
+//     } else if (name.contains('pet') ||
+//         name.contains('animal') ||
+//         name.contains('dog') ||
+//         name.contains('cat') ||
+//         name.contains('bird')) {
+//       return Icons.pets;
+//     } else if (name.contains('electronics') ||
+//         name.contains('phone') ||
+//         name.contains('laptop') ||
+//         name.contains('computer')) {
+//       return Icons.devices;
+//     } else if (name.contains('clothing') ||
+//         name.contains('fashion') ||
+//         name.contains('shirt') ||
+//         name.contains('dress')) {
+//       return Icons.checkroom;
+//     } else if (name.contains('beauty') ||
+//         name.contains('cosmetic') ||
+//         name.contains('makeup') ||
+//         name.contains('skincare')) {
+//       return Icons.face;
+//     } else if (name.contains('sports') ||
+//         name.contains('fitness') ||
+//         name.contains('gym') ||
+//         name.contains('exercise')) {
+//       return Icons.sports_soccer;
+//     } else if (name.contains('book') ||
+//         name.contains('stationery') ||
+//         name.contains('pen') ||
+//         name.contains('paper')) {
+//       return Icons.book;
+//     } else if (name.contains('home') ||
+//         name.contains('furniture') ||
+//         name.contains('kitchen') ||
+//         name.contains('garden')) {
+//       return Icons.home;
+//     } else if (name.contains('toy') ||
+//         name.contains('game') ||
+//         name.contains('play') ||
+//         name.contains('children')) {
+//       return Icons.toys;
+//     } else {
+//       // Default icon for unknown categories
+//       return Icons.category;
+//     }
+//   }
+//
+//   @override
+//   Widget build(
+//       BuildContext context, double shrinkOffset, bool overlapsContent) {
+//     return Container(
+//       width: 412,
+//       height: 220,
+//       decoration: const BoxDecoration(
+//         gradient: LinearGradient(
+//           begin: Alignment.topCenter,
+//           end: Alignment.bottomCenter,
+//           colors: [
+//             const Color(0xFFFAF9EE), // Custom cream color - top
+//             const Color(0xFFFAF9EE), // Custom cream color - bottom
+//           ],
+//           stops: [0.0, 1.0], // 0% to 100%
+//         ),
+//         borderRadius: BorderRadius.only(
+//           bottomLeft: Radius.circular(10),
+//           bottomRight: Radius.circular(10),
+//         ),
+//       ),
+//       child: Column(
+//         children: [
+//           SizedBox(
+//             height: 20,
+//           ),
+//           // Group 262 - Search Bar
+//           Padding(
+//             padding: const EdgeInsets.only(
+//               left: 16,
+//               right: 16,
+//             ),
+//             child: Positioned(
+//               left: 16,
+//               right: 16,
+//               top: 38, // Moved down by 10px
+//               child: const MartSearchBar(
+//                 hintText: 'Search products, categories...',
+//               ),
+//             ),
+//           ),
+//           SizedBox(
+//             height: 20,
+//           ),
+//           Padding(
+//             padding: const EdgeInsets.only(
+//               left: 16,
+//               right: 16,
+//             ),
+//             child: Positioned(
+//               left: 16,
+//               right: 16,
+//               top: 100,
+//               child: GetX<MartController>(
+//                 builder: (controller) {
+//                   print(
+//                       '[MART HOME] ==========================================');
+//                   print('[MART HOME] 🏠 GetX triggered');
+//                   print('[MART HOME] 📊 Controller state:');
+//                   print(
+//                       '[MART HOME]   - featuredCategories: ${controller.featuredCategories.length}');
+//                   print(
+//                       '[MART HOME]   - isCategoryLoading: ${controller.isCategoryLoading.value}');
+//                   print(
+//                       '[MART HOME]   - errorMessage: ${controller.errorMessage.value}');
+//                   print(
+//                       '[MART HOME] ==========================================');
+//
+//                   // Load homepage categories if not already loaded
+//                   if (controller.featuredCategories.isEmpty &&
+//                       !controller.isCategoryLoading.value &&
+//                       !controller.isHomepageCategoriesLoaded.value) {
+//                     print(
+//                         '[MART HOME] 📞 Loading homepage categories from Firestore...');
+//                     WidgetsBinding.instance.addPostFrameCallback((_) {
+//                       print('[MART HOME] 🔄 PostFrameCallback executed');
+//                       controller.loadHomepageCategoriesStreaming(limit: 6);
+//                     });
+//                   }
+//
+//                   if (controller.isCategoryLoading.value) {
+//                     return SizedBox(
+//                       height: 60,
+//                       child: Row(
+//                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//                         children: List.generate(
+//                           3,
+//                           (index) => Container(
+//                             width: 28,
+//                             height: 28,
+//                             decoration: BoxDecoration(
+//                               color: Colors.grey[300],
+//                               shape: BoxShape.circle,
+//                             ),
+//                           ),
+//                         ),
+//                       ),
+//                     );
+//                   }
+//
+//                   // Check for Firestore errors
+//                   if (controller.errorMessage.value.isNotEmpty) {
+//                     print(
+//                         '[MART HOME] ❌ Firestore error: ${controller.errorMessage.value}');
+//                     return SizedBox(
+//                       height: 80,
+//                       child: Center(
+//                         child: Column(
+//                           mainAxisAlignment: MainAxisAlignment.center,
+//                           children: [
+//                             const Text(
+//                               'Error loading categories',
+//                               style: TextStyle(
+//                                 fontFamily: 'Montserrat',
+//                                 fontSize: 12,
+//                                 color: Colors.red,
+//                               ),
+//                             ),
+//                             const SizedBox(height: 8),
+//                             ElevatedButton(
+//                               onPressed: () {
+//                                 print(
+//                                     '[MART HOME] 🔄 Retrying categories from Firestore...');
+//                                 controller.loadHomepageCategoriesStreaming(
+//                                     limit: 6);
+//                               },
+//                               child: const Text('Retry'),
+//                             ),
+//                           ],
+//                         ),
+//                       ),
+//                     );
+//                   }
+//
+//                   if (controller.featuredCategories.isEmpty) {
+//                     // No categories loaded from Firestore
+//                     print('[MART HOME] ⚠️ No categories loaded from Firestore');
+//                     return const SizedBox(
+//                       height: 80,
+//                       child: Center(
+//                         child: Text(
+//                           'No categories available',
+//                           style: TextStyle(
+//                             fontFamily: 'Montserrat',
+//                             fontSize: 12,
+//                             color: Colors.grey,
+//                           ),
+//                         ),
+//                       ),
+//                     );
+//                   }
+//
+//                   // Debug: Log the number of categories and alignment being used
+//                   final categoryCount = controller.featuredCategories.length;
+//                   final alignment =
+//                       categoryCount == 2 ? 'spaceBetween' : 'spaceEvenly';
+//                   print(
+//                       '[MART HOME] 📊 Categories: $categoryCount, Alignment: $alignment');
+//
+//                   // Default categories with fixed icons
+//                   return SizedBox(
+//                     height: 78,
+//                     child: Row(
+//                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//                       children: [
+//                         // Dynamic category from Firestore
+//                         Builder(
+//                           builder: (context) {
+//                             if (controller.featuredCategories.isNotEmpty) {
+//                               final category = controller.featuredCategories[0];
+//                               final categoryIcon =
+//                                   _getCategoryIcon(category.title ?? '');
+//
+//                               return InkWell(
+//                                 onTap: () {
+//                                   Get.to(() => const MartCategoryDetailScreen(),
+//                                       arguments: {
+//                                         'categoryId': category.id ?? '',
+//                                         'categoryName':
+//                                             category.title ?? 'Category',
+//                                       });
+//                                 },
+//                                 borderRadius: BorderRadius.circular(20),
+//                                 child: Column(
+//                                   children: [
+//                                     Container(
+//                                       width: 45,
+//                                       height: 45,
+//                                       decoration: const BoxDecoration(
+//                                         color: Color(0xFF00998a),
+//                                         shape: BoxShape.circle,
+//                                       ),
+//                                       child: Icon(
+//                                         categoryIcon,
+//                                         color: Colors.white,
+//                                         size: 28,
+//                                       ),
+//                                     ),
+//                                     const SizedBox(height: 5),
+//                                     SizedBox(
+//                                       width: 80,
+//                                       child: Text(
+//                                         category.title ?? 'Category',
+//                                         style: const TextStyle(
+//                                           fontFamily: 'Montserrat',
+//                                           fontSize: 12,
+//                                           fontWeight: FontWeight.w600,
+//                                           height: 16 / 14,
+//                                           color: Color(0xFF000000),
+//                                         ),
+//                                         textAlign: TextAlign.center,
+//                                         maxLines: 2,
+//                                         overflow: TextOverflow.ellipsis,
+//                                       ),
+//                                     ),
+//                                   ],
+//                                 ),
+//                               );
+//                             } else {
+//                               // Fallback to default grocery icon
+//                               return InkWell(
+//                                 onTap: () {
+//                                   Get.to(() => const MartCategoryDetailScreen(),
+//                                       arguments: {
+//                                         'categoryId': 'default',
+//                                         'categoryName': 'Category',
+//                                       });
+//                                 },
+//                                 borderRadius: BorderRadius.circular(20),
+//                                 child: Column(
+//                                   children: [
+//                                     Container(
+//                                       width: 45,
+//                                       height: 45,
+//                                       decoration: const BoxDecoration(
+//                                         color: Color(0xFF00998a),
+//                                         shape: BoxShape.circle,
+//                                       ),
+//                                       child: const Icon(
+//                                         Icons.category,
+//                                         color: Colors.white,
+//                                         size: 28,
+//                                       ),
+//                                     ),
+//                                     const SizedBox(height: 10),
+//                                     const SizedBox(
+//                                       width: 80,
+//                                       child: Text(
+//                                         'Loading...',
+//                                         style: TextStyle(
+//                                           fontFamily: 'Montserrat',
+//                                           fontSize: 12,
+//                                           fontWeight: FontWeight.w600,
+//                                           height: 16 / 14,
+//                                           color: Color(0xFF000000),
+//                                         ),
+//                                         textAlign: TextAlign.center,
+//                                         maxLines: 1,
+//                                         overflow: TextOverflow.ellipsis,
+//                                       ),
+//                                     ),
+//                                   ],
+//                                 ),
+//                               );
+//                             }
+//                           },
+//                         ),
+//
+//                         // Dynamic category from Firestore
+//                         Builder(
+//                           builder: (context) {
+//                             if (controller.featuredCategories.length > 1) {
+//                               final category = controller.featuredCategories[1];
+//                               final categoryIcon =
+//                                   _getCategoryIcon(category.title ?? '');
+//
+//                               return InkWell(
+//                                 onTap: () {
+//                                   Get.to(() => const MartCategoryDetailScreen(),
+//                                       arguments: {
+//                                         'categoryId': category.id ?? '',
+//                                         'categoryName':
+//                                             category.title ?? 'Category',
+//                                       });
+//                                 },
+//                                 borderRadius: BorderRadius.circular(20),
+//                                 child: Column(
+//                                   children: [
+//                                     Container(
+//                                       width: 45,
+//                                       height: 45,
+//                                       decoration: const BoxDecoration(
+//                                         color: Color(0xFF00998a),
+//                                         shape: BoxShape.circle,
+//                                       ),
+//                                       child: Icon(
+//                                         categoryIcon,
+//                                         color: Colors.white,
+//                                         size: 28,
+//                                       ),
+//                                     ),
+//                                     const SizedBox(height: 5),
+//                                     SizedBox(
+//                                       width: 80,
+//                                       child: Text(
+//                                         category.title ?? 'Category',
+//                                         style: const TextStyle(
+//                                           fontFamily: 'Montserrat',
+//                                           fontSize: 12,
+//                                           fontWeight: FontWeight.w600,
+//                                           height: 16 / 14,
+//                                           color: Color(0xFF000000),
+//                                         ),
+//                                         textAlign: TextAlign.center,
+//                                         maxLines: 2,
+//                                         overflow: TextOverflow.ellipsis,
+//                                       ),
+//                                     ),
+//                                   ],
+//                                 ),
+//                               );
+//                             } else {
+//                               // Fallback to default medicine icon
+//                               return InkWell(
+//                                 onTap: () {
+//                                   Get.to(() => const MartCategoryDetailScreen(),
+//                                       arguments: {
+//                                         'categoryId': 'default',
+//                                         'categoryName': 'Category',
+//                                       });
+//                                 },
+//                                 borderRadius: BorderRadius.circular(20),
+//                                 child: Column(
+//                                   children: [
+//                                     Container(
+//                                       width: 45,
+//                                       height: 45,
+//                                       decoration: const BoxDecoration(
+//                                         color: Color(0xFF00998a),
+//                                         shape: BoxShape.circle,
+//                                       ),
+//                                       child: const Icon(
+//                                         Icons.local_pharmacy,
+//                                         color: Colors.white,
+//                                         size: 28,
+//                                       ),
+//                                     ),
+//                                     const SizedBox(height: 10),
+//                                     const SizedBox(
+//                                       width: 80,
+//                                       child: Text(
+//                                         'Loading...',
+//                                         style: TextStyle(
+//                                           fontFamily: 'Montserrat',
+//                                           fontSize: 14,
+//                                           fontWeight: FontWeight.w600,
+//                                           height: 16 / 14,
+//                                           color: Color(0xFF000000),
+//                                         ),
+//                                         textAlign: TextAlign.center,
+//                                         maxLines: 1,
+//                                         overflow: TextOverflow.ellipsis,
+//                                       ),
+//                                     ),
+//                                   ],
+//                                 ),
+//                               );
+//                             }
+//                           },
+//                         ),
+//
+//                         // Dynamic category from Firestore
+//                         Builder(
+//                           builder: (context) {
+//                             if (controller.featuredCategories.length > 2) {
+//                               final category = controller.featuredCategories[2];
+//                               final categoryIcon =
+//                                   _getCategoryIcon(category.title ?? '');
+//
+//                               return InkWell(
+//                                 onTap: () {
+//                                   Get.to(() => const MartCategoryDetailScreen(),
+//                                       arguments: {
+//                                         'categoryId': category.id ?? '',
+//                                         'categoryName':
+//                                             category.title ?? 'Category',
+//                                       });
+//                                 },
+//                                 borderRadius: BorderRadius.circular(20),
+//                                 child: Column(
+//                                   children: [
+//                                     Container(
+//                                       width: 45,
+//                                       height: 45,
+//                                       decoration: const BoxDecoration(
+//                                         color: Color(0xFF00998a),
+//                                         shape: BoxShape.circle,
+//                                       ),
+//                                       child: Icon(
+//                                         categoryIcon,
+//                                         color: Colors.white,
+//                                         size: 28,
+//                                       ),
+//                                     ),
+//                                     const SizedBox(height: 5),
+//                                     SizedBox(
+//                                       width: 80,
+//                                       child: Text(
+//                                         category.title ?? 'Category',
+//                                         style: const TextStyle(
+//                                           fontFamily: 'Montserrat',
+//                                           fontSize: 12,
+//                                           fontWeight: FontWeight.w600,
+//                                           height: 16 / 18,
+//                                           color: Color(0xFF000000),
+//                                         ),
+//                                         textAlign: TextAlign.center,
+//                                         maxLines: 2,
+//                                         overflow: TextOverflow.ellipsis,
+//                                       ),
+//                                     ),
+//                                   ],
+//                                 ),
+//                               );
+//                             } else {
+//                               // Fallback to default pet icon
+//                               return InkWell(
+//                                 onTap: () {
+//                                   Get.to(() => const MartCategoryDetailScreen(),
+//                                       arguments: {
+//                                         'categoryId': 'default',
+//                                         'categoryName': 'Category',
+//                                       });
+//                                 },
+//                                 borderRadius: BorderRadius.circular(20),
+//                                 child: Column(
+//                                   children: [
+//                                     Container(
+//                                       width: 45,
+//                                       height: 45,
+//                                       decoration: const BoxDecoration(
+//                                         color: Color(0xFF00998a),
+//                                         shape: BoxShape.circle,
+//                                       ),
+//                                       child: const Icon(
+//                                         Icons.pets_outlined,
+//                                         color: Colors.white,
+//                                         size: 28,
+//                                       ),
+//                                     ),
+//                                     const SizedBox(height: 10),
+//                                     const SizedBox(
+//                                       width: 80,
+//                                       child: Text(
+//                                         'Loading...',
+//                                         style: TextStyle(
+//                                           fontFamily: 'Montserrat',
+//                                           fontSize: 14,
+//                                           fontWeight: FontWeight.w600,
+//                                           height: 16 / 14,
+//                                           color: Color(0xFF000000),
+//                                         ),
+//                                         textAlign: TextAlign.center,
+//                                         maxLines: 1,
+//                                         overflow: TextOverflow.ellipsis,
+//                                       ),
+//                                     ),
+//                                   ],
+//                                 ),
+//                               );
+//                             }
+//                           },
+//                         ),
+//                       ],
+//                     ),
+//                   );
+//                 },
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+//
+//   @override
+//   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
+//     return false;
+//   }
+// }
 
-  @override
-  double get maxExtent => 180.0;
-
+Widget searchWidgetMain() {
   /// Get appropriate icon for category based on name
   IconData _getCategoryIcon(String categoryName) {
     final name = categoryName.toLowerCase();
@@ -5880,477 +6469,451 @@ class _SearchAndCategoriesStickyDelegate
     }
   }
 
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Container(
-      width: 412,
-      height: 180,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            const Color(0xFFFAF9EE), // Custom cream color - top
-            const Color(0xFFFAF9EE), // Custom cream color - bottom
-          ],
-          stops: [0.0, 1.0], // 0% to 100%
-        ),
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(10),
-          bottomRight: Radius.circular(10),
-        ),
+  return Container(
+    // width: 412,
+    height: 190,
+    decoration: const BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          const Color(0xFFFAF9EE), // Custom cream color - top
+          const Color(0xFFFAF9EE), // Custom cream color - bottom
+        ],
+        stops: [0.0, 1.0], // 0% to 100%
       ),
-      child: Stack(
-        children: [
-          // Group 262 - Search Bar
-          Positioned(
-            left: 16,
-            right: 16,
-            top: 38, // Moved down by 10px
-            child: const MartSearchBar(
-              hintText: 'Search products, categories...',
-            ),
+      borderRadius: BorderRadius.only(
+        bottomLeft: Radius.circular(10),
+        bottomRight: Radius.circular(10),
+      ),
+    ),
+    child: Column(
+      children: [
+        SizedBox(
+          height: 20,
+        ),
+        // Group 262 - Search Bar
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: const MartSearchBar(
+            hintText: 'Search products, categories...',
           ),
-
-          // Group 327 - Dynamic Categories Row
-          Positioned(
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        Padding(
+          padding: const EdgeInsets.only(
             left: 16,
             right: 16,
-            top: 100,
-            child: GetX<MartController>(
-              builder: (controller) {
-                print('[MART HOME] ==========================================');
-                print('[MART HOME] 🏠 GetX triggered');
-                print('[MART HOME] 📊 Controller state:');
-                print(
-                    '[MART HOME]   - featuredCategories: ${controller.featuredCategories.length}');
-                print(
-                    '[MART HOME]   - isCategoryLoading: ${controller.isCategoryLoading.value}');
-                print(
-                    '[MART HOME]   - errorMessage: ${controller.errorMessage.value}');
-                print('[MART HOME] ==========================================');
-
-                // Load homepage categories if not already loaded
-                if (controller.featuredCategories.isEmpty &&
-                    !controller.isCategoryLoading.value &&
-                    !controller.isHomepageCategoriesLoaded.value) {
-                  print(
-                      '[MART HOME] 📞 Loading homepage categories from Firestore...');
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    print('[MART HOME] 🔄 PostFrameCallback executed');
-                    controller.loadHomepageCategoriesStreaming(limit: 6);
-                  });
-                }
-
-                if (controller.isCategoryLoading.value) {
-                  return SizedBox(
-                    height: 60,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: List.generate(
-                        3,
-                        (index) => Container(
-                          width: 28,
-                          height: 28,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                }
-
-                // Check for Firestore errors
-                if (controller.errorMessage.value.isNotEmpty) {
-                  print(
-                      '[MART HOME] ❌ Firestore error: ${controller.errorMessage.value}');
-                  return SizedBox(
-                    height: 80,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            'Error loading categories',
-                            style: TextStyle(
-                              fontFamily: 'Montserrat',
-                              fontSize: 12,
-                              color: Colors.red,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          ElevatedButton(
-                            onPressed: () {
-                              print(
-                                  '[MART HOME] 🔄 Retrying categories from Firestore...');
-                              controller.loadHomepageCategoriesStreaming(
-                                  limit: 6);
-                            },
-                            child: const Text('Retry'),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }
-
-                if (controller.featuredCategories.isEmpty) {
-                  // No categories loaded from Firestore
-                  print('[MART HOME] ⚠️ No categories loaded from Firestore');
-                  return const SizedBox(
-                    height: 80,
-                    child: Center(
-                      child: Text(
-                        'No categories available',
-                        style: TextStyle(
-                          fontFamily: 'Montserrat',
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ),
-                  );
-                }
-
-                // Debug: Log the number of categories and alignment being used
-                final categoryCount = controller.featuredCategories.length;
-                final alignment =
-                    categoryCount == 2 ? 'spaceBetween' : 'spaceEvenly';
-                print(
-                    '[MART HOME] 📊 Categories: $categoryCount, Alignment: $alignment');
-
-                // Default categories with fixed icons
+          ),
+          child: GetX<MartController>(
+            builder: (controller) {
+              if (controller.featuredCategories.isEmpty &&
+                  !controller.isCategoryLoading.value &&
+                  !controller.isHomepageCategoriesLoaded.value) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  controller.loadHomepageCategoriesStreaming(limit: 6);
+                });
+              }
+              if (controller.isCategoryLoading.value) {
                 return SizedBox(
-                  height: 80,
+                  height: 60,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      // Dynamic category from Firestore
-                      Builder(
-                        builder: (context) {
-                          if (controller.featuredCategories.isNotEmpty) {
-                            final category = controller.featuredCategories[0];
-                            final categoryIcon =
-                                _getCategoryIcon(category.title ?? '');
-
-                            return InkWell(
-                              onTap: () {
-                                Get.to(() => const MartCategoryDetailScreen(),
-                                    arguments: {
-                                      'categoryId': category.id ?? '',
-                                      'categoryName':
-                                          category.title ?? 'Category',
-                                    });
-                              },
-                              borderRadius: BorderRadius.circular(20),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    width: 45,
-                                    height: 45,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xFF00998a),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Icon(
-                                      categoryIcon,
-                                      color: Colors.white,
-                                      size: 28,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  SizedBox(
-                                    width: 80,
-                                    child: Text(
-                                      category.title ?? 'Category',
-                                      style: const TextStyle(
-                                        fontFamily: 'Montserrat',
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        height: 16 / 14,
-                                        color: Color(0xFF000000),
-                                      ),
-                                      textAlign: TextAlign.center,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          } else {
-                            // Fallback to default grocery icon
-                            return InkWell(
-                              onTap: () {
-                                Get.to(() => const MartCategoryDetailScreen(),
-                                    arguments: {
-                                      'categoryId': 'default',
-                                      'categoryName': 'Category',
-                                    });
-                              },
-                              borderRadius: BorderRadius.circular(20),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    width: 45,
-                                    height: 45,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xFF00998a),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(
-                                      Icons.category,
-                                      color: Colors.white,
-                                      size: 28,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  const SizedBox(
-                                    width: 80,
-                                    child: Text(
-                                      'Loading...',
-                                      style: TextStyle(
-                                        fontFamily: 'Montserrat',
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        height: 16 / 14,
-                                        color: Color(0xFF000000),
-                                      ),
-                                      textAlign: TextAlign.center,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-                        },
+                    children: List.generate(
+                      3,
+                      (index) => Container(
+                        width: 28,
+                        height: 28,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          shape: BoxShape.circle,
+                        ),
                       ),
-
-                      // Dynamic category from Firestore
-                      Builder(
-                        builder: (context) {
-                          if (controller.featuredCategories.length > 1) {
-                            final category = controller.featuredCategories[1];
-                            final categoryIcon =
-                                _getCategoryIcon(category.title ?? '');
-
-                            return InkWell(
-                              onTap: () {
-                                Get.to(() => const MartCategoryDetailScreen(),
-                                    arguments: {
-                                      'categoryId': category.id ?? '',
-                                      'categoryName':
-                                          category.title ?? 'Category',
-                                    });
-                              },
-                              borderRadius: BorderRadius.circular(20),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    width: 45,
-                                    height: 45,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xFF00998a),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Icon(
-                                      categoryIcon,
-                                      color: Colors.white,
-                                      size: 28,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  SizedBox(
-                                    width: 80,
-                                    child: Text(
-                                      category.title ?? 'Category',
-                                      style: const TextStyle(
-                                        fontFamily: 'Montserrat',
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        height: 16 / 14,
-                                        color: Color(0xFF000000),
-                                      ),
-                                      textAlign: TextAlign.center,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          } else {
-                            // Fallback to default medicine icon
-                            return InkWell(
-                              onTap: () {
-                                Get.to(() => const MartCategoryDetailScreen(),
-                                    arguments: {
-                                      'categoryId': 'default',
-                                      'categoryName': 'Category',
-                                    });
-                              },
-                              borderRadius: BorderRadius.circular(20),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    width: 45,
-                                    height: 45,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xFF00998a),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(
-                                      Icons.local_pharmacy,
-                                      color: Colors.white,
-                                      size: 28,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  const SizedBox(
-                                    width: 80,
-                                    child: Text(
-                                      'Loading...',
-                                      style: TextStyle(
-                                        fontFamily: 'Montserrat',
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        height: 16 / 14,
-                                        color: Color(0xFF000000),
-                                      ),
-                                      textAlign: TextAlign.center,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-                        },
-                      ),
-
-                      // Dynamic category from Firestore
-                      Builder(
-                        builder: (context) {
-                          if (controller.featuredCategories.length > 2) {
-                            final category = controller.featuredCategories[2];
-                            final categoryIcon =
-                                _getCategoryIcon(category.title ?? '');
-
-                            return InkWell(
-                              onTap: () {
-                                Get.to(() => const MartCategoryDetailScreen(),
-                                    arguments: {
-                                      'categoryId': category.id ?? '',
-                                      'categoryName':
-                                          category.title ?? 'Category',
-                                    });
-                              },
-                              borderRadius: BorderRadius.circular(20),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    width: 45,
-                                    height: 45,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xFF00998a),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Icon(
-                                      categoryIcon,
-                                      color: Colors.white,
-                                      size: 28,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  SizedBox(
-                                    width: 80,
-                                    child: Text(
-                                      category.title ?? 'Category',
-                                      style: const TextStyle(
-                                        fontFamily: 'Montserrat',
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        height: 16 / 14,
-                                        color: Color(0xFF000000),
-                                      ),
-                                      textAlign: TextAlign.center,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          } else {
-                            // Fallback to default pet icon
-                            return InkWell(
-                              onTap: () {
-                                Get.to(() => const MartCategoryDetailScreen(),
-                                    arguments: {
-                                      'categoryId': 'default',
-                                      'categoryName': 'Category',
-                                    });
-                              },
-                              borderRadius: BorderRadius.circular(20),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    width: 45,
-                                    height: 45,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xFF00998a),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(
-                                      Icons.pets,
-                                      color: Colors.white,
-                                      size: 28,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  const SizedBox(
-                                    width: 80,
-                                    child: Text(
-                                      'Loading...',
-                                      style: TextStyle(
-                                        fontFamily: 'Montserrat',
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        height: 16 / 14,
-                                        color: Color(0xFF000000),
-                                      ),
-                                      textAlign: TextAlign.center,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                    ],
+                    ),
                   ),
                 );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+              }
 
-  @override
-  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
-    return false;
-  }
+              // Check for Firestore errors
+              if (controller.errorMessage.value.isNotEmpty) {
+                print(
+                    '[MART HOME] ❌ Firestore error: ${controller.errorMessage.value}');
+                return SizedBox(
+                  height: 80,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Error loading categories',
+                          style: TextStyle(
+                            fontFamily: 'Montserrat',
+                            fontSize: 12,
+                            color: Colors.red,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        ElevatedButton(
+                          onPressed: () {
+                            print(
+                                '[MART HOME] 🔄 Retrying categories from Firestore...');
+                            controller.loadHomepageCategoriesStreaming(
+                                limit: 6);
+                          },
+                          child: const Text('Retry'),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+
+              if (controller.featuredCategories.isEmpty) {
+                // No categories loaded from Firestore
+                print('[MART HOME] ⚠️ No categories loaded from Firestore');
+                return const SizedBox(
+                  height: 80,
+                  child: Center(
+                    child: Text(
+                      'No categories available',
+                      style: TextStyle(
+                        fontFamily: 'Montserrat',
+                        fontSize: 12,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
+                );
+              }
+              // Debug: Log the number of categories and alignment being used
+              // final categoryCount = controller.featuredCategories.length;
+              // final alignment =
+              //     categoryCount == 2 ? 'spaceBetween' : 'spaceEvenly';
+
+              return SizedBox(
+                height: 90,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    // Dynamic category from Firestore
+                    Builder(
+                      builder: (context) {
+                        if (controller.featuredCategories.isNotEmpty) {
+                          final category = controller.featuredCategories[0];
+                          final categoryIcon =
+                              _getCategoryIcon(category.title ?? '');
+
+                          return InkWell(
+                            onTap: () {
+                              Get.to(() => const MartCategoryDetailScreen(),
+                                  arguments: {
+                                    'categoryId': category.id ?? '',
+                                    'categoryName':
+                                        category.title ?? 'Category',
+                                  });
+                            },
+                            borderRadius: BorderRadius.circular(20),
+                            child: Column(
+                              children: [
+                                Container(
+                                  width: 45,
+                                  height: 45,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFF00998a),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    categoryIcon,
+                                    color: Colors.white,
+                                    size: 28,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                SizedBox(
+                                  width: 80,
+                                  child: Text(
+                                    category.title ?? 'Category',
+                                    style: const TextStyle(
+                                      fontFamily: 'Montserrat',
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      // height: 16 / 14,
+                                      color: Color(0xFF000000),
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        } else {
+                          // Fallback to default grocery icon
+                          return InkWell(
+                            onTap: () {
+                              Get.to(() => const MartCategoryDetailScreen(),
+                                  arguments: {
+                                    'categoryId': 'default',
+                                    'categoryName': 'Category',
+                                  });
+                            },
+                            borderRadius: BorderRadius.circular(20),
+                            child: Column(
+                              children: [
+                                Container(
+                                  width: 45,
+                                  height: 45,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFF00998a),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.category,
+                                    color: Colors.white,
+                                    size: 28,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                const SizedBox(
+                                  width: 80,
+                                  child: Text(
+                                    'Loading...',
+                                    style: TextStyle(
+                                      fontFamily: 'Montserrat',
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      height: 16 / 14,
+                                      color: Color(0xFF000000),
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                      },
+                    ),
+
+                    // Dynamic category from Firestore
+                    Builder(
+                      builder: (context) {
+                        if (controller.featuredCategories.length > 1) {
+                          final category = controller.featuredCategories[1];
+                          final categoryIcon =
+                              _getCategoryIcon(category.title ?? '');
+
+                          return InkWell(
+                            onTap: () {
+                              Get.to(() => const MartCategoryDetailScreen(),
+                                  arguments: {
+                                    'categoryId': category.id ?? '',
+                                    'categoryName':
+                                        category.title ?? 'Category',
+                                  });
+                            },
+                            borderRadius: BorderRadius.circular(20),
+                            child: Column(
+                              children: [
+                                Container(
+                                  width: 45,
+                                  height: 45,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFF00998a),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    categoryIcon,
+                                    color: Colors.white,
+                                    size: 28,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                SizedBox(
+                                  width: 80,
+                                  child: Text(
+                                    category.title ?? 'Category',
+                                    style: const TextStyle(
+                                      fontFamily: 'Montserrat',
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      // height: 16 / 14,
+                                      color: Color(0xFF000000),
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        } else {
+                          // Fallback to default medicine icon
+                          return InkWell(
+                            onTap: () {
+                              Get.to(() => const MartCategoryDetailScreen(),
+                                  arguments: {
+                                    'categoryId': 'default',
+                                    'categoryName': 'Category',
+                                  });
+                            },
+                            borderRadius: BorderRadius.circular(20),
+                            child: Column(
+                              children: [
+                                Container(
+                                  width: 45,
+                                  height: 45,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFF00998a),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.local_pharmacy,
+                                    color: Colors.white,
+                                    size: 28,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                const SizedBox(
+                                  width: 80,
+                                  child: Text(
+                                    'Loading...',
+                                    style: TextStyle(
+                                      fontFamily: 'Montserrat',
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      height: 16 / 14,
+                                      color: Color(0xFF000000),
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                      },
+                    ),
+
+                    // Dynamic category from Firestore
+                    Builder(
+                      builder: (context) {
+                        if (controller.featuredCategories.length > 2) {
+                          final category = controller.featuredCategories[2];
+                          final categoryIcon =
+                              _getCategoryIcon(category.title ?? '');
+
+                          return InkWell(
+                            onTap: () {
+                              Get.to(() => const MartCategoryDetailScreen(),
+                                  arguments: {
+                                    'categoryId': category.id ?? '',
+                                    'categoryName':
+                                        category.title ?? 'Category',
+                                  });
+                            },
+                            borderRadius: BorderRadius.circular(20),
+                            child: Column(
+                              children: [
+                                Container(
+                                  width: 45,
+                                  height: 45,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFF00998a),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    categoryIcon,
+                                    color: Colors.white,
+                                    size: 28,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                SizedBox(
+                                  width: 80,
+                                  child: Text(
+                                    category.title ?? 'Category',
+                                    style: const TextStyle(
+                                      fontFamily: 'Montserrat',
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      // height: 16 / 18,
+                                      color: Color(0xFF000000),
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        } else {
+                          // Fallback to default pet icon
+                          return InkWell(
+                            onTap: () {
+                              Get.to(() => const MartCategoryDetailScreen(),
+                                  arguments: {
+                                    'categoryId': 'default',
+                                    'categoryName': 'Category',
+                                  });
+                            },
+                            borderRadius: BorderRadius.circular(20),
+                            child: Column(
+                              children: [
+                                Container(
+                                  width: 45,
+                                  height: 45,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFF00998a),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.pets_outlined,
+                                    color: Colors.white,
+                                    size: 28,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                const SizedBox(
+                                  width: 80,
+                                  child: Text(
+                                    'Loading...',
+                                    style: TextStyle(
+                                      fontFamily: 'Montserrat',
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      height: 16 / 14,
+                                      color: Color(0xFF000000),
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 // Helper method for user initials (keeping this one as it's still used)

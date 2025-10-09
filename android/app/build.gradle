@@ -59,7 +59,7 @@ android {
     defaultConfig {
         applicationId = "com.jippymart.customer"
         minSdkVersion = flutter.minSdkVersion
-        targetSdk = 34  // Android 14 - More stable for SDK compatibility
+        targetSdk = 36  // Android 14 - More stable for SDK compatibility
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

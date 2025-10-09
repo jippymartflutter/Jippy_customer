@@ -165,11 +165,9 @@ class CateringServiceScreen extends StatelessWidget {
                                       onChanged: (value) =>
                                           controller.updateGuestCounts(),
                                     ),
-
                                     // Meal Preference Radio
                                     _buildMealPreferenceRadio(
                                         controller: controller),
-
                                     // Veg/Non-Veg Counts
                                     if (controller.mealPreference ==
                                         'Both') ...[
@@ -199,7 +197,7 @@ class CateringServiceScreen extends StatelessWidget {
                                                   child: _buildTextField(
                                                     controller: controller
                                                         .vegCountController,
-                                                    label: 'No. of Veg',
+                                                    label: 'Veg',
                                                     keyboardType:
                                                         TextInputType.number,
                                                     icon: Icons.eco_outlined,
@@ -219,6 +217,8 @@ class CateringServiceScreen extends StatelessWidget {
                                                               0;
                                                       if (veg + nonveg !=
                                                           guests) {
+                                                        controller
+                                                            .showSnackBarInGustDistribution();
                                                         return 'Veg + Non-Veg must equal total guests';
                                                       }
                                                       return null;
@@ -230,7 +230,7 @@ class CateringServiceScreen extends StatelessWidget {
                                                   child: _buildTextField(
                                                     controller: controller
                                                         .nonvegCountController,
-                                                    label: 'No. of Non-Veg',
+                                                    label: 'Non-Veg',
                                                     keyboardType:
                                                         TextInputType.number,
                                                     icon: Icons

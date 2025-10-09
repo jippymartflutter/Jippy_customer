@@ -28,7 +28,7 @@ class MartProfileScreen extends StatelessWidget {
             slivers: [
               // App Bar
               SliverAppBar(
-                expandedHeight: 120,
+                expandedHeight: 75,
                 floating: false,
                 pinned: true,
                 backgroundColor: const Color(0xFF5D56F3),

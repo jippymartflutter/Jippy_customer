@@ -36,14 +36,24 @@ class CategoryServiceController extends GetxController {
   }
 
   void updateGuestCounts() {
-    final guests = int.tryParse(guestsController.text) ?? 0;
+    final guests = int.tryParse(guestsController.text) ?? '';
     if (mealPreference == 'Veg') {
       vegCountController.text = guests.toString();
-      nonvegCountController.text = '0';
+      nonvegCountController.text = '';
     } else if (mealPreference == 'Non-Veg') {
-      vegCountController.text = '0';
+      vegCountController.text = '';
       nonvegCountController.text = guests.toString();
     }
+  }
+
+  void showSnackBarInGustDistribution() {
+    Get.snackbar(
+      'Error',
+      'Veg + Non-Veg must equal total guests',
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
   }
 
   Future<void> selectDate({required BuildContext context}) async {
