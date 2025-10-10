@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:customer/app/category_service/category__service_screen.dart';
 import 'package:customer/app/mart/mart_category_detail_screen.dart';
 import 'package:customer/app/mart/mart_navigation_screen.dart';
 import 'package:customer/app/mart/mart_product_details_screen.dart';
@@ -50,13 +51,13 @@ class GlobalDeeplinkHandler {
 
   /// Listen to incoming deep links (app already running)
   void _listenToIncomingLinks() {
-    print('🔗 [GLOBAL_DEEPLINK] Listening for incoming deep links...');
+    print(' [GLOBAL_DEEPLINK] Listening for incoming deep links...');
   }
 
   /// Store a deep link for later processing
   void storeDeeplink(String url) {
     print('🔗 [GLOBAL_DEEPLINK] 🚀 storeDeeplink() called with URL: $url');
-
+    print(' [GLOBAL_DEEPLINK]  storeDeeplink() called with URL: $url');
     if (url.isEmpty) {
       print('🔗 [GLOBAL_DEEPLINK] ❌ Empty URL provided, skipping storage');
       return;
@@ -127,6 +128,7 @@ class GlobalDeeplinkHandler {
     }
   }
 
+//changed here
   /// Navigate to a specific deep link
   void navigateToLink(String link) {
     print('🔗 [GLOBAL_DEEPLINK] navigateToLink() called with: $link');
@@ -174,8 +176,20 @@ class GlobalDeeplinkHandler {
       } else {
         print('🔗 [GLOBAL_DEEPLINK] ❌ No restaurant ID found in URL');
       }
+    } else if (pathSegments.isNotEmpty && pathSegments[0] == 'catering') {
+      print('🔗 [GLOBAL_DEEPLINK] Catering link clicked, navigating...');
+      _navigateToCatering();
     } else {
       print('🔗 [GLOBAL_DEEPLINK] ❌ No matching route for: $link');
+    }
+  }
+
+  void _navigateToCatering() {
+    try {
+      print('🔗 [GLOBAL_DEEPLINK] Navigating to CateringServiceScreen');
+      Get.to(() => CateringServiceScreen()); // <-- your screen widget
+    } catch (e) {
+      print('❌ [GLOBAL_DEEPLINK] Error navigating to catering: $e');
     }
   }
 

@@ -56,6 +56,9 @@ class MartSubcategoriesSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          SizedBox(
+            height: 10,
+          ),
           // Section Title with item count
           GetX<MartController>(
             builder: (controller) {
@@ -86,8 +89,9 @@ class MartSubcategoriesSection extends StatelessWidget {
               );
             },
           ),
-          const SizedBox(height: 16),
-
+          SizedBox(
+            height: 10,
+          ),
           // Subcategories Grid with Pagination
           GetX<MartController>(
             builder: (controller) {
@@ -113,6 +117,7 @@ class MartSubcategoriesSection extends StatelessWidget {
                   // Subcategories Grid
                   if (homepageSubcategories.isNotEmpty)
                     GridView.builder(
+                      padding: EdgeInsets.zero,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       gridDelegate:

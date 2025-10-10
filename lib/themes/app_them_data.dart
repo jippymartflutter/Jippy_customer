@@ -11,7 +11,7 @@ class AppThemeData {
 
   static const Color surface = Color(0xFFF9FAFB);
   static const Color surfaceDark = Color(0xFF030712);
-  
+
   // Mart Home screen background color - reusable across all screens
   static const Color homeScreenBackground = Color(0xFFFAF9EE);
 
@@ -78,4 +78,8 @@ class AppThemeData {
   static const String regular = 'Outfit-Regular';
   static const String semiBold = 'Outfit-SemiBold';
   static const String thin = 'Outfit-Thin';
+  static const String montserrat = 'Montserrat';
+  static const String montserratRegular = 'Montserrat-Regular';
+
+  static const String googleSansCode = 'GoogleSansCode';
 }

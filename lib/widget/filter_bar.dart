@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+String capitalize(String s) =>
+    s.isNotEmpty ? '${s[0].toUpperCase()}${s.substring(1).toLowerCase()}' : s;
+
 enum FilterType { distance, priceLowToHigh, priceHighToLow, rating }
 
 class FilterBar extends StatelessWidget {
@@ -24,9 +27,11 @@ class FilterBar extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 4.0),
             child: ChoiceChip(
               label: Text(
-                filter.toString().split('.').last,
+                capitalize(filter.toString().split('.').last),
                 style: TextStyle(
-                  color: isSelected ? Colors.white : theme.textTheme.bodyMedium?.color,
+                  color: isSelected
+                      ? Colors.white
+                      : theme.textTheme.bodyMedium?.color,
                 ),
               ),
               selected: isSelected,
@@ -38,4 +43,4 @@ class FilterBar extends StatelessWidget {
       ),
     );
   }
-} 
+}

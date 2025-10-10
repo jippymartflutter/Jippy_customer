@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:customer/app/dash_board_screens/dash_board_controller.dart';
+import 'package:customer/app/category_service/controller/cetegory_service_controller.dart';
 import 'package:customer/app/dash_board_screens/dash_board_screen.dart';
 import 'package:customer/app/mart/mart_categories_screen.dart';
 import 'package:customer/app/mart/mart_category_detail_screen.dart';
@@ -11,6 +11,7 @@ import 'package:customer/app/mart/mart_navigation_screen.dart';
 import 'package:customer/app/mart/mart_product_details_screen.dart';
 import 'package:customer/app/restaurant_details_screen/restaurant_details_screen.dart';
 import 'package:customer/constant/constant.dart';
+import 'package:customer/app/dash_board_screens/controller/dash_board_controller.dart';
 import 'package:customer/models/mart_category_model.dart';
 import 'package:customer/services/global_deeplink_handler.dart';
 import 'package:customer/utils/fire_store_utils.dart';
@@ -102,6 +103,7 @@ class FinalDeepLinkService {
     }
   }
 
+//changed here true
   void _handleLink(String url) async {
     print('🔥🔥🔥 [FLUTTER] _handleLink() called with URL: $url');
     print('🔥🔥🔥 [FLUTTER] ===== DEEP LINK RECEIVED =====');
@@ -132,6 +134,21 @@ class FinalDeepLinkService {
 
     // Check if user is already logged in
     final isLoggedIn = await _checkUserLoginStatus();
+
+    final uri = Uri.parse(url);
+    final pathSegments = uri.pathSegments;
+    if (pathSegments.isNotEmpty && pathSegments[0] == 'catering') {
+      await Future.delayed(Duration(seconds: 2));
+      print('🔗 [GLOBAL_DEEPLINK] Catering link clicked, navigating...');
+      _navigateToCatering();
+    }
+    // if (pathSegments.isNotEmpty && pathSegments[0] == 'catering') {
+    //   print('🔗 [GLOBAL_DEEPLINK] Catering link clicked, navigating...');
+    //   WidgetsBinding.instance.addPostFrameCallback((_) {
+    //     _navigateToCatering();
+    //   });
+    // }
+
     if (isLoggedIn) {
       print(
           '🔥🔥🔥 [FLUTTER] User is logged in, processing deep link immediately');
@@ -709,15 +726,21 @@ class FinalDeepLinkService {
               '🔥 [NEW HANDLER] Custom scheme with restaurant prefix - Restaurant ID: $restaurantId');
           _navigateToRestaurantWithData(restaurantId);
           return;
-        } else if (pathSegments.length >= 2 &&
-            pathSegments[0] == 'categoriesservice') {
-          // Format: jippymart://restaurant/123
-          final restaurantId = pathSegments[1];
-          print(
-              '🔥 [NEW HANDLER] Custom scheme with restaurant prefix - Restaurant ID: $restaurantId');
-          _navigateToCateringService();
+        }
+        if (pathSegments.isNotEmpty && pathSegments[0] == 'catering') {
+          // print('🔗 [GLOBAL_DEEPLINK] Catering link clicked, navigating...');
+          // _navigateToCatering();
           return;
-        } else {
+        }
+        // else if (pathSegments.length >= 2 && pathSegments[0] == 'catering') {
+        //   // Format: jippymart://restaurant/123
+        //   final restaurantId = pathSegments[1];
+        //   print(
+        //       '🔥 [NEW HANDLER] Custom scheme with restaurant prefix - Restaurant ID: $restaurantId');
+        //   _navigateToCateringService();
+        //   return;
+        // }
+        else {
           // Format: jippymart://123 (direct product ID)
           productId = pathSegments[0];
           print(
@@ -748,16 +771,13 @@ class FinalDeepLinkService {
         return;
       } else if (pathSegments.length >= 2 && pathSegments[0] == 'categories') {
         final categoryId = pathSegments[1];
-        print(
-            '🔥 [NEW HANDLER] HTTPS scheme (plural) - Category ID: $categoryId');
+        print('🔥 ¸ $categoryId');
         _navigateToCategoryWithData(categoryId);
         return;
-      } else if (pathSegments.length >= 2 &&
-          pathSegments[0] == 'categoriesservice') {
-        print(
-          '🔥 categoriesservice ',
-        );
-        _navigateToCateringService();
+      }
+      if (pathSegments.isNotEmpty && pathSegments[0] == 'catering') {
+        // print('🔗 [GLOBAL_DEEPLINK] Catering link clicked, navigating...');
+        // _navigateToCatering();
         return;
       } else if (pathSegments.length >= 1) {
         // Direct product ID in path
@@ -840,6 +860,16 @@ class FinalDeepLinkService {
       }
     } else {
       print('❌ [NEW HANDLER] No product ID found in URL');
+    }
+  }
+
+  void _navigateToCatering() {
+    try {
+      print('🔗 [GLOBAL_DEEPLINK] Navigating to CateringServiceScreen ');
+      // Navigator.of(context).push(MaterialPageRoute(builder: (context)=>CateringServiceScreen()))
+      Get.to(() => CateringServiceScreen()); // <-- your screen widget
+    } catch (e) {
+      print('❌ [GLOBAL_DEEPLINK] Error navigating to catering: $e');
     }
   }
 

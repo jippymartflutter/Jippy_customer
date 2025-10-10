@@ -9,7 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class CategoryServiceController extends GetxController {
-  String baseUrl = 'https://customer.jippymart.in/api/catering/';
+  String baseUrl = 'https://jippymart.in/api/catering/';
   @override
   void onInit() {
     super.onInit();
@@ -36,14 +36,24 @@ class CategoryServiceController extends GetxController {
   }
 
   void updateGuestCounts() {
-    final guests = int.tryParse(guestsController.text) ?? 0;
+    final guests = int.tryParse(guestsController.text) ?? '';
     if (mealPreference == 'Veg') {
       vegCountController.text = guests.toString();
-      nonvegCountController.text = '0';
+      nonvegCountController.text = '';
     } else if (mealPreference == 'Non-Veg') {
-      vegCountController.text = '0';
+      vegCountController.text = '';
       nonvegCountController.text = guests.toString();
     }
+  }
+
+  void showSnackBarInGustDistribution() {
+    Get.snackbar(
+      'Error',
+      'Veg + Non-Veg must equal total guests',
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
   }
 
   Future<void> selectDate({required BuildContext context}) async {
@@ -78,7 +88,10 @@ class CategoryServiceController extends GetxController {
     );
   }
 
-  void showSuccessDialog({required BuildContext context, String message = ''}) {
+  void showSuccessDialog(
+      {required BuildContext context,
+      String message = '',
+      void Function()? onPressed}) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -92,7 +105,7 @@ class CategoryServiceController extends GetxController {
           actions: [
             TextButton(
               child: const Text('OK'),
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: onPressed,
             ),
           ],
         );
@@ -145,17 +158,13 @@ class CategoryServiceController extends GetxController {
       print("${response.body} ${response.statusCode} submitCateringRequest ");
 
       if (response.statusCode == 201 || response.statusCode == 200) {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-            builder: (context) => VideoSplashScreen(),
-          ),
-          (Route<dynamic> route) => false, // condition to stop removing
-        );
-        // Navigator.of(context).push(
+        // Navigator.of(context).pushAndRemoveUntil(
         //   MaterialPageRoute(
-        //     builder: (context) => DashBoardScreen(),
+        //     builder: (context) => VideoSplashScreen(),
         //   ),
+        //   (Route<dynamic> route) => false, // condition to stop removing
         // );
+
         return {
           'success': true,
           'message': 'Catering request submitted successfully!',
@@ -258,10 +267,25 @@ class CategoryServiceController extends GetxController {
       print("$result final result ");
       if (result['success']) {
         // Success flow
+        // Navigator.of(context).pushAndRemoveUntil(
+        //   MaterialPageRoute(
+        //     builder: (context) => VideoSplashScreen(),
+        //   ),
+        //   (Route<dynamic> route) => false, // condition to stop removing
+        // );
         showSuccessDialog(
-          message: result['message'],
-          context: context,
-        );
+            message: result['message'],
+            context: context,
+            onPressed: () {
+              Get.back();
+              Get.back();
+              // Navigator.of(context).pushAndRemoveUntil(
+              //   MaterialPageRoute(
+              //     builder: (context) => VideoSplashScreen(),
+              //   ),
+              //   (Route<dynamic> route) => false, // condition to stop removing
+              // );
+            });
         resetForm();
       } else {
         // Error flow

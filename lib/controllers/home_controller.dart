@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:customer/constant/constant.dart';
-import 'package:customer/controllers/dash_board_controller.dart';
+import 'package:customer/app/dash_board_screens/controller/dash_board_controller.dart';
 import 'package:customer/models/BannerModel.dart';
 import 'package:customer/models/advertisement_model.dart';
 import 'package:customer/models/coupon_model.dart';
@@ -95,37 +95,69 @@ class HomeController extends GetxController {
 
   void startBannerTimer() {
     _bannerTimer?.cancel();
-    _bannerTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
-      // Check if controller is still valid and widget is mounted
+    _bannerTimer = Timer.periodic(const Duration(seconds: 3), (timer) async {
       if (!Get.isRegistered<HomeController>() ||
           !pageController.value.hasClients) {
         timer.cancel();
         return;
       }
 
-      if (bannerModel.isNotEmpty) {
-        if (currentPage.value < bannerModel.length - 1) {
-          currentPage.value++;
-        } else {
-          currentPage.value = 0;
-        }
+      if (bannerModel.isEmpty) return;
 
-        // Only animate if attached
+      int nextPage = currentPage.value + 1;
+
+      if (nextPage >= bannerModel.length) {
+        // Instead of animating back to 0, jump instantly without animation
+        pageController.value.jumpToPage(0);
+        currentPage.value = 0;
+      } else {
+        currentPage.value = nextPage;
         try {
-          if (pageController.value.hasClients) {
-            pageController.value.animateToPage(
-              currentPage.value,
-              duration: const Duration(milliseconds: 500),
-              curve: Curves.easeInOut,
-            );
-          }
+          await pageController.value.animateToPage(
+            currentPage.value,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+          );
         } catch (e) {
-          // If any error occurs, cancel the timer
           timer.cancel();
         }
       }
     });
   }
+
+  // void startBannerTimer() {
+  //   _bannerTimer?.cancel();
+  //   _bannerTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
+  //     // Check if controller is still valid and widget is mounted
+  //     if (!Get.isRegistered<HomeController>() ||
+  //         !pageController.value.hasClients) {
+  //       timer.cancel();
+  //       return;
+  //     }
+  //
+  //     if (bannerModel.isNotEmpty) {
+  //       if (currentPage.value < bannerModel.length - 1) {
+  //         currentPage.value++;
+  //       } else {
+  //         currentPage.value = 0;
+  //       }
+  //
+  //       // Only animate if attached
+  //       try {
+  //         if (pageController.value.hasClients) {
+  //           pageController.value.animateToPage(
+  //             currentPage.value,
+  //             duration: const Duration(milliseconds: 500),
+  //             curve: Curves.easeInOut,
+  //           );
+  //         }
+  //       } catch (e) {
+  //         // If any error occurs, cancel the timer
+  //         timer.cancel();
+  //       }
+  //     }
+  //   });
+  // }
 
   void stopBannerTimer() {
     _bannerTimer?.cancel();
@@ -168,7 +200,9 @@ class HomeController extends GetxController {
         _loadFavorites(),
         _loadRestaurantsAndRelatedData(),
       ]);
+      // startBannerTimer();
       print('[DEBUG] All parallel data fetch completed');
+
       setLoading();
     });
   }
@@ -208,7 +242,10 @@ class HomeController extends GetxController {
             '[BANNER_LOADING] Bottom banner details: ${value.map((b) => '${b.title} (Zone: ${b.zoneId})').join(', ')}');
       }),
     ]);
-
+    // ✅ Start timer AFTER banners are loaded and only if not empty
+    if (bannerModel.isNotEmpty) {
+      startBannerTimer();
+    }
     print(
         '[BANNER_LOADING] Total banners loaded - Top: ${bannerModel.length}, Bottom: ${bannerBottomModel.length}');
   }

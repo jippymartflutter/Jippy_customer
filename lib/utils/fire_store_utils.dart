@@ -12,7 +12,7 @@ import 'package:customer/constant/collection_name.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
 import 'package:customer/controllers/gift_cards_model.dart';
-import 'package:customer/controllers/dash_board_controller.dart';
+import 'package:customer/app/dash_board_screens/controller/dash_board_controller.dart';
 import 'package:customer/models/AttributesModel.dart';
 import 'package:customer/models/BannerModel.dart';
 import 'package:customer/models/admin_commission.dart';
@@ -77,7 +77,8 @@ class FireStoreUtils {
   static const Duration _errorResetTime = Duration(minutes: 5);
   static DateTime? _lastErrorTime;
 
-  static String? backendUserId; // Set this from LoginController after OTP verification
+  static String?
+      backendUserId; // Set this from LoginController after OTP verification
 
   // **CRITICAL: Database health check**
   static bool get isDatabaseHealthy => _isDatabaseHealthy;
@@ -89,7 +90,8 @@ class FireStoreUtils {
     if (_consecutiveErrors >= _maxConsecutiveErrors) {
       _isDatabaseHealthy = false;
       if (kDebugMode) {
-        print('CRITICAL: Database marked as unhealthy due to $_consecutiveErrors consecutive errors');
+        print(
+            'CRITICAL: Database marked as unhealthy due to $_consecutiveErrors consecutive errors');
       }
     }
   }
@@ -103,7 +105,8 @@ class FireStoreUtils {
   }
 
   // **CRITICAL: Safe Firestore operation wrapper with retry mechanism**
-  static Future<T> _safeFirestoreOperation<T>(Future<T> Function() operation, {int maxRetries = 3}) async {
+  static Future<T> _safeFirestoreOperation<T>(Future<T> Function() operation,
+      {int maxRetries = 3}) async {
     int retryCount = 0;
 
     while (retryCount < maxRetries) {
@@ -118,7 +121,8 @@ class FireStoreUtils {
           const Duration(seconds: 5), // **ANR FIX: Reduced from 10s to 5s**
           onTimeout: () {
             _recordError();
-            throw TimeoutException('Firestore operation timed out', const Duration(seconds: 5));
+            throw TimeoutException(
+                'Firestore operation timed out', const Duration(seconds: 5));
           },
         );
 
@@ -130,15 +134,14 @@ class FireStoreUtils {
         _recordError();
 
         if (kDebugMode) {
-          print('ERROR: Firestore operation failed (attempt $retryCount/$maxRetries): $e');
+          print(
+              'ERROR: Firestore operation failed (attempt $retryCount/$maxRetries): $e');
         }
 
         // Log to Crashlytics for production monitoring
-        FirebaseCrashlytics.instance.recordError(
-            e,
-            StackTrace.current,
-            reason: 'Firestore operation failed - attempt $retryCount/$maxRetries'
-        );
+        FirebaseCrashlytics.instance.recordError(e, StackTrace.current,
+            reason:
+                'Firestore operation failed - attempt $retryCount/$maxRetries');
 
         // Don't retry on certain errors
         if (e.toString().contains('PERMISSION_DENIED') ||
@@ -177,7 +180,9 @@ class FireStoreUtils {
     }
 
     // Try to get from Constant.userModel if available
-    if (Constant.userModel != null && Constant.userModel!.id != null && Constant.userModel!.id!.isNotEmpty) {
+    if (Constant.userModel != null &&
+        Constant.userModel!.id != null &&
+        Constant.userModel!.id!.isNotEmpty) {
       if (kDebugMode) {
         log('[FireStoreUtils] Using Constant.userModel.id: ${Constant.userModel!.id}');
       }
@@ -209,7 +214,7 @@ class FireStoreUtils {
     bool isExist = false;
 
     await fireStore.collection(CollectionName.users).doc(uid).get().then(
-          (value) {
+      (value) {
         if (value.exists) {
           isExist = true;
         } else {
@@ -232,13 +237,15 @@ class FireStoreUtils {
       }
 
       log('getUserProfile: Fetching user with UUID: $uuid');
-      DocumentSnapshot<Map<String, dynamic>> userDocument = await fireStore.collection(CollectionName.users).doc(uuid).get();
+      DocumentSnapshot<Map<String, dynamic>> userDocument =
+          await fireStore.collection(CollectionName.users).doc(uuid).get();
 
       log('getUserProfile: Document exists: ${userDocument.exists}');
       log('getUserProfile: Document data: ${userDocument.data()}');
 
       if (userDocument.data() != null) {
-        Map<String, dynamic> data = Map<String, dynamic>.from(userDocument.data()!);
+        Map<String, dynamic> data =
+            Map<String, dynamic>.from(userDocument.data()!);
         data['id'] = uuid;
 
         log('getUserProfile: Raw data before processing: $data');
@@ -254,7 +261,8 @@ class FireStoreUtils {
                 } else if (item is String) {
                   // Handle case where item is a string (JSON)
                   try {
-                    Map<String, dynamic> addressMap = Map<String, dynamic>.from(json.decode(item));
+                    Map<String, dynamic> addressMap =
+                        Map<String, dynamic>.from(json.decode(item));
                     addresses.add(addressMap);
                   } catch (e) {
                     log('Error parsing shipping address string: $e');
@@ -263,10 +271,13 @@ class FireStoreUtils {
               }
               data['shippingAddress'] = addresses;
             } else if (data['shippingAddress'] is Map) {
-              data['shippingAddress'] = [Map<String, dynamic>.from(data['shippingAddress'])];
+              data['shippingAddress'] = [
+                Map<String, dynamic>.from(data['shippingAddress'])
+              ];
             } else if (data['shippingAddress'] is String) {
               try {
-                Map<String, dynamic> addressMap = Map<String, dynamic>.from(json.decode(data['shippingAddress']));
+                Map<String, dynamic> addressMap = Map<String, dynamic>.from(
+                    json.decode(data['shippingAddress']));
                 data['shippingAddress'] = [addressMap];
               } catch (e) {
                 log('Error parsing shipping address string: $e');
@@ -282,7 +293,8 @@ class FireStoreUtils {
           // Ensure wallet_amount is a number
           if (data['wallet_amount'] != null) {
             if (data['wallet_amount'] is String) {
-              data['wallet_amount'] = double.tryParse(data['wallet_amount']) ?? 0.0;
+              data['wallet_amount'] =
+                  double.tryParse(data['wallet_amount']) ?? 0.0;
             } else if (data['wallet_amount'] is num) {
               data['wallet_amount'] = (data['wallet_amount'] as num).toDouble();
             } else {
@@ -294,10 +306,14 @@ class FireStoreUtils {
 
           // Ensure all required fields have proper types
           data['active'] = data['active'] is bool ? data['active'] : false;
-          data['isActive'] = data['isActive'] is bool ? data['isActive'] : false;
-          data['isDocumentVerify'] = data['isDocumentVerify'] is bool ? data['isDocumentVerify'] : false;
+          data['isActive'] =
+              data['isActive'] is bool ? data['isActive'] : false;
+          data['isDocumentVerify'] = data['isDocumentVerify'] is bool
+              ? data['isDocumentVerify']
+              : false;
           data['role'] = data['role']?.toString() ?? 'customer';
-          data['appIdentifier'] = data['appIdentifier']?.toString() ?? 'android';
+          data['appIdentifier'] =
+              data['appIdentifier']?.toString() ?? 'android';
           data['provider'] = data['provider']?.toString() ?? 'email';
 
           log('getUserProfile: Processed user data: $data');
@@ -325,8 +341,8 @@ class FireStoreUtils {
       if (value != null) {
         UserModel userModel = value;
         userModel.walletAmount =
-        (double.parse(userModel.walletAmount.toString()) +
-            double.parse(amount));
+            (double.parse(userModel.walletAmount.toString()) +
+                double.parse(amount));
         await FireStoreUtils.updateUser(userModel).then((value) {
           isAdded = value;
         });
@@ -367,7 +383,7 @@ class FireStoreUtils {
         .then((value) {
       for (var element in value.docs) {
         OnBoardingModel documentModel =
-        OnBoardingModel.fromJson(element.data());
+            OnBoardingModel.fromJson(element.data());
         onBoardingModel.add(documentModel);
       }
     }).catchError((error) {
@@ -383,21 +399,23 @@ class FireStoreUtils {
         .where("zoneId", isEqualTo: Constant.selectedZone!.id.toString())
         .get();
     await Future.forEach(currencyQuery.docs,
-            (QueryDocumentSnapshot<Map<String, dynamic>> document) {
-          try {
-            log(document.data().toString());
-            VendorModel vendorModel = VendorModel.fromJson(document.data());
-            
-            // **FOOD CATEGORY FILTERING: Exclude mart vendors**
-            if (vendorModel.vType == null || vendorModel.vType!.toLowerCase() != 'mart') {
-              giftCardModelList.add(vendorModel);
-            } else {
-              print('🔍 Mart vendor excluded from getVendors: ${vendorModel.title}');
-            }
-          } catch (e) {
-            debugPrint('FireStoreUtils.get Currency Parse error $e');
-          }
-        });
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+      try {
+        log(document.data().toString());
+        VendorModel vendorModel = VendorModel.fromJson(document.data());
+
+        // **FOOD CATEGORY FILTERING: Exclude mart vendors**
+        if (vendorModel.vType == null ||
+            vendorModel.vType!.toLowerCase() != 'mart') {
+          giftCardModelList.add(vendorModel);
+        } else {
+          print(
+              '🔍 Mart vendor excluded from getVendors: ${vendorModel.title}');
+        }
+      } catch (e) {
+        debugPrint('FireStoreUtils.get Currency Parse error $e');
+      }
+    });
     return giftCardModelList;
   }
 
@@ -425,7 +443,7 @@ class FireStoreUtils {
           .get()
           .then((value) {
         Constant.isSubscriptionModelApplied =
-        value.data()!['subscription_model'];
+            value.data()!['subscription_model'];
       });
 
       fireStore
@@ -707,7 +725,7 @@ class FireStoreUtils {
         .then((value) {
       for (var element in value.docs) {
         WalletTransactionModel walletTransactionModel =
-        WalletTransactionModel.fromJson(element.data());
+            WalletTransactionModel.fromJson(element.data());
         walletTransactionList.add(walletTransactionModel);
       }
     }).catchError((error) {
@@ -735,7 +753,7 @@ class FireStoreUtils {
         .then((value) async {
       if (value.exists) {
         MercadoPagoModel mercadoPagoModel =
-        MercadoPagoModel.fromJson(value.data()!);
+            MercadoPagoModel.fromJson(value.data()!);
         await Preferences.setString(
             Preferences.mercadoPago, jsonEncode(mercadoPagoModel.toJson()));
       }
@@ -769,7 +787,7 @@ class FireStoreUtils {
         .then((value) async {
       if (value.exists) {
         FlutterWaveModel flutterWaveModel =
-        FlutterWaveModel.fromJson(value.data()!);
+            FlutterWaveModel.fromJson(value.data()!);
         await Preferences.setString(
             Preferences.flutterWave, jsonEncode(flutterWaveModel.toJson()));
       }
@@ -803,7 +821,7 @@ class FireStoreUtils {
         .then((value) async {
       if (value.exists) {
         WalletSettingModel walletSettingModel =
-        WalletSettingModel.fromJson(value.data()!);
+            WalletSettingModel.fromJson(value.data()!);
         await Preferences.setString(Preferences.walletSettings,
             jsonEncode(walletSettingModel.toJson()));
       }
@@ -826,7 +844,7 @@ class FireStoreUtils {
         .then((value) async {
       if (value.exists) {
         CodSettingModel codSettingModel =
-        CodSettingModel.fromJson(value.data()!);
+            CodSettingModel.fromJson(value.data()!);
         await Preferences.setString(
             Preferences.codSettings, jsonEncode(codSettingModel.toJson()));
       }
@@ -894,29 +912,33 @@ class FireStoreUtils {
       {bool? isDining}) async* {
     try {
       getNearestVendorController =
-      StreamController<List<VendorModel>>.broadcast();
+          StreamController<List<VendorModel>>.broadcast();
       List<VendorModel> vendorList = [];
 
       // **DEBUG: Check zone availability**
       if (Constant.selectedZone == null) {
-        print('[DEBUG] getAllNearestRestaurant: No zone selected, cannot load restaurants');
+        print(
+            '[DEBUG] getAllNearestRestaurant: No zone selected, cannot load restaurants');
         getNearestVendorController!.sink.add([]);
         yield* getNearestVendorController!.stream;
         return;
       }
 
-      print('[DEBUG] getAllNearestRestaurant: Loading restaurants for zone: ${Constant.selectedZone!.name} (${Constant.selectedZone!.id})');
-      print('[DEBUG] getAllNearestRestaurant: User location: ${Constant.selectedLocation.location?.latitude}, ${Constant.selectedLocation.location?.longitude}');
-      print('[DEBUG] getAllNearestRestaurant: Search radius: ${Constant.radius}km');
+      print(
+          '[DEBUG] getAllNearestRestaurant: Loading restaurants for zone: ${Constant.selectedZone!.name} (${Constant.selectedZone!.id})');
+      print(
+          '[DEBUG] getAllNearestRestaurant: User location: ${Constant.selectedLocation.location?.latitude}, ${Constant.selectedLocation.location?.longitude}');
+      print(
+          '[DEBUG] getAllNearestRestaurant: Search radius: ${Constant.radius}km');
 
       Query<Map<String, dynamic>> query = isDining == true
           ? fireStore
-          .collection(CollectionName.vendors)
-          .where('zoneId', isEqualTo: Constant.selectedZone!.id.toString())
-          .where("enabledDiveInFuture", isEqualTo: true)
+              .collection(CollectionName.vendors)
+              .where('zoneId', isEqualTo: Constant.selectedZone!.id.toString())
+              .where("enabledDiveInFuture", isEqualTo: true)
           : fireStore
-          .collection(CollectionName.vendors)
-          .where('zoneId', isEqualTo: Constant.selectedZone!.id.toString());
+              .collection(CollectionName.vendors)
+              .where('zoneId', isEqualTo: Constant.selectedZone!.id.toString());
 
       GeoFirePoint center = Geoflutterfire().point(
           latitude: Constant.selectedLocation.location!.latitude ?? 0.0,
@@ -926,14 +948,15 @@ class FireStoreUtils {
       Stream<List<DocumentSnapshot>> stream = Geoflutterfire()
           .collection(collectionRef: query)
           .within(
-          center: center,
-          radius: double.parse(Constant.radius),
-          field: field,
-          strictMode: true);
+              center: center,
+              radius: double.parse(Constant.radius),
+              field: field,
+              strictMode: true);
 
       stream.listen((List<DocumentSnapshot> documentList) async {
         vendorList.clear();
-        print('[DEBUG] getAllNearestRestaurant: Found ${documentList.length} restaurants in Firestore query');
+        print(
+            '[DEBUG] getAllNearestRestaurant: Found ${documentList.length} restaurants in Firestore query');
 
         for (var document in documentList) {
           try {
@@ -941,43 +964,53 @@ class FireStoreUtils {
             VendorModel vendorModel = VendorModel.fromJson(data);
 
             // **DEBUG: Log restaurant details**
-            print('[DEBUG] Restaurant: ${vendorModel.title} (ID: ${vendorModel.id}) - Zone: ${vendorModel.zoneId}');
+            print(
+                '[DEBUG] Restaurant: ${vendorModel.title} (ID: ${vendorModel.id}) - Zone: ${vendorModel.zoneId}');
 
             if ((Constant.isSubscriptionModelApplied == true ||
-                Constant.adminCommission?.isEnabled == true) &&
+                    Constant.adminCommission?.isEnabled == true) &&
                 vendorModel.subscriptionPlan != null) {
               if (vendorModel.subscriptionTotalOrders == "-1") {
                 vendorList.add(vendorModel);
-                print('[DEBUG] Restaurant added (unlimited subscription): ${vendorModel.title}');
+                print(
+                    '[DEBUG] Restaurant added (unlimited subscription): ${vendorModel.title}');
               } else {
                 if ((vendorModel.subscriptionExpiryDate != null &&
-                    vendorModel.subscriptionExpiryDate!
-                        .toDate()
-                        .isBefore(DateTime.now()) ==
-                        false) ||
+                        vendorModel.subscriptionExpiryDate!
+                                .toDate()
+                                .isBefore(DateTime.now()) ==
+                            false) ||
                     vendorModel.subscriptionPlan?.expiryDay == "-1") {
                   if (vendorModel.subscriptionTotalOrders != '0') {
                     // **FOOD CATEGORY FILTERING: Exclude mart vendors**
-                    if (vendorModel.vType == null || vendorModel.vType!.toLowerCase() != 'mart') {
+                    if (vendorModel.vType == null ||
+                        vendorModel.vType!.toLowerCase() != 'mart') {
                       vendorList.add(vendorModel);
-                      print('[DEBUG] Restaurant added (valid subscription): ${vendorModel.title}');
+                      print(
+                          '[DEBUG] Restaurant added (valid subscription): ${vendorModel.title}');
                     } else {
-                      print('[DEBUG] Mart vendor excluded from FOOD category: ${vendorModel.title}');
+                      print(
+                          '[DEBUG] Mart vendor excluded from FOOD category: ${vendorModel.title}');
                     }
                   } else {
-                    print('[DEBUG] Restaurant filtered out (subscription orders exhausted): ${vendorModel.title}');
+                    print(
+                        '[DEBUG] Restaurant filtered out (subscription orders exhausted): ${vendorModel.title}');
                   }
                 } else {
-                  print('[DEBUG] Restaurant filtered out (subscription expired): ${vendorModel.title}');
+                  print(
+                      '[DEBUG] Restaurant filtered out (subscription expired): ${vendorModel.title}');
                 }
               }
             } else {
               // **FOOD CATEGORY FILTERING: Exclude mart vendors**
-              if (vendorModel.vType == null || vendorModel.vType!.toLowerCase() != 'mart') {
+              if (vendorModel.vType == null ||
+                  vendorModel.vType!.toLowerCase() != 'mart') {
                 vendorList.add(vendorModel);
-                print('[DEBUG] Restaurant added (no subscription filter): ${vendorModel.title}');
+                print(
+                    '[DEBUG] Restaurant added (no subscription filter): ${vendorModel.title}');
               } else {
-                print('[DEBUG] Mart vendor excluded from FOOD category: ${vendorModel.title}');
+                print(
+                    '[DEBUG] Mart vendor excluded from FOOD category: ${vendorModel.title}');
               }
             }
           } catch (e) {
@@ -985,7 +1018,8 @@ class FireStoreUtils {
           }
         }
 
-        print('[DEBUG] getAllNearestRestaurant: Final result: ${vendorList.length} restaurants after filtering');
+        print(
+            '[DEBUG] getAllNearestRestaurant: Final result: ${vendorList.length} restaurants after filtering');
         getNearestVendorController!.sink.add(vendorList);
       }, onError: (error) {
         print('[DEBUG] getAllNearestRestaurant: Stream error: $error');
@@ -998,7 +1032,8 @@ class FireStoreUtils {
 
       // **FALLBACK: Try to load restaurants without zone filtering if main query fails**
       try {
-        print('[DEBUG] getAllNearestRestaurant: Attempting fallback query without zone filtering');
+        print(
+            '[DEBUG] getAllNearestRestaurant: Attempting fallback query without zone filtering');
         List<VendorModel> fallbackVendorList = [];
 
         final fallbackQuery = fireStore
@@ -1006,29 +1041,34 @@ class FireStoreUtils {
             .limit(50); // Limit to prevent huge queries
 
         final fallbackSnapshot = await fallbackQuery.get();
-        print('[DEBUG] getAllNearestRestaurant: Fallback query found ${fallbackSnapshot.docs.length} restaurants');
+        print(
+            '[DEBUG] getAllNearestRestaurant: Fallback query found ${fallbackSnapshot.docs.length} restaurants');
 
         for (var document in fallbackSnapshot.docs) {
           try {
             final data = document.data();
             VendorModel vendorModel = VendorModel.fromJson(data);
-            
+
             // **FOOD CATEGORY FILTERING: Exclude mart vendors from fallback query too**
-            if (vendorModel.vType == null || vendorModel.vType!.toLowerCase() != 'mart') {
+            if (vendorModel.vType == null ||
+                vendorModel.vType!.toLowerCase() != 'mart') {
               fallbackVendorList.add(vendorModel);
             } else {
-              print('[DEBUG] Mart vendor excluded from fallback FOOD category: ${vendorModel.title}');
+              print(
+                  '[DEBUG] Mart vendor excluded from fallback FOOD category: ${vendorModel.title}');
             }
           } catch (e) {
             print('[DEBUG] Error parsing fallback restaurant data: $e');
           }
         }
 
-        print('[DEBUG] getAllNearestRestaurant: Fallback result: ${fallbackVendorList.length} restaurants');
+        print(
+            '[DEBUG] getAllNearestRestaurant: Fallback result: ${fallbackVendorList.length} restaurants');
         getNearestVendorController!.sink.add(fallbackVendorList);
         yield* getNearestVendorController!.stream;
       } catch (fallbackError) {
-        print('[DEBUG] getAllNearestRestaurant: Fallback query also failed: $fallbackError');
+        print(
+            '[DEBUG] getAllNearestRestaurant: Fallback query also failed: $fallbackError');
         getNearestVendorController!.sink.add([]);
         yield* getNearestVendorController!.stream;
       }
@@ -1036,13 +1076,13 @@ class FireStoreUtils {
   }
 
   static StreamController<List<VendorModel>>?
-  getNearestVendorByCategoryController;
+      getNearestVendorByCategoryController;
 
   static Stream<List<VendorModel>> getAllNearestRestaurantByCategoryId(
       {bool? isDining, required String categoryId}) async* {
     try {
       getNearestVendorByCategoryController =
-      StreamController<List<VendorModel>>.broadcast();
+          StreamController<List<VendorModel>>.broadcast();
       List<VendorModel> vendorList = [];
 
       // Debug log the category ID we're searching for
@@ -1050,12 +1090,12 @@ class FireStoreUtils {
 
       Query<Map<String, dynamic>> query = isDining == true
           ? fireStore
-          .collection(CollectionName.vendors)
-          .where('zoneId', isEqualTo: Constant.selectedZone!.id.toString())
-          .where("enabledDiveInFuture", isEqualTo: true)
+              .collection(CollectionName.vendors)
+              .where('zoneId', isEqualTo: Constant.selectedZone!.id.toString())
+              .where("enabledDiveInFuture", isEqualTo: true)
           : fireStore
-          .collection(CollectionName.vendors)
-          .where('zoneId', isEqualTo: Constant.selectedZone!.id.toString());
+              .collection(CollectionName.vendors)
+              .where('zoneId', isEqualTo: Constant.selectedZone!.id.toString());
 
       GeoFirePoint center = Geoflutterfire().point(
           latitude: Constant.selectedLocation.location!.latitude ?? 0.0,
@@ -1065,10 +1105,10 @@ class FireStoreUtils {
       Stream<List<DocumentSnapshot>> stream = Geoflutterfire()
           .collection(collectionRef: query)
           .within(
-          center: center,
-          radius: double.parse(Constant.radius),
-          field: field,
-          strictMode: true);
+              center: center,
+              radius: double.parse(Constant.radius),
+              field: field,
+              strictMode: true);
 
       stream.listen((List<DocumentSnapshot> documentList) async {
         vendorList.clear();
@@ -1079,7 +1119,8 @@ class FireStoreUtils {
           // Debug logging
           print("Vendor ID: ${vendorModel.id}");
           print("Vendor Categories: ${vendorModel.categoryID}");
-          print("Raw vendor data: ${data['categoryID']}"); // Add this to see raw data
+          print(
+              "Raw vendor data: ${data['categoryID']}"); // Add this to see raw data
 
           // Check if the vendor has the category ID in its categoryID list
           bool hasCategory = false;
@@ -1092,9 +1133,8 @@ class FireStoreUtils {
             // Handle different possible data types
             if (rawCategoryId is List) {
               hasCategory = rawCategoryId.any((catId) =>
-              catId.toString() == categoryId ||
-                  catId.toString().trim() == categoryId.trim()
-              );
+                  catId.toString() == categoryId ||
+                  catId.toString().trim() == categoryId.trim());
             } else if (rawCategoryId is String) {
               hasCategory = rawCategoryId == categoryId ||
                   rawCategoryId.trim() == categoryId.trim();
@@ -1104,47 +1144,52 @@ class FireStoreUtils {
           // If no category found in raw data, check the model
           if (!hasCategory && vendorModel.categoryID != null) {
             hasCategory = vendorModel.categoryID!.any((catId) =>
-            catId.toString() == categoryId ||
-                catId.toString().trim() == categoryId.trim()
-            );
+                catId.toString() == categoryId ||
+                catId.toString().trim() == categoryId.trim());
           }
 
           print("Has category: $hasCategory");
 
           if (hasCategory) {
             if ((Constant.isSubscriptionModelApplied == true ||
-                Constant.adminCommission?.isEnabled == true) &&
+                    Constant.adminCommission?.isEnabled == true) &&
                 vendorModel.subscriptionPlan != null) {
               if (vendorModel.subscriptionTotalOrders == "-1") {
                 // **FOOD CATEGORY FILTERING: Exclude mart vendors**
-                if (vendorModel.vType == null || vendorModel.vType!.toLowerCase() != 'mart') {
+                if (vendorModel.vType == null ||
+                    vendorModel.vType!.toLowerCase() != 'mart') {
                   vendorList.add(vendorModel);
                 } else {
-                  print('[DEBUG] Mart vendor excluded from FOOD category (unlimited subscription): ${vendorModel.title}');
+                  print(
+                      '[DEBUG] Mart vendor excluded from FOOD category (unlimited subscription): ${vendorModel.title}');
                 }
               } else {
                 if ((vendorModel.subscriptionExpiryDate != null &&
-                    vendorModel.subscriptionExpiryDate!
-                        .toDate()
-                        .isBefore(DateTime.now()) ==
-                        false) ||
+                        vendorModel.subscriptionExpiryDate!
+                                .toDate()
+                                .isBefore(DateTime.now()) ==
+                            false) ||
                     vendorModel.subscriptionPlan?.expiryDay == '-1') {
                   if (vendorModel.subscriptionTotalOrders != '0') {
                     // **FOOD CATEGORY FILTERING: Exclude mart vendors**
-                    if (vendorModel.vType == null || vendorModel.vType!.toLowerCase() != 'mart') {
+                    if (vendorModel.vType == null ||
+                        vendorModel.vType!.toLowerCase() != 'mart') {
                       vendorList.add(vendorModel);
                     } else {
-                      print('[DEBUG] Mart vendor excluded from FOOD category (valid subscription): ${vendorModel.title}');
+                      print(
+                          '[DEBUG] Mart vendor excluded from FOOD category (valid subscription): ${vendorModel.title}');
                     }
                   }
                 }
               }
             } else {
               // **FOOD CATEGORY FILTERING: Exclude mart vendors**
-              if (vendorModel.vType == null || vendorModel.vType!.toLowerCase() != 'mart') {
+              if (vendorModel.vType == null ||
+                  vendorModel.vType!.toLowerCase() != 'mart') {
                 vendorList.add(vendorModel);
               } else {
-                print('[DEBUG] Mart vendor excluded from FOOD category (no subscription filter): ${vendorModel.title}');
+                print(
+                    '[DEBUG] Mart vendor excluded from FOOD category (no subscription filter): ${vendorModel.title}');
               }
             }
           }
@@ -1183,7 +1228,7 @@ class FireStoreUtils {
         .then((value) {
       for (var element in value.docs) {
         CouponModel walletTransactionModel =
-        CouponModel.fromJson(element.data());
+            CouponModel.fromJson(element.data());
         list.add(walletTransactionModel);
       }
     }).catchError((error) {
@@ -1202,7 +1247,7 @@ class FireStoreUtils {
         .then((value) {
       for (var element in value.docs) {
         VendorCategoryModel walletTransactionModel =
-        VendorCategoryModel.fromJson(element.data());
+            VendorCategoryModel.fromJson(element.data());
         list.add(walletTransactionModel);
       }
     }).catchError((error) {
@@ -1220,7 +1265,7 @@ class FireStoreUtils {
         .then((value) {
       for (var element in value.docs) {
         VendorCategoryModel walletTransactionModel =
-        VendorCategoryModel.fromJson(element.data());
+            VendorCategoryModel.fromJson(element.data());
         list.add(walletTransactionModel);
       }
     }).catchError((error) {
@@ -1236,27 +1281,28 @@ class FireStoreUtils {
       log('[BANNER_FILTERING] Zone already detected: ${Constant.selectedZone!.id}');
       return;
     }
-    
+
     // Check if we have a valid location
-    if (Constant.selectedLocation.location?.latitude == null || 
+    if (Constant.selectedLocation.location?.latitude == null ||
         Constant.selectedLocation.location?.longitude == null) {
       log('[BANNER_FILTERING] No valid location available for zone detection');
       return;
     }
-    
+
     try {
       log('[BANNER_FILTERING] Attempting to detect zone for location: ${Constant.selectedLocation.location!.latitude}, ${Constant.selectedLocation.location!.longitude}');
-      
+
       // Get all zones and check if current location is within any zone
       List<ZoneModel>? zones = await getZone();
-      
+
       if (zones != null && zones.isNotEmpty) {
         for (ZoneModel zone in zones) {
-          if (zone.area != null && Constant.isPointInPolygon(
-            LatLng(Constant.selectedLocation.location!.latitude!, 
-                   Constant.selectedLocation.location!.longitude!),
-            zone.area!,
-          )) {
+          if (zone.area != null &&
+              Constant.isPointInPolygon(
+                LatLng(Constant.selectedLocation.location!.latitude!,
+                    Constant.selectedLocation.location!.longitude!),
+                zone.area!,
+              )) {
             Constant.selectedZone = zone;
             Constant.isZoneAvailable = true;
             log('[BANNER_FILTERING] Zone detected successfully: ${zone.id} - ${zone.name}');
@@ -1275,13 +1321,13 @@ class FireStoreUtils {
   static Future<List<BannerModel>> getHomeTopBanner() async {
     List<BannerModel> bannerList = [];
     List<BannerModel> filteredBannerList = [];
-    
+
     // Get customer's current zone (should be set by home controller)
     String? customerZoneId = Constant.selectedZone?.id;
     String? customerZoneTitle = Constant.selectedZone?.name;
-    
+
     log('[BANNER_FILTERING] Customer zone - ID: $customerZoneId, Title: $customerZoneTitle');
-    
+
     await fireStore
         .collection(CollectionName.menuItems)
         .where("is_publish", isEqualTo: true)
@@ -1289,16 +1335,16 @@ class FireStoreUtils {
         .orderBy("set_order", descending: false)
         .get()
         .then(
-          (value) {
+      (value) {
         log('[BANNER_FILTERING] Total banners in database: ${value.docs.length}');
-        
+
         for (var element in value.docs) {
           BannerModel bannerHome = BannerModel.fromJson(element.data());
           bannerList.add(bannerHome);
-          
+
           // Filter banners by zone
           bool shouldShowBanner = false;
-          
+
           // If banner has no zone specified, show it to all zones
           if (bannerHome.zoneId == null || bannerHome.zoneId!.isEmpty) {
             shouldShowBanner = true;
@@ -1318,12 +1364,12 @@ class FireStoreUtils {
           else {
             log('[BANNER_FILTERING] Banner "${bannerHome.title}" - Zone ${bannerHome.zoneId} does not match customer zone $customerZoneId');
           }
-          
+
           if (shouldShowBanner) {
             filteredBannerList.add(bannerHome);
           }
         }
-        
+
         log('[BANNER_FILTERING] Banners matching customer zone: ${filteredBannerList.length}');
       },
     );
@@ -1333,13 +1379,13 @@ class FireStoreUtils {
   static Future<List<BannerModel>> getHomeBottomBanner() async {
     List<BannerModel> bannerList = [];
     List<BannerModel> filteredBannerList = [];
-    
+
     // Get customer's current zone (should be set by home controller)
     String? customerZoneId = Constant.selectedZone?.id;
     String? customerZoneTitle = Constant.selectedZone?.name;
-    
+
     log('[BANNER_FILTERING] Customer zone for bottom banners - ID: $customerZoneId, Title: $customerZoneTitle');
-    
+
     await fireStore
         .collection(CollectionName.menuItems)
         .where("is_publish", isEqualTo: true)
@@ -1347,16 +1393,16 @@ class FireStoreUtils {
         .orderBy("set_order", descending: false)
         .get()
         .then(
-          (value) {
+      (value) {
         log('[BANNER_FILTERING] Total bottom banners in database: ${value.docs.length}');
-        
+
         for (var element in value.docs) {
           BannerModel bannerHome = BannerModel.fromJson(element.data());
           bannerList.add(bannerHome);
-          
+
           // Filter banners by zone
           bool shouldShowBanner = false;
-          
+
           // If banner has no zone specified, show it to all zones
           if (bannerHome.zoneId == null || bannerHome.zoneId!.isEmpty) {
             shouldShowBanner = true;
@@ -1376,12 +1422,12 @@ class FireStoreUtils {
           else {
             log('[BANNER_FILTERING] Bottom Banner "${bannerHome.title}" - Zone ${bannerHome.zoneId} does not match customer zone $customerZoneId');
           }
-          
+
           if (shouldShowBanner) {
             filteredBannerList.add(bannerHome);
           }
         }
-        
+
         log('[BANNER_FILTERING] Bottom banners matching customer zone: ${filteredBannerList.length}');
       },
     );
@@ -1389,26 +1435,27 @@ class FireStoreUtils {
   }
 
   // ==================== MART BANNERS ====================
-  
+
   /// Stream method to get all mart banners without filtering
   static Stream<List<MartBannerModel>> getAllMartBannersStream() {
     log('[MART_BANNER_STREAM] Starting stream for all mart banners...');
-    
+
     return fireStore
         .collection('mart_banners')
         .snapshots()
         .map((querySnapshot) {
       List<MartBannerModel> bannerList = [];
-      
+
       log('[MART_BANNER_STREAM] Stream update - Total banners in database: ${querySnapshot.docs.length}');
-      
+
       for (var element in querySnapshot.docs) {
         log('[MART_BANNER_STREAM] Raw banner data: ${element.data()}');
-        MartBannerModel banner = MartBannerModel.fromJson({...element.data(), 'id': element.id});
+        MartBannerModel banner =
+            MartBannerModel.fromJson({...element.data(), 'id': element.id});
         log('[MART_BANNER_STREAM] Parsed banner: title=${banner.title}, photo=${banner.photo}, position=${banner.position}, isPublish=${banner.isPublish}');
         bannerList.add(banner);
       }
-      
+
       log('[MART_BANNER_STREAM] Stream update - Successfully loaded ${bannerList.length} banners');
       return bannerList;
     }).handleError((error) {
@@ -1416,11 +1463,11 @@ class FireStoreUtils {
       return <MartBannerModel>[];
     });
   }
-  
+
   /// Stream method to get mart top banners (position: "top") - Lazy loading
   static Stream<List<MartBannerModel>> getMartTopBannersStream() {
     log('[MART_BANNER_STREAM] Starting lazy loading stream for mart top banners...');
-    
+
     return fireStore
         .collection('mart_banners')
         .where("is_publish", isEqualTo: true)
@@ -1429,23 +1476,24 @@ class FireStoreUtils {
         .map((querySnapshot) {
       List<MartBannerModel> bannerList = [];
       List<MartBannerModel> filteredBannerList = [];
-      
+
       // Get customer's current zone
       String? customerZoneId = Constant.selectedZone?.id;
       String? customerZoneTitle = Constant.selectedZone?.name;
-      
+
       log('[MART_BANNER_STREAM] Customer zone for mart top banners - ID: $customerZoneId, Title: $customerZoneTitle');
       log('[MART_BANNER_STREAM] Total mart top banners in database: ${querySnapshot.docs.length}');
-      
+
       for (var element in querySnapshot.docs) {
         log('[MART_BANNER_STREAM] Raw banner data: ${element.data()}');
-        MartBannerModel banner = MartBannerModel.fromJson({...element.data(), 'id': element.id});
+        MartBannerModel banner =
+            MartBannerModel.fromJson({...element.data(), 'id': element.id});
         log('[MART_BANNER_STREAM] Parsed banner: title=${banner.title}, photo=${banner.photo}, position=${banner.position}');
         bannerList.add(banner);
-        
+
         // Filter banners by zone
         bool shouldShowBanner = false;
-        
+
         // If banner has no zone specified, show it to all zones
         if (banner.zoneId == null || banner.zoneId!.isEmpty) {
           shouldShowBanner = true;
@@ -1465,19 +1513,19 @@ class FireStoreUtils {
         else {
           log('[MART_BANNER_STREAM] Mart Top Banner "${banner.title}" - Zone ${banner.zoneId} does not match customer zone $customerZoneId');
         }
-        
+
         if (shouldShowBanner) {
           filteredBannerList.add(banner);
         }
       }
-      
+
       // Sort by set_order in memory
       filteredBannerList.sort((a, b) {
         int orderA = a.setOrder ?? 0;
         int orderB = b.setOrder ?? 0;
         return orderA.compareTo(orderB);
       });
-      
+
       log('[MART_BANNER_STREAM] Mart top banners matching customer zone: ${filteredBannerList.length}');
       return filteredBannerList;
     }).handleError((error) {
@@ -1490,13 +1538,13 @@ class FireStoreUtils {
   static Future<List<MartBannerModel>> getMartTopBanners() async {
     List<MartBannerModel> bannerList = [];
     List<MartBannerModel> filteredBannerList = [];
-    
+
     // Get customer's current zone
     String? customerZoneId = Constant.selectedZone?.id;
     String? customerZoneTitle = Constant.selectedZone?.name;
-    
+
     log('[MART_BANNER_FILTERING] Customer zone for mart top banners - ID: $customerZoneId, Title: $customerZoneTitle');
-    
+
     try {
       // Try optimized query with orderBy (requires index)
       final querySnapshot = await fireStore
@@ -1505,18 +1553,19 @@ class FireStoreUtils {
           .where("position", isEqualTo: "top")
           .orderBy("set_order", descending: false)
           .get();
-          
+
       log('[MART_BANNER_FILTERING] Total mart top banners in database: ${querySnapshot.docs.length}');
-      
+
       for (var element in querySnapshot.docs) {
         log('[MART_BANNER_FILTERING] Raw banner data: ${element.data()}');
-        MartBannerModel banner = MartBannerModel.fromJson({...element.data(), 'id': element.id});
+        MartBannerModel banner =
+            MartBannerModel.fromJson({...element.data(), 'id': element.id});
         log('[MART_BANNER_FILTERING] Parsed banner: title=${banner.title}, photo=${banner.photo}, position=${banner.position}');
         bannerList.add(banner);
-        
+
         // Filter banners by zone
         bool shouldShowBanner = false;
-        
+
         // If banner has no zone specified, show it to all zones
         if (banner.zoneId == null || banner.zoneId!.isEmpty) {
           shouldShowBanner = true;
@@ -1536,34 +1585,35 @@ class FireStoreUtils {
         else {
           log('[MART_BANNER_FILTERING] Mart Top Banner "${banner.title}" - Zone ${banner.zoneId} does not match customer zone $customerZoneId');
         }
-        
+
         if (shouldShowBanner) {
           filteredBannerList.add(banner);
         }
       }
-      
+
       log('[MART_BANNER_FILTERING] Mart top banners matching customer zone: ${filteredBannerList.length}');
     } catch (e) {
       log('[MART_BANNER_FILTERING] Index query failed, using fallback query: $e');
-      
+
       // Fallback: Use simpler query without orderBy
       final fallbackSnapshot = await fireStore
           .collection('mart_banners')
           .where("is_publish", isEqualTo: true)
           .where("position", isEqualTo: "top")
           .get();
-          
+
       log('[MART_BANNER_FILTERING] Fallback - Total mart top banners in database: ${fallbackSnapshot.docs.length}');
-      
+
       for (var element in fallbackSnapshot.docs) {
         log('[MART_BANNER_FILTERING] Raw banner data: ${element.data()}');
-        MartBannerModel banner = MartBannerModel.fromJson({...element.data(), 'id': element.id});
+        MartBannerModel banner =
+            MartBannerModel.fromJson({...element.data(), 'id': element.id});
         log('[MART_BANNER_FILTERING] Parsed banner: title=${banner.title}, photo=${banner.photo}, position=${banner.position}');
         bannerList.add(banner);
-        
+
         // Filter banners by zone
         bool shouldShowBanner = false;
-        
+
         // If banner has no zone specified, show it to all zones
         if (banner.zoneId == null || banner.zoneId!.isEmpty) {
           shouldShowBanner = true;
@@ -1583,29 +1633,29 @@ class FireStoreUtils {
         else {
           log('[MART_BANNER_FILTERING] Mart Top Banner "${banner.title}" - Zone ${banner.zoneId} does not match customer zone $customerZoneId');
         }
-        
+
         if (shouldShowBanner) {
           filteredBannerList.add(banner);
         }
       }
-      
+
       // Sort by set_order in memory (fallback sorting)
       filteredBannerList.sort((a, b) {
         int orderA = a.setOrder ?? 0;
         int orderB = b.setOrder ?? 0;
         return orderA.compareTo(orderB);
       });
-      
+
       log('[MART_BANNER_FILTERING] Fallback - Mart top banners matching customer zone: ${filteredBannerList.length}');
     }
-    
+
     return filteredBannerList;
   }
 
   /// Stream method to get mart bottom banners (position: "bottom") - Lazy loading
   static Stream<List<MartBannerModel>> getMartBottomBannersStream() {
     log('[MART_BANNER_STREAM] Starting lazy loading stream for mart bottom banners...');
-    
+
     return fireStore
         .collection('mart_banners')
         .where("is_publish", isEqualTo: true)
@@ -1614,23 +1664,24 @@ class FireStoreUtils {
         .map((querySnapshot) {
       List<MartBannerModel> bannerList = [];
       List<MartBannerModel> filteredBannerList = [];
-      
+
       // Get customer's current zone
       String? customerZoneId = Constant.selectedZone?.id;
       String? customerZoneTitle = Constant.selectedZone?.name;
-      
+
       log('[MART_BANNER_STREAM] Customer zone for mart bottom banners - ID: $customerZoneId, Title: $customerZoneTitle');
       log('[MART_BANNER_STREAM] Total mart bottom banners in database: ${querySnapshot.docs.length}');
-      
+
       for (var element in querySnapshot.docs) {
         log('[MART_BANNER_STREAM] Raw banner data: ${element.data()}');
-        MartBannerModel banner = MartBannerModel.fromJson({...element.data(), 'id': element.id});
+        MartBannerModel banner =
+            MartBannerModel.fromJson({...element.data(), 'id': element.id});
         log('[MART_BANNER_STREAM] Parsed banner: title=${banner.title}, photo=${banner.photo}, position=${banner.position}');
         bannerList.add(banner);
-        
+
         // Filter banners by zone
         bool shouldShowBanner = false;
-        
+
         // If banner has no zone specified, show it to all zones
         if (banner.zoneId == null || banner.zoneId!.isEmpty) {
           shouldShowBanner = true;
@@ -1650,19 +1701,19 @@ class FireStoreUtils {
         else {
           log('[MART_BANNER_STREAM] Mart Bottom Banner "${banner.title}" - Zone ${banner.zoneId} does not match customer zone $customerZoneId');
         }
-        
+
         if (shouldShowBanner) {
           filteredBannerList.add(banner);
         }
       }
-      
+
       // Sort by set_order in memory
       filteredBannerList.sort((a, b) {
         int orderA = a.setOrder ?? 0;
         int orderB = b.setOrder ?? 0;
         return orderA.compareTo(orderB);
       });
-      
+
       log('[MART_BANNER_STREAM] Mart bottom banners matching customer zone: ${filteredBannerList.length}');
       return filteredBannerList;
     }).handleError((error) {
@@ -1675,13 +1726,13 @@ class FireStoreUtils {
   static Future<List<MartBannerModel>> getMartBottomBanners() async {
     List<MartBannerModel> bannerList = [];
     List<MartBannerModel> filteredBannerList = [];
-    
+
     // Get customer's current zone
     String? customerZoneId = Constant.selectedZone?.id;
     String? customerZoneTitle = Constant.selectedZone?.name;
-    
+
     log('[MART_BANNER_FILTERING] Customer zone for mart bottom banners - ID: $customerZoneId, Title: $customerZoneTitle');
-    
+
     try {
       // Try optimized query with orderBy (requires index)
       final querySnapshot = await fireStore
@@ -1690,16 +1741,17 @@ class FireStoreUtils {
           .where("position", isEqualTo: "bottom")
           .orderBy("set_order", descending: false)
           .get();
-          
+
       log('[MART_BANNER_FILTERING] Total mart bottom banners in database: ${querySnapshot.docs.length}');
-      
+
       for (var element in querySnapshot.docs) {
-        MartBannerModel banner = MartBannerModel.fromJson({...element.data(), 'id': element.id});
+        MartBannerModel banner =
+            MartBannerModel.fromJson({...element.data(), 'id': element.id});
         bannerList.add(banner);
-        
+
         // Filter banners by zone
         bool shouldShowBanner = false;
-        
+
         // If banner has no zone specified, show it to all zones
         if (banner.zoneId == null || banner.zoneId!.isEmpty) {
           shouldShowBanner = true;
@@ -1719,32 +1771,33 @@ class FireStoreUtils {
         else {
           log('[MART_BANNER_FILTERING] Mart Bottom Banner "${banner.title}" - Zone ${banner.zoneId} does not match customer zone $customerZoneId');
         }
-        
+
         if (shouldShowBanner) {
           filteredBannerList.add(banner);
         }
       }
-      
+
       log('[MART_BANNER_FILTERING] Mart bottom banners matching customer zone: ${filteredBannerList.length}');
     } catch (e) {
       log('[MART_BANNER_FILTERING] Index query failed, using fallback query: $e');
-      
+
       // Fallback: Use simpler query without orderBy
       final fallbackSnapshot = await fireStore
           .collection('mart_banners')
           .where("is_publish", isEqualTo: true)
           .where("position", isEqualTo: "bottom")
           .get();
-          
+
       log('[MART_BANNER_FILTERING] Fallback - Total mart bottom banners in database: ${fallbackSnapshot.docs.length}');
-      
+
       for (var element in fallbackSnapshot.docs) {
-        MartBannerModel banner = MartBannerModel.fromJson({...element.data(), 'id': element.id});
+        MartBannerModel banner =
+            MartBannerModel.fromJson({...element.data(), 'id': element.id});
         bannerList.add(banner);
-        
+
         // Filter banners by zone
         bool shouldShowBanner = false;
-        
+
         // If banner has no zone specified, show it to all zones
         if (banner.zoneId == null || banner.zoneId!.isEmpty) {
           shouldShowBanner = true;
@@ -1764,22 +1817,22 @@ class FireStoreUtils {
         else {
           log('[MART_BANNER_FILTERING] Mart Bottom Banner "${banner.title}" - Zone ${banner.zoneId} does not match customer zone $customerZoneId');
         }
-        
+
         if (shouldShowBanner) {
           filteredBannerList.add(banner);
         }
       }
-      
+
       // Sort by set_order in memory (fallback sorting)
       filteredBannerList.sort((a, b) {
         int orderA = a.setOrder ?? 0;
         int orderB = b.setOrder ?? 0;
         return orderA.compareTo(orderB);
       });
-      
+
       log('[MART_BANNER_FILTERING] Fallback - Mart bottom banners matching customer zone: ${filteredBannerList.length}');
     }
-    
+
     return filteredBannerList;
   }
 
@@ -1790,10 +1843,10 @@ class FireStoreUtils {
         .where('user_id', isEqualTo: getCurrentUid())
         .get()
         .then(
-          (value) {
+      (value) {
         for (var element in value.docs) {
           FavouriteModel favouriteModel =
-          FavouriteModel.fromJson(element.data());
+              FavouriteModel.fromJson(element.data());
           favouriteList.add(favouriteModel);
         }
       },
@@ -1808,10 +1861,10 @@ class FireStoreUtils {
         .where('user_id', isEqualTo: getCurrentUid())
         .get()
         .then(
-          (value) {
+      (value) {
         for (var element in value.docs) {
           FavouriteItemModel favouriteModel =
-          FavouriteItemModel.fromJson(element.data());
+              FavouriteItemModel.fromJson(element.data());
           favouriteList.add(favouriteModel);
         }
       },
@@ -1845,7 +1898,7 @@ class FireStoreUtils {
       FavouriteItemModel favouriteModel) async {
     try {
       final favoriteCollection =
-      fireStore.collection(CollectionName.favoriteItem);
+          fireStore.collection(CollectionName.favoriteItem);
       final querySnapshot = await favoriteCollection
           .where("product_id", isEqualTo: favouriteModel.productId)
           .get();
@@ -1875,7 +1928,8 @@ class FireStoreUtils {
 
         // **PERFORMANCE OPTIMIZATION: Add timeout and limit**
         final queryTimeout = const Duration(seconds: 15); // Increased timeout
-        const int maxProducts = 400; // Increased limit to prevent product filtering issues
+        const int maxProducts =
+            400; // Increased limit to prevent product filtering issues
 
         if (selectedFoodType == "TakeAway") {
           final value = await fireStore
@@ -1921,20 +1975,26 @@ class FireStoreUtils {
         }
 
         if (kDebugMode) {
-          print('DEBUG: getProductByVendorId loaded ${list.length} products for vendor $vendorId');
+          print(
+              'DEBUG: getProductByVendorId loaded ${list.length} products for vendor $vendorId');
           print('DEBUG: Food delivery type: $selectedFoodType');
           print('DEBUG: Max products limit: $maxProducts');
-          
+
           // Check if specific product is in the list
-          bool foundSpecificProduct = list.any((product) => product.id == "E5uQMHSJY9hj9yD5NTp3");
-          print('DEBUG: Rayalaseema Biryani (E5uQMHSJY9hj9yD5NTp3) found in product list: $foundSpecificProduct');
-          
+          bool foundSpecificProduct =
+              list.any((product) => product.id == "E5uQMHSJY9hj9yD5NTp3");
+          print(
+              'DEBUG: Rayalaseema Biryani (E5uQMHSJY9hj9yD5NTp3) found in product list: $foundSpecificProduct');
+
           if (!foundSpecificProduct) {
-            print('DEBUG: ⚠️ Rayalaseema Biryani NOT found in product list - checking filters...');
+            print(
+                'DEBUG: ⚠️ Rayalaseema Biryani NOT found in product list - checking filters...');
             print('DEBUG: This could be due to:');
             print('DEBUG: 1. Product not published (publish: false)');
-            print('DEBUG: 2. Product is takeaway only (takeawayOption: true) but app in delivery mode');
-            print('DEBUG: 3. Product limit exceeded (more than $maxProducts products)');
+            print(
+                'DEBUG: 2. Product is takeaway only (takeawayOption: true) but app in delivery mode');
+            print(
+                'DEBUG: 3. Product limit exceeded (more than $maxProducts products)');
             print('DEBUG: 4. Wrong vendorID in product document');
           }
         }
@@ -1998,7 +2058,7 @@ class FireStoreUtils {
         .where('expiresAt', isGreaterThanOrEqualTo: Timestamp.now())
         .get()
         .then(
-          (value) {
+      (value) {
         for (var element in value.docs) {
           CouponModel favouriteModel = CouponModel.fromJson(element.data());
           couponList.add(favouriteModel);
@@ -2011,10 +2071,10 @@ class FireStoreUtils {
   static Future<List<AttributesModel>?> getAttributes() async {
     List<AttributesModel> attributeList = [];
     await fireStore.collection(CollectionName.vendorAttributes).get().then(
-          (value) {
+      (value) {
         for (var element in value.docs) {
           AttributesModel favouriteModel =
-          AttributesModel.fromJson(element.data());
+              AttributesModel.fromJson(element.data());
           attributeList.add(favouriteModel);
         }
       },
@@ -2255,7 +2315,7 @@ class FireStoreUtils {
           .then((value) {
         for (var element in value.docs) {
           DineInBookingModel taxModel =
-          DineInBookingModel.fromJson(element.data());
+              DineInBookingModel.fromJson(element.data());
           list.add(taxModel);
         }
       }).catchError((error) {
@@ -2272,7 +2332,7 @@ class FireStoreUtils {
           .then((value) {
         for (var element in value.docs) {
           DineInBookingModel taxModel =
-          DineInBookingModel.fromJson(element.data());
+              DineInBookingModel.fromJson(element.data());
           list.add(taxModel);
         }
       }).catchError((error) {
@@ -2307,14 +2367,14 @@ class FireStoreUtils {
         .where("isEnable", isEqualTo: true)
         .get();
     await Future.forEach(currencyQuery.docs,
-            (QueryDocumentSnapshot<Map<String, dynamic>> document) {
-          try {
-            log(document.data().toString());
-            giftCardModelList.add(GiftCardsModel.fromJson(document.data()));
-          } catch (e) {
-            debugPrint('FireStoreUtils.get Currency Parse error $e');
-          }
-        });
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+      try {
+        log(document.data().toString());
+        giftCardModelList.add(GiftCardsModel.fromJson(document.data()));
+      } catch (e) {
+        debugPrint('FireStoreUtils.get Currency Parse error $e');
+      }
+    });
     return giftCardModelList;
   }
 
@@ -2370,7 +2430,7 @@ class FireStoreUtils {
         .then((value) {
       for (var element in value.docs) {
         GiftCardsOrderModel giftCardsOrderModel =
-        GiftCardsOrderModel.fromJson(element.data());
+            GiftCardsOrderModel.fromJson(element.data());
         giftCardsOrderList.add(giftCardsOrderModel);
       }
     });
@@ -2379,10 +2439,10 @@ class FireStoreUtils {
 
   static sendTopUpMail(
       {required String amount,
-        required String paymentMethod,
-        required String tractionId}) async {
+      required String paymentMethod,
+      required String tractionId}) async {
     EmailTemplateModel? emailTemplateModel =
-    await FireStoreUtils.getEmailTemplates(Constant.walletTopup);
+        await FireStoreUtils.getEmailTemplates(Constant.walletTopup);
 
     String newString = emailTemplateModel!.message.toString();
     newString = newString.replaceAll(
@@ -2415,27 +2475,27 @@ class FireStoreUtils {
         .where('vendorID', isEqualTo: id)
         .get();
     await Future.forEach(productsQuery.docs,
-            (QueryDocumentSnapshot<Map<String, dynamic>> document) {
-          if (document.data().containsKey("categoryID") &&
-              document.data()['categoryID'].toString().isNotEmpty) {
-            prodTagList.add(document.data()['categoryID']);
-          }
-        });
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+      if (document.data().containsKey("categoryID") &&
+          document.data()['categoryID'].toString().isNotEmpty) {
+        prodTagList.add(document.data()['categoryID']);
+      }
+    });
     QuerySnapshot<Map<String, dynamic>> catQuery = await fireStore
         .collection(CollectionName.vendorCategories)
         .where('publish', isEqualTo: true)
         .get();
     await Future.forEach(catQuery.docs,
-            (QueryDocumentSnapshot<Map<String, dynamic>> document) {
-          Map<String, dynamic> catDoc = document.data();
-          if (catDoc.containsKey("id") &&
-              catDoc['id'].toString().isNotEmpty &&
-              catDoc.containsKey("title") &&
-              catDoc['title'].toString().isNotEmpty &&
-              prodTagList.contains(catDoc['id'])) {
-            tagList.add(catDoc['title']);
-          }
-        });
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+      Map<String, dynamic> catDoc = document.data();
+      if (catDoc.containsKey("id") &&
+          catDoc['id'].toString().isNotEmpty &&
+          catDoc.containsKey("title") &&
+          catDoc['title'].toString().isNotEmpty &&
+          prodTagList.contains(catDoc['id'])) {
+        tagList.add(catDoc['title']);
+      }
+    });
     return tagList;
   }
 
@@ -2509,7 +2569,8 @@ class FireStoreUtils {
           .collection("chat_restaurant")
           .doc(inboxModel.orderId)
           .set(inboxModel.toJson());
-      debugPrint('[FIRESTORE] addRestaurantInbox SUCCESS: orderId=${inboxModel.orderId}');
+      debugPrint(
+          '[FIRESTORE] addRestaurantInbox SUCCESS: orderId=${inboxModel.orderId}');
     } catch (e) {
       debugPrint('[FIRESTORE] addRestaurantInbox ERROR: $e');
     }
@@ -2523,7 +2584,8 @@ class FireStoreUtils {
           .collection("thread")
           .doc(conversationModel.id)
           .set(conversationModel.toJson());
-      debugPrint('[FIRESTORE] addRestaurantChat SUCCESS: orderId=${conversationModel.orderId}, messageId=${conversationModel.id}');
+      debugPrint(
+          '[FIRESTORE] addRestaurantChat SUCCESS: orderId=${conversationModel.orderId}, messageId=${conversationModel.id}');
     } catch (e) {
       debugPrint('[FIRESTORE] addRestaurantChat ERROR: $e');
     }
@@ -2534,7 +2596,7 @@ class FireStoreUtils {
     ShowToastDialog.showLoader("Please wait".tr);
     var uniqueID = const Uuid().v4();
     Reference upload =
-    FirebaseStorage.instance.ref().child('images/$uniqueID.png');
+        FirebaseStorage.instance.ref().child('images/$uniqueID.png');
     UploadTask uploadTask = upload.putFile(image);
     var storageRef = (await uploadTask.whenComplete(() {})).ref;
     var downloadUrl = await storageRef.getDownloadURL();
@@ -2550,7 +2612,7 @@ class FireStoreUtils {
       ShowToastDialog.showLoader("Uploading video...");
       final String uniqueID = const Uuid().v4();
       final Reference videoRef =
-      FirebaseStorage.instance.ref('videos/$uniqueID.mp4');
+          FirebaseStorage.instance.ref('videos/$uniqueID.mp4');
       final UploadTask uploadTask = videoRef.putFile(
         video,
         SettableMetadata(contentType: 'video/mp4'),
@@ -2566,7 +2628,7 @@ class FireStoreUtils {
 
       final String thumbnailID = const Uuid().v4();
       final Reference thumbnailRef =
-      FirebaseStorage.instance.ref('thumbnails/$thumbnailID.jpg');
+          FirebaseStorage.instance.ref('thumbnails/$thumbnailID.jpg');
       final UploadTask thumbnailUploadTask = thumbnailRef.putData(
         thumbnail.readAsBytesSync(),
         SettableMetadata(contentType: 'image/jpeg'),
@@ -2592,10 +2654,10 @@ class FireStoreUtils {
   static Future<String> uploadVideoThumbnailToFireStorage(File file) async {
     var uniqueID = const Uuid().v4();
     Reference upload =
-    FirebaseStorage.instance.ref().child('thumbnails/$uniqueID.png');
+        FirebaseStorage.instance.ref().child('thumbnails/$uniqueID.png');
     UploadTask uploadTask = upload.putFile(file);
     var downloadUrl =
-    await (await uploadTask.whenComplete(() {})).ref.getDownloadURL();
+        await (await uploadTask.whenComplete(() {})).ref.getDownloadURL();
     return downloadUrl.toString();
   }
 
@@ -2711,7 +2773,7 @@ class FireStoreUtils {
         .then((value) {
       for (var element in value.docs) {
         AdvertisementModel advertisementModel =
-        AdvertisementModel.fromJson(element.data());
+            AdvertisementModel.fromJson(element.data());
         if (advertisementModel.isPaused == null ||
             advertisementModel.isPaused == false) {
           advertisementList.add(advertisementModel);
@@ -2738,7 +2800,8 @@ class FireStoreUtils {
     return advertisementModel;
   }
 
-  static Future<void> setUsedCoupon({required String userId, required String couponId}) async {
+  static Future<void> setUsedCoupon(
+      {required String userId, required String couponId}) async {
     await fireStore.collection('used_coupons').add({
       'userId': userId,
       'couponId': couponId,
@@ -2765,7 +2828,8 @@ class FireStoreUtils {
     return null;
   }
 
-  static Future<List<VendorCategoryModel>> getAllVendorCategories(String vendorId) async {
+  static Future<List<VendorCategoryModel>> getAllVendorCategories(
+      String vendorId) async {
     List<VendorCategoryModel> categories = [];
     try {
       await fireStore
@@ -2774,7 +2838,8 @@ class FireStoreUtils {
           .get()
           .then((value) {
         for (var element in value.docs) {
-          VendorCategoryModel categoryModel = VendorCategoryModel.fromJson(element.data());
+          VendorCategoryModel categoryModel =
+              VendorCategoryModel.fromJson(element.data());
           categories.add(categoryModel);
         }
       });
@@ -2785,7 +2850,8 @@ class FireStoreUtils {
   }
 
   /// **ULTRA-FAST PROMOTIONAL DATA FETCHING WITH LAZY LOADING**
-  static Future<List<Map<String, dynamic>>> fetchActivePromotions({String? restaurantId}) async {
+  static Future<List<Map<String, dynamic>>> fetchActivePromotions(
+      {String? restaurantId}) async {
     final now = Timestamp.now();
     print('[DEBUG] ===== ULTRA-FAST PROMOTIONAL FETCH =====');
     print('[DEBUG] Restaurant filter: $restaurantId');
@@ -2796,36 +2862,39 @@ class FireStoreUtils {
           .collection(CollectionName.promotions)
           .where('isAvailable', isEqualTo: true)
           .where('restaurant_id', isEqualTo: restaurantId)
-          .limit(100); // **INCREASED: Limit to 100 to show more promotional items**
+          .limit(
+              100); // **INCREASED: Limit to 100 to show more promotional items**
 
       final querySnapshot = await query.get();
       print('[DEBUG] Found ${querySnapshot.docs.length} promotions instantly');
 
       final promotions = <Map<String, dynamic>>[];
-      
+
       // **PARALLEL PROCESSING: Process all docs simultaneously**
       final futures = querySnapshot.docs.map((doc) async {
         final data = doc.data() as Map<String, dynamic>;
-        
+
         // **LAZY TIME CHECK: Only check time if needed**
         final startTime = data['start_time'] as Timestamp?;
         final endTime = data['end_time'] as Timestamp?;
-        
+
         if (startTime != null && endTime != null) {
-          final isActive = startTime.compareTo(now) <= 0 && endTime.compareTo(now) >= 0;
+          final isActive =
+              startTime.compareTo(now) <= 0 && endTime.compareTo(now) >= 0;
           return isActive ? data : null;
         }
-        
+
         return data; // Include if no time constraints
       });
-      
+
       // **PARALLEL EXECUTION: All time checks happen simultaneously**
       final results = await Future.wait(futures);
-      promotions.addAll(results.where((item) => item != null).cast<Map<String, dynamic>>());
+      promotions.addAll(
+          results.where((item) => item != null).cast<Map<String, dynamic>>());
 
       print('[DEBUG] Final active promotions: ${promotions.length} items');
       print('[DEBUG] ===== ULTRA-FAST FETCH COMPLETE =====');
-      
+
       return promotions;
     } catch (e) {
       print('[DEBUG] ERROR in ultra-fast fetch: $e');
@@ -2841,10 +2910,12 @@ class FireStoreUtils {
   }) async {
     final promos = await fetchActivePromotions();
     final promo = promos.firstWhere(
-          (p) => p['product_id'] == productId && p['restaurant_id'] == restaurantId,
+      (p) => p['product_id'] == productId && p['restaurant_id'] == restaurantId,
       orElse: () => {},
     );
-    return promo.isNotEmpty ? (promo['special_price'] as num).toDouble() : normalPrice;
+    return promo.isNotEmpty
+        ? (promo['special_price'] as num).toDouble()
+        : normalPrice;
   }
 
   /// Checks if a product is currently a promo item (OPTIMIZED)
@@ -2853,20 +2924,23 @@ class FireStoreUtils {
     required String restaurantId,
   }) async {
     print('[DEBUG] ===== PROMOTION CHECK START (OPTIMIZED) =====');
-    print('[DEBUG] getActivePromotionForProduct called for productId=$productId, restaurantId=$restaurantId');
+    print(
+        '[DEBUG] getActivePromotionForProduct called for productId=$productId, restaurantId=$restaurantId');
 
     // **CRITICAL PERFORMANCE FIX: Filter by restaurant to reduce query size**
     final promos = await fetchActivePromotions(restaurantId: restaurantId);
-    print('[DEBUG] Total active promotions found for restaurant: ${promos.length}');
-    
+    print(
+        '[DEBUG] Total active promotions found for restaurant: ${promos.length}');
+
     // **PERFORMANCE FIX: Direct match instead of looping through all**
     final promo = promos.firstWhere(
-      (p) => p['product_id'] == productId &&
-             p['restaurant_id'] == restaurantId &&
-             p['isAvailable'] == true,
+      (p) =>
+          p['product_id'] == productId &&
+          p['restaurant_id'] == restaurantId &&
+          p['isAvailable'] == true,
       orElse: () => <String, dynamic>{},
     );
-    
+
     print('[DEBUG] Final matched promo: ${promo.toString()}');
     print('[DEBUG] ===== PROMOTION CHECK END =====');
 
@@ -2879,7 +2953,8 @@ class FireStoreUtils {
       print('[DEBUG] - start_time: ${promo['start_time']}');
       print('[DEBUG] - end_time: ${promo['end_time']}');
     } else {
-      print('[DEBUG] ✗ No promotional data found for this product/restaurant combination');
+      print(
+          '[DEBUG] ✗ No promotional data found for this product/restaurant combination');
     }
 
     return promo.isNotEmpty ? promo : null;
@@ -2910,7 +2985,8 @@ class FireStoreUtils {
       List<VendorModel> vendorList = [];
 
       // **MEMORY SAFETY: Always use a limit to prevent OutOfMemoryError**
-      int safeLimit = limit ?? 500; // Increased to 500 to match admin panel results
+      int safeLimit =
+          limit ?? 500; // Increased to 500 to match admin panel results
 
       // **ZONE FILTERING: Only load vendors from current zone**
       Query query;
@@ -2919,7 +2995,8 @@ class FireStoreUtils {
             .collection(CollectionName.vendors)
             .where('zoneId', isEqualTo: Constant.selectedZone!.id.toString())
             .limit(safeLimit);
-        print('🔍 Loading vendors from zone: ${Constant.selectedZone!.name} (${Constant.selectedZone!.id})');
+        print(
+            '🔍 Loading vendors from zone: ${Constant.selectedZone!.name} (${Constant.selectedZone!.id})');
       } else {
         // Fallback: load all vendors if no zone selected
         query = FirebaseFirestore.instance
@@ -2930,15 +3007,17 @@ class FireStoreUtils {
 
       QuerySnapshot querySnapshot = await query.get();
 
-      print('🔍 Found ${querySnapshot.docs.length} vendors in Firestore (limited to $safeLimit for memory safety)');
+      print(
+          '🔍 Found ${querySnapshot.docs.length} vendors in Firestore (limited to $safeLimit for memory safety)');
 
       for (var document in querySnapshot.docs) {
         try {
           final data = document.data() as Map<String, dynamic>;
           VendorModel vendorModel = VendorModel.fromJson(data);
-          
+
           // **FOOD CATEGORY FILTERING: Exclude mart vendors from search**
-          if (vendorModel.vType == null || vendorModel.vType!.toLowerCase() != 'mart') {
+          if (vendorModel.vType == null ||
+              vendorModel.vType!.toLowerCase() != 'mart') {
             vendorList.add(vendorModel);
           } else {
             print('🔍 Mart vendor excluded from search: ${vendorModel.title}');
@@ -2953,7 +3032,8 @@ class FireStoreUtils {
     } catch (e) {
       print('❌ Error loading all vendors: $e');
       if (e.toString().contains('OutOfMemoryError')) {
-        print('🚨 OutOfMemoryError detected! Returning empty list to prevent crash.');
+        print(
+            '🚨 OutOfMemoryError detected! Returning empty list to prevent crash.');
       }
       return [];
     }
@@ -2965,7 +3045,8 @@ class FireStoreUtils {
       List<ProductModel> productList = [];
 
       // **MEMORY SAFETY: Always use a limit to prevent OutOfMemoryError**
-      int safeLimit = limit ?? 800; // Increased to 800 to match admin panel results
+      int safeLimit =
+          limit ?? 800; // Increased to 800 to match admin panel results
 
       // **OPTIMIZED: Single query for published products only**
       Query query = FirebaseFirestore.instance
@@ -2975,11 +3056,13 @@ class FireStoreUtils {
 
       QuerySnapshot querySnapshot = await query.get();
 
-      print('📊 Loaded ${querySnapshot.docs.length} published products (limited to $safeLimit for memory safety)');
+      print(
+          '📊 Loaded ${querySnapshot.docs.length} published products (limited to $safeLimit for memory safety)');
 
       for (var document in querySnapshot.docs) {
         try {
-          ProductModel productModel = ProductModel.fromJson(document.data() as Map<String, dynamic>);
+          ProductModel productModel =
+              ProductModel.fromJson(document.data() as Map<String, dynamic>);
           productList.add(productModel);
         } catch (e) {
           print('❌ Error parsing product ${document.id}: $e');
@@ -2991,7 +3074,8 @@ class FireStoreUtils {
     } catch (e) {
       print('❌ Error loading all products: $e');
       if (e.toString().contains('OutOfMemoryError')) {
-        print('🚨 OutOfMemoryError detected! Returning empty list to prevent crash.');
+        print(
+            '🚨 OutOfMemoryError detected! Returning empty list to prevent crash.');
       }
       return [];
     }
@@ -3003,9 +3087,21 @@ class FireStoreUtils {
       // This is a placeholder - you can implement this based on your analytics
       // For now, return a static list of popular searches
       return [
-        "Pizza", "Biryani", "Burgers", "Coffee", "Ice Cream",
-        "Chinese", "Italian", "South Indian", "Fast Food", "Desserts",
-        "Chicken", "Vegetarian", "Spicy", "Sweet", "Healthy"
+        "Pizza",
+        "Biryani",
+        "Burgers",
+        "Coffee",
+        "Ice Cream",
+        "Chinese",
+        "Italian",
+        "South Indian",
+        "Fast Food",
+        "Desserts",
+        "Chicken",
+        "Vegetarian",
+        "Spicy",
+        "Sweet",
+        "Healthy"
       ];
     } catch (e) {
       print('❌ Error loading trending searches: $e');
@@ -3123,7 +3219,9 @@ class FireStoreUtils {
     return (vendor.title?.toLowerCase().contains(lowerQuery) ?? false) ||
         (vendor.description?.toLowerCase().contains(lowerQuery) ?? false) ||
         (vendor.location?.toLowerCase().contains(lowerQuery) ?? false) ||
-        (vendor.categoryTitle?.any((cat) => cat.toLowerCase().contains(lowerQuery)) ?? false) ||
+        (vendor.categoryTitle
+                ?.any((cat) => cat.toLowerCase().contains(lowerQuery)) ??
+            false) ||
         (vendor.id?.toLowerCase().contains(lowerQuery) ?? false) ||
         (vendor.phonenumber?.toLowerCase().contains(lowerQuery) ?? false) ||
         (vendor.vType?.toLowerCase().contains(lowerQuery) ?? false);
@@ -3161,7 +3259,9 @@ class FireStoreUtils {
       Query vendorQuery = FirebaseFirestore.instance
           .collection(CollectionName.vendors)
           .where('title', isGreaterThanOrEqualTo: query)
-          .where('title', isLessThan: query + '\uf8ff') // \uf8ff is the highest Unicode character
+          .where('title',
+              isLessThan:
+                  query + '\uf8ff') // \uf8ff is the highest Unicode character
           .limit(limit ~/ 2); // Half the limit for vendors
 
       QuerySnapshot vendorSnapshot = await vendorQuery.get();
@@ -3199,18 +3299,26 @@ class FireStoreUtils {
       return [];
     }
   }
+
+  static Future<List<VendorCategoryModel>> getVendorCategoryIdUsed(
+      String categoryId) async {
+    List<VendorCategoryModel> list = [];
+    await fireStore
+        .collection(CollectionName.vendorCategories)
+        .where("id", isEqualTo: categoryId)
+        .get()
+        .then((value) {
+      for (var element in value.docs) {
+        VendorCategoryModel walletTransactionModel =
+            VendorCategoryModel.fromJson(element.data());
+        list.add(walletTransactionModel);
+      }
+    }).catchError((error) {
+      log(error.toString());
+    });
+    return list;
+  }
 }
-
-
-
-
-
-
-
-
-
-
-
 
 // import 'dart:async';
 // import 'dart:convert';

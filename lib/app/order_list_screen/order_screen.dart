@@ -4,6 +4,7 @@ import 'package:customer/app/order_list_screen/live_tracking_screen.dart';
 import 'package:customer/app/order_list_screen/order_details_screen.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
+import 'package:customer/app/dash_board_screens/controller/dash_board_controller.dart';
 import 'package:customer/controllers/order_controller.dart';
 import 'package:customer/models/order_model.dart';
 import 'package:customer/themes/app_them_data.dart';
@@ -23,375 +24,397 @@ class OrderScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
-    return GetX(
-        init: OrderController(),
-        builder: (controller) {
-          return Scaffold(
-            body: Padding(
-              padding:
-                  EdgeInsets.only(top: MediaQuery.of(context).viewPadding.top),
-              child: controller.isLoading.value
-                  ? const OrderLoadingWidget(message: "🍽️ Loading Your Orders")
-                  : Constant.userModel == null
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                "assets/images/login.gif",
-                                height: 140,
-                              ),
-                              const SizedBox(
-                                height: 12,
-                              ),
-                              Text(
-                                "Please Log In to Continue".tr,
-                                style: TextStyle(
-                                    color: themeChange.getThem()
-                                        ? AppThemeData.grey100
-                                        : AppThemeData.grey800,
-                                    fontSize: 22,
-                                    fontFamily: AppThemeData.semiBold),
-                              ),
-                              const SizedBox(
-                                height: 5,
-                              ),
-                              Text(
-                                "You're not logged in. Please sign in to access your account and explore all features."
-                                    .tr,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: themeChange.getThem()
-                                        ? AppThemeData.grey50
-                                        : AppThemeData.grey500,
-                                    fontSize: 16,
-                                    fontFamily: AppThemeData.bold),
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              RoundedButtonFill(
-                                title: "Log in".tr,
-                                width: 55,
-                                height: 5.5,
-                                color: AppThemeData.primary300,
-                                textColor: AppThemeData.grey50,
-                                onPress: () async {
-                                  Get.offAll(const LoginScreen());
-                                },
-                              ),
-                            ],
-                          ),
-                        )
-                      : DefaultTabController(
-                          length: 6,
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 16),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            "My Order".tr,
-                                            style: TextStyle(
-                                              fontSize: 24,
-                                              color: themeChange.getThem()
-                                                  ? AppThemeData.grey50
-                                                  : AppThemeData.grey900,
-                                              fontFamily: AppThemeData.semiBold,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                          // Text(
-                                          //   "Keep track your delivered, In Progress and Rejected food all in just one place."
-                                          //       .tr,
-                                          //   style: TextStyle(
-                                          //     color: themeChange.getThem()
-                                          //         ? AppThemeData.grey50
-                                          //         : AppThemeData.grey900,
-                                          //     fontFamily: AppThemeData.regular,
-                                          //     fontWeight: FontWeight.w400,
-                                          //   ),
-                                          // ),
-                                        ],
-                                      ),
-                                    ),
-                                    // Add refresh button
-                                    // IconButton(
-                                    //   onPressed: () {
-                                    //     controller.refreshOrders();
-                                    //   },
-                                    //   icon: Icon(
-                                    //     Icons.refresh,
-                                    //     color: themeChange.getThem()
-                                    //         ? AppThemeData.grey50
-                                    //         : AppThemeData.grey900,
-                                    //   ),
-                                    // ),
-                                    // // Add debug button to force set user ID
-                                    // IconButton(
-                                    //   onPressed: () {
-                                    //     controller.forceSetUserId();
-                                    //     controller.refreshOrders();
-                                    //   },
-                                    //   icon: Icon(
-                                    //     Icons.bug_report,
-                                    //     color: themeChange.getThem()
-                                    //         ? AppThemeData.grey50
-                                    //         : AppThemeData.grey900,
-                                    //   ),
-                                    // ),
-                                  ],
+    return GetBuilder<DashBoardController>(builder: (contexts) {
+      return GetX(
+          init: OrderController(),
+          builder: (controller) {
+            return Scaffold(
+              body: Padding(
+                padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).viewPadding.top),
+                child: controller.isLoading.value
+                    ? const OrderLoadingWidget(
+                        message: "🍽️ Loading Your Orders",
+                      )
+                    : Constant.userModel == null
+                        ? Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  "assets/images/login.gif",
+                                  height: 140,
                                 ),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Expanded(
-                                child: Padding(
+                                const SizedBox(
+                                  height: 12,
+                                ),
+                                Text(
+                                  "Please Log In to Continue".tr,
+                                  style: TextStyle(
+                                      color: themeChange.getThem()
+                                          ? AppThemeData.grey100
+                                          : AppThemeData.grey800,
+                                      fontSize: 22,
+                                      fontFamily: AppThemeData.semiBold),
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                Text(
+                                  "You're not logged in. Please sign in to access your account and explore all features."
+                                      .tr,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: themeChange.getThem()
+                                          ? AppThemeData.grey50
+                                          : AppThemeData.grey500,
+                                      fontSize: 16,
+                                      fontFamily: AppThemeData.bold),
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                RoundedButtonFill(
+                                  title: "Log in".tr,
+                                  width: 55,
+                                  height: 5.5,
+                                  color: AppThemeData.primary300,
+                                  textColor: AppThemeData.grey50,
+                                  onPress: () async {
+                                    Get.offAll(const LoginScreen());
+                                  },
+                                ),
+                              ],
+                            ),
+                          )
+                        : DefaultTabController(
+                            length: 6,
+                            child: Column(
+                              children: [
+                                Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 16),
-                                  child: Column(
+                                  child: Row(
                                     children: [
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 6, horizontal: 10),
-                                        decoration: ShapeDecoration(
-                                          color: themeChange.getThem()
-                                              ? AppThemeData.grey800
-                                              : AppThemeData.grey100,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(120),
-                                          ),
-                                        ),
-                                        child: TabBar(
-                                          indicator: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                      50), // Creates border
-                                              color: AppThemeData.primary300),
-                                          labelColor: AppThemeData.grey50,
-                                          isScrollable: true,
-                                          tabAlignment: TabAlignment.start,
-                                          indicatorWeight: 0.5,
-                                          unselectedLabelColor:
-                                              themeChange.getThem()
-                                                  ? AppThemeData.grey50
-                                                  : AppThemeData.grey900,
-                                          dividerColor: Colors.transparent,
-                                          indicatorSize:
-                                              TabBarIndicatorSize.tab,
-                                          tabs: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 18),
-                                              child: Tab(
-                                                text: 'All'.tr,
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "My Order".tr,
+                                              style: TextStyle(
+                                                fontSize: 24,
+                                                color: themeChange.getThem()
+                                                    ? AppThemeData.grey50
+                                                    : AppThemeData.grey900,
+                                                fontFamily:
+                                                    AppThemeData.semiBold,
+                                                fontWeight: FontWeight.w500,
                                               ),
                                             ),
-                                            Tab(
-                                              text: 'New Orders'.tr,
-                                            ),
-                                            Tab(
-                                              text: 'In Progress'.tr,
-                                            ),
-                                            Tab(
-                                              text: 'Delivered'.tr,
-                                            ),
-                                            Tab(
-                                              text: 'Cancelled'.tr,
-                                            ),
-                                            Tab(
-                                              text: 'Rejected'.tr,
-                                            ),
+                                            // Text(
+                                            //   "Keep track your delivered, In Progress and Rejected food all in just one place."
+                                            //       .tr,
+                                            //   style: TextStyle(
+                                            //     color: themeChange.getThem()
+                                            //         ? AppThemeData.grey50
+                                            //         : AppThemeData.grey900,
+                                            //     fontFamily: AppThemeData.regular,
+                                            //     fontWeight: FontWeight.w400,
+                                            //   ),
+                                            // ),
                                           ],
                                         ),
                                       ),
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
-                                      Expanded(
-                                        child: TabBarView(
-                                          children: [
-                                            controller.allList.isEmpty
-                                                ? Constant.showEmptyView(
-                                                    message:
-                                                        "Order Not Found".tr)
-                                                : RefreshIndicator(
-                                                    onRefresh: () =>
-                                                        controller.getOrder(),
-                                                    child: ListView.builder(
-                                                      itemCount: controller
-                                                          .allList.length,
-                                                      shrinkWrap: true,
-                                                      padding: EdgeInsets.zero,
-                                                      itemBuilder:
-                                                          (context, index) {
-                                                        OrderModel orderModel =
-                                                            controller
-                                                                .allList[index];
-                                                        return itemView(
-                                                            themeChange,
-                                                            context,
-                                                            orderModel,
-                                                            controller);
-                                                      },
-                                                    ),
-                                                  ),
-                                            controller.newOrderList.isEmpty
-                                                ? Constant.showEmptyView(
-                                                    message:
-                                                        "Order Not Found".tr)
-                                                : RefreshIndicator(
-                                                    onRefresh: () =>
-                                                        controller.getOrder(),
-                                                    child: ListView.builder(
-                                                      itemCount: controller
-                                                          .newOrderList.length,
-                                                      shrinkWrap: true,
-                                                      padding: EdgeInsets.zero,
-                                                      itemBuilder:
-                                                          (context, index) {
-                                                        OrderModel orderModel =
-                                                            controller
-                                                                    .newOrderList[
-                                                                index];
-                                                        return itemView(
-                                                            themeChange,
-                                                            context,
-                                                            orderModel,
-                                                            controller);
-                                                      },
-                                                    ),
-                                                  ),
-                                            controller.inProgressList.isEmpty
-                                                ? Constant.showEmptyView(
-                                                    message:
-                                                        "Order Not Found".tr)
-                                                : RefreshIndicator(
-                                                    onRefresh: () =>
-                                                        controller.getOrder(),
-                                                    child: ListView.builder(
-                                                      itemCount: controller
-                                                          .inProgressList
-                                                          .length,
-                                                      shrinkWrap: true,
-                                                      padding: EdgeInsets.zero,
-                                                      itemBuilder:
-                                                          (context, index) {
-                                                        OrderModel orderModel =
-                                                            controller
-                                                                    .inProgressList[
-                                                                index];
-                                                        return itemView(
-                                                            themeChange,
-                                                            context,
-                                                            orderModel,
-                                                            controller);
-                                                      },
-                                                    ),
-                                                  ),
-                                            controller.deliveredList.isEmpty
-                                                ? Constant.showEmptyView(
-                                                    message:
-                                                        "Order Not Found".tr)
-                                                : RefreshIndicator(
-                                                    onRefresh: () =>
-                                                        controller.getOrder(),
-                                                    child: ListView.builder(
-                                                      itemCount: controller
-                                                          .deliveredList.length,
-                                                      shrinkWrap: true,
-                                                      padding: EdgeInsets.zero,
-                                                      itemBuilder:
-                                                          (context, index) {
-                                                        OrderModel orderModel =
-                                                            controller
-                                                                    .deliveredList[
-                                                                index];
-                                                        return itemView(
-                                                            themeChange,
-                                                            context,
-                                                            orderModel,
-                                                            controller);
-                                                      },
-                                                    ),
-                                                  ),
-                                            controller.cancelledList.isEmpty
-                                                ? Constant.showEmptyView(
-                                                    message:
-                                                        "Order Not Found".tr)
-                                                : RefreshIndicator(
-                                                    onRefresh: () =>
-                                                        controller.getOrder(),
-                                                    child: ListView.builder(
-                                                      itemCount: controller
-                                                          .cancelledList.length,
-                                                      shrinkWrap: true,
-                                                      padding: EdgeInsets.zero,
-                                                      itemBuilder:
-                                                          (context, index) {
-                                                        OrderModel orderModel =
-                                                            controller
-                                                                    .cancelledList[
-                                                                index];
-                                                        return itemView(
-                                                            themeChange,
-                                                            context,
-                                                            orderModel,
-                                                            controller);
-                                                      },
-                                                    ),
-                                                  ),
-                                            controller.rejectedList.isEmpty
-                                                ? Constant.showEmptyView(
-                                                    message:
-                                                        "Order Not Found".tr)
-                                                : RefreshIndicator(
-                                                    onRefresh: () =>
-                                                        controller.getOrder(),
-                                                    child: ListView.builder(
-                                                      itemCount: controller
-                                                          .rejectedList.length,
-                                                      shrinkWrap: true,
-                                                      padding: EdgeInsets.zero,
-                                                      itemBuilder:
-                                                          (context, index) {
-                                                        OrderModel orderModel =
-                                                            controller
-                                                                    .rejectedList[
-                                                                index];
-                                                        return itemView(
-                                                            themeChange,
-                                                            context,
-                                                            orderModel,
-                                                            controller);
-                                                      },
-                                                    ),
-                                                  ),
-                                          ],
-                                        ),
-                                      ),
+                                      // Add refresh button
+                                      // IconButton(
+                                      //   onPressed: () {
+                                      //     controller.refreshOrders();
+                                      //   },
+                                      //   icon: Icon(
+                                      //     Icons.refresh,
+                                      //     color: themeChange.getThem()
+                                      //         ? AppThemeData.grey50
+                                      //         : AppThemeData.grey900,
+                                      //   ),
+                                      // ),
+                                      // // Add debug button to force set user ID
+                                      // IconButton(
+                                      //   onPressed: () {
+                                      //     controller.forceSetUserId();
+                                      //     controller.refreshOrders();
+                                      //   },
+                                      //   icon: Icon(
+                                      //     Icons.bug_report,
+                                      //     color: themeChange.getThem()
+                                      //         ? AppThemeData.grey50
+                                      //         : AppThemeData.grey900,
+                                      //   ),
+                                      // ),
                                     ],
                                   ),
                                 ),
-                              )
-                            ],
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16),
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 6, horizontal: 10),
+                                          decoration: ShapeDecoration(
+                                            color: themeChange.getThem()
+                                                ? AppThemeData.grey800
+                                                : AppThemeData.grey100,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(120),
+                                            ),
+                                          ),
+                                          child: TabBar(
+                                            indicator: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        50), // Creates border
+                                                color: AppThemeData.primary300),
+                                            labelColor: AppThemeData.grey50,
+                                            isScrollable: true,
+                                            tabAlignment: TabAlignment.start,
+                                            indicatorWeight: 0.5,
+                                            unselectedLabelColor:
+                                                themeChange.getThem()
+                                                    ? AppThemeData.grey50
+                                                    : AppThemeData.grey900,
+                                            dividerColor: Colors.transparent,
+                                            indicatorSize:
+                                                TabBarIndicatorSize.tab,
+                                            tabs: [
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 18),
+                                                child: Tab(
+                                                  text: 'All'.tr,
+                                                ),
+                                              ),
+                                              Tab(
+                                                text: 'New Orders'.tr,
+                                              ),
+                                              Tab(
+                                                text: 'In Progress'.tr,
+                                              ),
+                                              Tab(
+                                                text: 'Delivered'.tr,
+                                              ),
+                                              Tab(
+                                                text: 'Cancelled'.tr,
+                                              ),
+                                              Tab(
+                                                text: 'Rejected'.tr,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Expanded(
+                                          child: TabBarView(
+                                            children: [
+                                              controller.allList.isEmpty
+                                                  ? Constant.showEmptyView(
+                                                      message:
+                                                          "Order Not Found".tr)
+                                                  : RefreshIndicator(
+                                                      onRefresh: () =>
+                                                          controller.getOrder(),
+                                                      child: ListView.builder(
+                                                        itemCount: controller
+                                                            .allList.length,
+                                                        shrinkWrap: true,
+                                                        padding:
+                                                            EdgeInsets.zero,
+                                                        itemBuilder:
+                                                            (context, index) {
+                                                          OrderModel
+                                                              orderModel =
+                                                              controller
+                                                                      .allList[
+                                                                  index];
+                                                          return itemView(
+                                                              themeChange,
+                                                              context,
+                                                              orderModel,
+                                                              controller);
+                                                        },
+                                                      ),
+                                                    ),
+                                              controller.newOrderList.isEmpty
+                                                  ? Constant.showEmptyView(
+                                                      message:
+                                                          "Order Not Found".tr)
+                                                  : RefreshIndicator(
+                                                      onRefresh: () =>
+                                                          controller.getOrder(),
+                                                      child: ListView.builder(
+                                                        itemCount: controller
+                                                            .newOrderList
+                                                            .length,
+                                                        shrinkWrap: true,
+                                                        padding:
+                                                            EdgeInsets.zero,
+                                                        itemBuilder:
+                                                            (context, index) {
+                                                          OrderModel
+                                                              orderModel =
+                                                              controller
+                                                                      .newOrderList[
+                                                                  index];
+                                                          return itemView(
+                                                              themeChange,
+                                                              context,
+                                                              orderModel,
+                                                              controller);
+                                                        },
+                                                      ),
+                                                    ),
+                                              controller.inProgressList.isEmpty
+                                                  ? Constant.showEmptyView(
+                                                      message:
+                                                          "Order Not Found".tr)
+                                                  : RefreshIndicator(
+                                                      onRefresh: () =>
+                                                          controller.getOrder(),
+                                                      child: ListView.builder(
+                                                        itemCount: controller
+                                                            .inProgressList
+                                                            .length,
+                                                        shrinkWrap: true,
+                                                        padding:
+                                                            EdgeInsets.zero,
+                                                        itemBuilder:
+                                                            (context, index) {
+                                                          OrderModel
+                                                              orderModel =
+                                                              controller
+                                                                      .inProgressList[
+                                                                  index];
+                                                          return itemView(
+                                                              themeChange,
+                                                              context,
+                                                              orderModel,
+                                                              controller);
+                                                        },
+                                                      ),
+                                                    ),
+                                              controller.deliveredList.isEmpty
+                                                  ? Constant.showEmptyView(
+                                                      message:
+                                                          "Order Not Found".tr)
+                                                  : RefreshIndicator(
+                                                      onRefresh: () =>
+                                                          controller.getOrder(),
+                                                      child: ListView.builder(
+                                                        itemCount: controller
+                                                            .deliveredList
+                                                            .length,
+                                                        shrinkWrap: true,
+                                                        padding:
+                                                            EdgeInsets.zero,
+                                                        itemBuilder:
+                                                            (context, index) {
+                                                          OrderModel
+                                                              orderModel =
+                                                              controller
+                                                                      .deliveredList[
+                                                                  index];
+                                                          return itemView(
+                                                              themeChange,
+                                                              context,
+                                                              orderModel,
+                                                              controller);
+                                                        },
+                                                      ),
+                                                    ),
+                                              controller.cancelledList.isEmpty
+                                                  ? Constant.showEmptyView(
+                                                      message:
+                                                          "Order Not Found".tr)
+                                                  : RefreshIndicator(
+                                                      onRefresh: () =>
+                                                          controller.getOrder(),
+                                                      child: ListView.builder(
+                                                        itemCount: controller
+                                                            .cancelledList
+                                                            .length,
+                                                        shrinkWrap: true,
+                                                        padding:
+                                                            EdgeInsets.zero,
+                                                        itemBuilder:
+                                                            (context, index) {
+                                                          OrderModel
+                                                              orderModel =
+                                                              controller
+                                                                      .cancelledList[
+                                                                  index];
+                                                          return itemView(
+                                                              themeChange,
+                                                              context,
+                                                              orderModel,
+                                                              controller);
+                                                        },
+                                                      ),
+                                                    ),
+                                              controller.rejectedList.isEmpty
+                                                  ? Constant.showEmptyView(
+                                                      message:
+                                                          "Order Not Found".tr)
+                                                  : RefreshIndicator(
+                                                      onRefresh: () =>
+                                                          controller.getOrder(),
+                                                      child: ListView.builder(
+                                                        itemCount: controller
+                                                            .rejectedList
+                                                            .length,
+                                                        shrinkWrap: true,
+                                                        padding:
+                                                            EdgeInsets.zero,
+                                                        itemBuilder:
+                                                            (context, index) {
+                                                          OrderModel
+                                                              orderModel =
+                                                              controller
+                                                                      .rejectedList[
+                                                                  index];
+                                                          return itemView(
+                                                              themeChange,
+                                                              context,
+                                                              orderModel,
+                                                              controller);
+                                                        },
+                                                      ),
+                                                    ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
-                        ),
-            ),
-          );
-        });
+              ),
+            );
+          });
+    });
   }
 
   itemView(DarkThemeProvider themeChange, BuildContext context,

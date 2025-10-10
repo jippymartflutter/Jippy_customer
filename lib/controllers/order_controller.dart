@@ -24,13 +24,18 @@ class OrderController extends GetxController {
     super.onInit();
   }
 
+  void refreshDataAfterUserLoaded() {
+    print('[DEBUG] Refreshing favourites after user data loaded');
+    getOrder();
+  }
+
   getOrder() async {
     // Debug logging (will be optimized out in release builds)
     if (kDebugMode) {
       log('[OrderController] getOrder called');
       log('[OrderController] Constant.userModel: ${Constant.userModel != null ? "EXISTS" : "NULL"}');
     }
-    
+
     // Ensure backendUserId is set if user model exists
     if (Constant.userModel != null) {
       // Always use the correct user ID from Constant.userModel
@@ -39,7 +44,7 @@ class OrderController extends GetxController {
         log('[OrderController] Set backendUserId to: ${Constant.userModel!.id}');
       }
     }
-    
+
     if (Constant.userModel != null) {
       if (kDebugMode) {
         log('[OrderController] User model exists, fetching orders...');
@@ -49,14 +54,15 @@ class OrderController extends GetxController {
         if (kDebugMode) {
           log('[OrderController] Fetched ${orders.length} orders');
         }
-        
+
         allList.value = orders;
         if (kDebugMode) {
           log('[OrderController] All orders: ${allList.length}');
         }
 
         newOrderList.value = allList
-            .where((p0) => p0.status == Constant.orderPlaced || p0.status == "pending")
+            .where((p0) =>
+                p0.status == Constant.orderPlaced || p0.status == "pending")
             .toList();
         rejectedList.value =
             allList.where((p0) => p0.status == Constant.orderRejected).toList();
