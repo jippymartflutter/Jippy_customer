@@ -4724,9 +4724,12 @@ class CartController extends GetxController
     }
   }
 
+  RxBool isGlobalLocked = false.obs;
+
   /// ✅ NEW: Safe payment success handler with crash prevention
   void handlePaymentSuccess(PaymentSuccessResponse response) {
     try {
+      isGlobalLocked.value = true;
       print('🔑 RAZORPAY SUCCESS - Processing payment success');
       print('🔑 RAZORPAY SUCCESS - Handler called at: ${DateTime.now()}');
       print('DEBUG: Payment response: ${response.data}');
@@ -4749,11 +4752,13 @@ class CartController extends GetxController
       ShowToastDialog.showLoader("Processing payment and placing order...".tr);
 
       // Add a small delay to ensure payment is fully processed
-      Future.delayed(const Duration(milliseconds: 500), () {
+      Future.delayed(const Duration(milliseconds: 500), () async {
         print('🔑 RAZORPAY SUCCESS - Starting order placement after delay');
         placeOrderAfterPayment();
+        isGlobalLocked.value = false;
       });
     } catch (e) {
+      isGlobalLocked.value = false;
       print('🔑 ERROR: Payment success handler failed: $e');
       isPaymentInProgress.value = false;
       ShowToastDialog.showToast(

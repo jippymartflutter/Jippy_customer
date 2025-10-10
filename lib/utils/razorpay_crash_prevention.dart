@@ -10,7 +10,8 @@ import 'package:razorpay_flutter/razorpay_flutter.dart';
 /// - Graceful error handling for payment operations
 /// - Version compatibility checks
 class RazorpayCrashPrevention {
-  static final RazorpayCrashPrevention _instance = RazorpayCrashPrevention._internal();
+  static final RazorpayCrashPrevention _instance =
+      RazorpayCrashPrevention._internal();
   factory RazorpayCrashPrevention() => _instance;
   RazorpayCrashPrevention._internal();
 
@@ -39,7 +40,8 @@ class RazorpayCrashPrevention {
       _razorpay = Razorpay();
 
       // Set up event handlers with error protection
-      _razorpay!.on(Razorpay.EVENT_PAYMENT_SUCCESS, (PaymentSuccessResponse response) {
+      _razorpay!.on(Razorpay.EVENT_PAYMENT_SUCCESS,
+          (PaymentSuccessResponse response) {
         try {
           log('RAZORPAY_CRASH_PREVENTION: Payment success received');
           log('RAZORPAY_CRASH_PREVENTION: Payment ID: ${response.paymentId}');
@@ -51,7 +53,8 @@ class RazorpayCrashPrevention {
         }
       });
 
-      _razorpay!.on(Razorpay.EVENT_PAYMENT_ERROR, (PaymentFailureResponse response) {
+      _razorpay!.on(Razorpay.EVENT_PAYMENT_ERROR,
+          (PaymentFailureResponse response) {
         try {
           log('RAZORPAY_CRASH_PREVENTION: Payment error received: ${response.message}');
           onFailure(response);
@@ -60,7 +63,8 @@ class RazorpayCrashPrevention {
         }
       });
 
-      _razorpay!.on(Razorpay.EVENT_EXTERNAL_WALLET, (ExternalWalletResponse response) {
+      _razorpay!.on(Razorpay.EVENT_EXTERNAL_WALLET,
+          (ExternalWalletResponse response) {
         try {
           log('RAZORPAY_CRASH_PREVENTION: External wallet response received');
           onExternalWallet(response);
@@ -74,7 +78,6 @@ class RazorpayCrashPrevention {
 
       log('RAZORPAY_CRASH_PREVENTION: ✅ Safe initialization completed');
       return true;
-
     } catch (e) {
       log('RAZORPAY_CRASH_PREVENTION: ❌ Initialization failed: $e');
       _isInitialized = false;
@@ -92,7 +95,6 @@ class RazorpayCrashPrevention {
         log('RAZORPAY_CRASH_PREVENTION: Razorpay not safely initialized, cannot open payment');
         return false;
       }
-
       // ✅ CRITICAL: Validate options before opening payment
       if (!_validatePaymentOptions(options)) {
         log('RAZORPAY_CRASH_PREVENTION: Invalid payment options');
@@ -104,7 +106,6 @@ class RazorpayCrashPrevention {
 
       log('RAZORPAY_CRASH_PREVENTION: ✅ Payment opened successfully');
       return true;
-
     } catch (e) {
       log('RAZORPAY_CRASH_PREVENTION: ❌ Error opening payment: $e');
       return false;
@@ -167,12 +168,10 @@ class RazorpayCrashPrevention {
 
         log('RAZORPAY_CRASH_PREVENTION: ✅ Razorpay can be safely initialized');
         return true;
-
       } catch (e) {
         log('RAZORPAY_CRASH_PREVENTION: ❌ Razorpay constant access failed: $e');
         return false;
       }
-
     } catch (e) {
       log('RAZORPAY_CRASH_PREVENTION: ❌ Razorpay instantiation test failed: $e');
       return false;
@@ -227,7 +226,6 @@ class RazorpayCrashPrevention {
 
       log('RAZORPAY_CRASH_PREVENTION: ✅ Payment options validated successfully');
       return true;
-
     } catch (e) {
       log('RAZORPAY_CRASH_PREVENTION: ❌ Payment options validation failed: $e');
       return false;
@@ -239,7 +237,8 @@ class RazorpayCrashPrevention {
 ///
 /// Add this mixin to controllers that use Razorpay
 mixin RazorpayCrashPreventionMixin {
-  final RazorpayCrashPrevention _razorpayCrashPrevention = RazorpayCrashPrevention();
+  final RazorpayCrashPrevention _razorpayCrashPrevention =
+      RazorpayCrashPrevention();
 
   /// **SAFE RAZORPAY INITIALIZATION**
   Future<bool> safeInitializeRazorpay({
@@ -293,7 +292,8 @@ class RazorpayErrorRecovery {
       // Check if we should attempt recovery
       if (_consecutiveErrors > _maxConsecutiveErrors) {
         final now = DateTime.now();
-        if (_lastErrorTime != null && now.difference(_lastErrorTime!) < _errorCooldown) {
+        if (_lastErrorTime != null &&
+            now.difference(_lastErrorTime!) < _errorCooldown) {
           log('RAZORPAY_ERROR_RECOVERY: Too many consecutive errors, skipping recovery');
           return false;
         } else {
@@ -311,7 +311,6 @@ class RazorpayErrorRecovery {
         log('RAZORPAY_ERROR_RECOVERY: ❌ Recovery failed');
         return false;
       }
-
     } catch (e) {
       log('RAZORPAY_ERROR_RECOVERY: ❌ Error handling failed: $e');
       return false;
@@ -335,7 +334,6 @@ class RazorpayErrorRecovery {
       }
 
       return true;
-
     } catch (e) {
       log('RAZORPAY_ERROR_RECOVERY: Recovery attempt failed: $e');
       return false;
