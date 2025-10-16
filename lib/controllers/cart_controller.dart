@@ -122,6 +122,24 @@ class CartController extends GetxController
       throw Exception("Surge rules not found");
     }
   }
+  Future<String> getAdminSurgeFee() async {
+    final doc = await FirebaseFirestore.instance
+        .collection("surge_rules")
+        .doc("surge_settings")
+        .get();
+
+    if (doc.exists) {
+      final data = doc.data();
+      if (data != null && data.containsKey('admin_surge_fee')) {
+        print("Admin Surge Fee: ${data['admin_surge_fee']}");
+        return data['admin_surge_fee'].toString(); // return as String
+      } else {
+        throw Exception("Field 'admin_surge_fee' not found in surge_settings");
+      }
+    } else {
+      throw Exception("Document surge_settings not found");
+    }
+  }
 
   double calculateSurgeFee(
       Map<String, dynamic> weather, Map<String, dynamic> rules) {
@@ -132,9 +150,11 @@ class CartController extends GetxController
     if (condition.contains("rain")) surge += rules["rain"];
     // Temperature check for summer/winter
     double temp = weather['main']['temp'];
-    if (temp > 35) surge += rules["summer"]; // hot weather
+    if (temp > 45) surge += rules["summer"]; // hot weather
     if (temp < 10) surge += rules["bad_weather"]; // cold/winter
     print(" newvaluevalue ${surge}");
+    // if(surge > 0) surge+=rules["admin_surge_fee"];
+
     return surge; // percentage
   }
 
@@ -4022,13 +4042,17 @@ class CartController extends GetxController
               Constant.adminCommission!.commissionType;
         }
       }
+      String admin_fee  ="0";
+      if(surgePercent.value>0){
+        admin_fee=   await getAdminSurgeFee();
+      }
       orderModel.products = tempProduc;
       orderModel.specialDiscount = specialDiscountMap;
       orderModel.paymentMethod = selectedPaymentMethod.value;
       orderModel.status = Constant.orderPlaced;
       orderModel.createdAt = Timestamp.now();
-      orderModel.couponId = selectedCouponModel.value?.id ?? '';
-      orderModel.couponCode = selectedCouponModel.value?.code ?? '';
+      orderModel.couponId = selectedCouponModel.value.id ?? '';
+      orderModel.couponCode = selectedCouponModel.value.code ?? '';
       orderModel.discount = couponAmount.value ?? 0.0;
       orderModel.deliveryCharge = deliveryCharges.value?.toString() ?? '0.0';
       orderModel.tipAmount = deliveryTips.value?.toString() ?? '0.0';
@@ -4036,7 +4060,7 @@ class CartController extends GetxController
       orderModel.scheduleTime = scheduleDateTime.value != null
           ? Timestamp.fromDate(scheduleDateTime.value!)
           : null;
-
+      orderModel.surgeFee = "${surgePercent.value+ int.parse(admin_fee)}";
       // Calculate distance (stored in vendor model for reference)
       if (vendorModel.value.id != null &&
           vendorModel.value.latitude != null &&
@@ -4078,9 +4102,10 @@ class CartController extends GetxController
         'orderId': orderModel.id,
         'ToPay': orderModel.toPayAmount,
         'createdAt': Timestamp.now(),
-        'serge_fee': surgePercent.value
+        'surge_fee': surgePercent.value,
+        'admin_surge_fee':admin_fee,
+        'total_surge_fee':"${surgePercent.value+ int.parse(admin_fee)}",
       }));
-
       // Send notifications and email
       if (orderModel.vendor != null && orderModel.vendor!.author != null) {
         additionalTasks.add(
@@ -4724,9 +4749,12 @@ class CartController extends GetxController
     }
   }
 
+  RxBool isGlobalLocked = false.obs;
+
   /// ✅ NEW: Safe payment success handler with crash prevention
   void handlePaymentSuccess(PaymentSuccessResponse response) {
     try {
+      isGlobalLocked.value = true;
       print('🔑 RAZORPAY SUCCESS - Processing payment success');
       print('🔑 RAZORPAY SUCCESS - Handler called at: ${DateTime.now()}');
       print('DEBUG: Payment response: ${response.data}');
@@ -4749,11 +4777,13 @@ class CartController extends GetxController
       ShowToastDialog.showLoader("Processing payment and placing order...".tr);
 
       // Add a small delay to ensure payment is fully processed
-      Future.delayed(const Duration(milliseconds: 500), () {
+      Future.delayed(const Duration(milliseconds: 500), () async {
         print('🔑 RAZORPAY SUCCESS - Starting order placement after delay');
         placeOrderAfterPayment();
+        isGlobalLocked.value = false;
       });
     } catch (e) {
+      isGlobalLocked.value = false;
       print('🔑 ERROR: Payment success handler failed: $e');
       isPaymentInProgress.value = false;
       ShowToastDialog.showToast(

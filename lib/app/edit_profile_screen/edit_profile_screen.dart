@@ -24,12 +24,15 @@ class EditProfileScreen extends StatelessWidget {
     return GetX(
         init: EditProfileController(),
         builder: (controller) {
-          print('[PROFILE_SCREEN] Loaded user model: ' + controller.userModel.value.toJson().toString());
+          print('[PROFILE_SCREEN] Loaded user model: ' +
+              controller.userModel.value.toJson().toString());
           return Scaffold(
             appBar: AppBar(
               centerTitle: false,
               titleSpacing: 0,
-              backgroundColor: themeChange.getThem() ? AppThemeData.surfaceDark : AppThemeData.surface,
+              backgroundColor: themeChange.getThem()
+                  ? AppThemeData.surfaceDark
+                  : AppThemeData.surface,
             ),
             body: SingleChildScrollView(
               child: Padding(
@@ -41,16 +44,21 @@ class EditProfileScreen extends StatelessWidget {
                       "Profile Information".tr,
                       style: TextStyle(
                         fontSize: 24,
-                        color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+                        color: themeChange.getThem()
+                            ? AppThemeData.grey50
+                            : AppThemeData.grey900,
                         fontFamily: AppThemeData.semiBold,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                     Text(
-                      "View and update your personal details, contact information, and preferences.".tr,
+                      "View and update your personal details, contact information, and preferences."
+                          .tr,
                       style: TextStyle(
                         fontSize: 16,
-                        color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+                        color: themeChange.getThem()
+                            ? AppThemeData.grey50
+                            : AppThemeData.grey900,
                         fontFamily: AppThemeData.regular,
                         fontWeight: FontWeight.w400,
                       ),
@@ -71,7 +79,9 @@ class EditProfileScreen extends StatelessWidget {
                                     fit: BoxFit.cover,
                                   ),
                                 )
-                              : Constant().hasValidUrl(controller.profileImage.value) == false
+                              : Constant().hasValidUrl(
+                                          controller.profileImage.value) ==
+                                      false
                                   ? ClipRRect(
                                       borderRadius: BorderRadius.circular(60),
                                       child: Image.file(
@@ -103,7 +113,8 @@ class EditProfileScreen extends StatelessWidget {
                                   onTap: () {
                                     buildBottomSheet(context, controller);
                                   },
-                                  child: SvgPicture.asset("assets/icons/ic_edit.svg")))
+                                  child: SvgPicture.asset(
+                                      "assets/icons/ic_edit.svg")))
                         ],
                       ),
                     ),
@@ -136,14 +147,16 @@ class EditProfileScreen extends StatelessWidget {
                       textInputType: TextInputType.emailAddress,
                       controller: controller.emailController.value,
                       hintText: 'Email'.tr,
-                      enable: false,
+                      enable: true,
                     ),
                     TextFieldWidget(
                       title: 'Phone Number'.tr,
                       textInputType: TextInputType.phone,
                       controller: controller.phoneNumberController.value,
                       hintText: 'Phone Number'.tr,
-                      enable: controller.phoneNumberController.value.text.trim().isEmpty,
+                      enable: controller.phoneNumberController.value.text
+                          .trim()
+                          .isEmpty,
                     ),
                     // Address field - display only
                     Container(
@@ -155,7 +168,9 @@ class EditProfileScreen extends StatelessWidget {
                             'Address'.tr,
                             style: TextStyle(
                               fontSize: 16,
-                              color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+                              color: themeChange.getThem()
+                                  ? AppThemeData.grey50
+                                  : AppThemeData.grey900,
                               fontFamily: AppThemeData.semiBold,
                               fontWeight: FontWeight.w500,
                             ),
@@ -169,155 +184,192 @@ class EditProfileScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                             child: Container(
                               width: double.infinity,
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 12),
                               decoration: BoxDecoration(
-                                color: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
+                                color: themeChange.getThem()
+                                    ? AppThemeData.grey900
+                                    : AppThemeData.grey50,
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
-                                  color: themeChange.getThem() ? AppThemeData.grey700 : AppThemeData.grey200,
+                                  color: themeChange.getThem()
+                                      ? AppThemeData.grey700
+                                      : AppThemeData.grey200,
                                   width: 1,
                                 ),
                               ),
-                            child: Obx(() {
-                              final userModel = controller.userModel.value;
-                              if (userModel.shippingAddress != null && userModel.shippingAddress!.isNotEmpty) {
-                                final addresses = userModel.shippingAddress!;
-                                
-                                if (addresses.length == 1) {
-                                  // Single address - show directly
-                                  final address = addresses.first;
-                                  return Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        address.addressAs ?? 'Address',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: themeChange.getThem() ? AppThemeData.grey300 : AppThemeData.grey600,
-                                          fontFamily: AppThemeData.medium,
-                                          fontWeight: FontWeight.w500,
+                              child: Obx(() {
+                                final userModel = controller.userModel.value;
+                                if (userModel.shippingAddress != null &&
+                                    userModel.shippingAddress!.isNotEmpty) {
+                                  final addresses = userModel.shippingAddress!;
+
+                                  if (addresses.length == 1) {
+                                    // Single address - show directly
+                                    final address = addresses.first;
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          address.addressAs ?? 'Address',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: themeChange.getThem()
+                                                ? AppThemeData.grey300
+                                                : AppThemeData.grey600,
+                                            fontFamily: AppThemeData.medium,
+                                            fontWeight: FontWeight.w500,
+                                          ),
                                         ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        address.getFullAddress(),
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: themeChange.getThem() ? AppThemeData.grey100 : AppThemeData.grey800,
-                                          fontFamily: AppThemeData.regular,
-                                          fontWeight: FontWeight.w400,
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          address.getFullAddress(),
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: themeChange.getThem()
+                                                ? AppThemeData.grey100
+                                                : AppThemeData.grey800,
+                                            fontFamily: AppThemeData.regular,
+                                            fontWeight: FontWeight.w400,
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  );
-                                } else {
-                                  // Multiple addresses - show count and default address
-                                  final defaultAddress = addresses.firstWhere(
-                                    (a) => a.isDefault == true, 
-                                    orElse: () => addresses.first
-                                  );
-                                  
-                                  return Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                              '${addresses.length} Addresses Saved',
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                color: themeChange.getThem() ? AppThemeData.grey300 : AppThemeData.grey600,
-                                                fontFamily: AppThemeData.medium,
-                                                fontWeight: FontWeight.w500,
+                                      ],
+                                    );
+                                  } else {
+                                    // Multiple addresses - show count and default address
+                                    final defaultAddress = addresses.firstWhere(
+                                        (a) => a.isDefault == true,
+                                        orElse: () => addresses.first);
+
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                '${addresses.length} Addresses Saved',
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: themeChange.getThem()
+                                                      ? AppThemeData.grey300
+                                                      : AppThemeData.grey600,
+                                                  fontFamily:
+                                                      AppThemeData.medium,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          Text(
-                                            'Tap to view all',
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: AppThemeData.primary300,
-                                              fontFamily: AppThemeData.regular,
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 8),
-                                      // Show default address
-                                      Container(
-                                        padding: const EdgeInsets.all(12),
-                                        decoration: BoxDecoration(
-                                          color: themeChange.getThem() ? AppThemeData.grey800 : AppThemeData.grey100,
-                                          borderRadius: BorderRadius.circular(6),
-                                          border: Border.all(
-                                            color: AppThemeData.primary300.withOpacity(0.3),
-                                            width: 1,
-                                          ),
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  defaultAddress.addressAs ?? 'Address',
-                                                  style: TextStyle(
-                                                    fontSize: 13,
-                                                    color: AppThemeData.primary300,
-                                                    fontFamily: AppThemeData.semiBold,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 8),
-                                                Container(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                                  decoration: BoxDecoration(
-                                                    color: AppThemeData.primary300,
-                                                    borderRadius: BorderRadius.circular(4),
-                                                  ),
-                                                  child: Text(
-                                                    'DEFAULT',
-                                                    style: TextStyle(
-                                                      fontSize: 10,
-                                                      color: Colors.white,
-                                                      fontFamily: AppThemeData.semiBold,
-                                                      fontWeight: FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            const SizedBox(height: 4),
                                             Text(
-                                              defaultAddress.getFullAddress(),
+                                              'Tap to view all',
                                               style: TextStyle(
-                                                fontSize: 14,
-                                                color: themeChange.getThem() ? AppThemeData.grey200 : AppThemeData.grey700,
-                                                fontFamily: AppThemeData.regular,
+                                                fontSize: 12,
+                                                color: AppThemeData.primary300,
+                                                fontFamily:
+                                                    AppThemeData.regular,
                                                 fontWeight: FontWeight.w400,
                                               ),
                                             ),
                                           ],
                                         ),
-                                      ),
-                                    ],
+                                        const SizedBox(height: 8),
+                                        // Show default address
+                                        Container(
+                                          padding: const EdgeInsets.all(12),
+                                          decoration: BoxDecoration(
+                                            color: themeChange.getThem()
+                                                ? AppThemeData.grey800
+                                                : AppThemeData.grey100,
+                                            borderRadius:
+                                                BorderRadius.circular(6),
+                                            border: Border.all(
+                                              color: AppThemeData.primary300
+                                                  .withOpacity(0.3),
+                                              width: 1,
+                                            ),
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    defaultAddress.addressAs ??
+                                                        'Address',
+                                                    style: TextStyle(
+                                                      fontSize: 13,
+                                                      color: AppThemeData
+                                                          .primary300,
+                                                      fontFamily:
+                                                          AppThemeData.semiBold,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                  Container(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 6,
+                                                        vertical: 2),
+                                                    decoration: BoxDecoration(
+                                                      color: AppThemeData
+                                                          .primary300,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              4),
+                                                    ),
+                                                    child: Text(
+                                                      'DEFAULT',
+                                                      style: TextStyle(
+                                                        fontSize: 10,
+                                                        color: Colors.white,
+                                                        fontFamily: AppThemeData
+                                                            .semiBold,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                defaultAddress.getFullAddress(),
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: themeChange.getThem()
+                                                      ? AppThemeData.grey200
+                                                      : AppThemeData.grey700,
+                                                  fontFamily:
+                                                      AppThemeData.regular,
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  }
+                                } else {
+                                  return Text(
+                                    'No address saved'.tr,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: themeChange.getThem()
+                                          ? AppThemeData.grey400
+                                          : AppThemeData.grey500,
+                                      fontFamily: AppThemeData.regular,
+                                      fontWeight: FontWeight.w400,
+                                      fontStyle: FontStyle.italic,
+                                    ),
                                   );
                                 }
-                              } else {
-                                return Text(
-                                  'No address saved'.tr,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: themeChange.getThem() ? AppThemeData.grey400 : AppThemeData.grey500,
-                                    fontFamily: AppThemeData.regular,
-                                    fontWeight: FontWeight.w400,
-                                    fontStyle: FontStyle.italic,
-                                  ),
-                                );
-                              }
-                            }),
+                              }),
                             ),
                           ),
                         ],
@@ -328,7 +380,9 @@ class EditProfileScreen extends StatelessWidget {
               ),
             ),
             bottomNavigationBar: Container(
-              color: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
+              color: themeChange.getThem()
+                  ? AppThemeData.grey900
+                  : AppThemeData.grey50,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
               child: Padding(
                   padding: const EdgeInsets.only(bottom: 20),
@@ -339,8 +393,7 @@ class EditProfileScreen extends StatelessWidget {
                     textColor: AppThemeData.grey50,
                     fontSizes: 16,
                     onPress: () async {
-                      await controller.saveData();
-                      Get.back(result: "profile_updated");
+                      await controller.saveData(context);
                     },
                   )),
             ),
@@ -377,7 +430,8 @@ class EditProfileScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             IconButton(
-                                onPressed: () => controller.pickFile(source: ImageSource.camera),
+                                onPressed: () => controller.pickFile(
+                                    source: ImageSource.camera),
                                 icon: const Icon(
                                   Icons.camera_alt,
                                   size: 32,
@@ -399,7 +453,8 @@ class EditProfileScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             IconButton(
-                              onPressed: () => controller.pickFile(source: ImageSource.gallery),
+                              onPressed: () => controller.pickFile(
+                                  source: ImageSource.gallery),
                               icon: const Icon(
                                 Icons.photo_library_sharp,
                                 size: 32,

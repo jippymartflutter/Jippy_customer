@@ -95,7 +95,7 @@ class ProductModel {
     photos = json['photos'] != null ? json['photos'].cast<String>() : null;
     nonveg = json['nonveg'];
     photo = json['photo'];
-    price = json['price'];
+    price = json['price'].toString();
     categoryID = json['categoryID'];
     description = json['description'];
     createdAt = json['createdAt'];

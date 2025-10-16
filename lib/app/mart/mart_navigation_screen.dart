@@ -6,6 +6,7 @@ import 'package:customer/services/cart_provider.dart';
 import 'package:customer/models/cart_product_model.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/themes/mart_theme.dart';
+import 'package:provider/provider.dart';
 
 class MartNavigationScreen extends StatefulWidget {
   const MartNavigationScreen({super.key});
@@ -157,29 +158,57 @@ class _MartNavigationScreenState extends State<MartNavigationScreen> {
                                 label: 'Cart',
                                 index: 2,
                                 controller: navController,
-                                badge: StreamBuilder<List<CartProductModel>>(
-                                  stream: CartProvider().cartStream,
-                                  builder: (context, snapshot) {
-                                    int cartItemCount = snapshot.data?.length ?? cartItem.length;
-                                    return cartItemCount > 0
-                                        ? Container(
-                                            padding: const EdgeInsets.all(4),
-                                            decoration: const BoxDecoration(
-                                              color: Colors.red,
-                                              shape: BoxShape.circle,
+                                badge: Consumer<CartProvider>(
+                                  builder: (context, cartProvider, _) {
+                                    return StreamBuilder<List<CartProductModel>>(
+                                      stream: cartProvider.cartStream,
+                                      builder: (context, snapshot) {
+                                        int cartItemCount = snapshot.data?.length ?? cartItem.length;
+                                        return cartItemCount > 0
+                                            ? Container(
+                                          padding: const EdgeInsets.all(4),
+                                          decoration: const BoxDecoration(
+                                            color: Colors.red,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Text(
+                                            cartItemCount.toString(),
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
                                             ),
-                                            child: Text(
-                                              cartItemCount.toString(),
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          )
-                                        : const SizedBox.shrink();
+                                          ),
+                                        )
+                                            : const SizedBox.shrink();
+                                      },
+                                    );
                                   },
                                 ),
+
+                                // badge: StreamBuilder<List<CartProductModel>>(
+                                //   stream: CartProvider().cartStream,
+                                //   builder: (context, snapshot) {
+                                //     int cartItemCount = snapshot.data?.length ?? cartItem.length;
+                                //     return cartItemCount > 0
+                                //         ? Container(
+                                //             padding: const EdgeInsets.all(4),
+                                //             decoration: const BoxDecoration(
+                                //               color: Colors.red,
+                                //               shape: BoxShape.circle,
+                                //             ),
+                                //             child: Text(
+                                //               cartItemCount.toString(),
+                                //               style: const TextStyle(
+                                //                 color: Colors.white,
+                                //                 fontSize: 10,
+                                //                 fontWeight: FontWeight.bold,
+                                //               ),
+                                //             ),
+                                //           )
+                                //         : const SizedBox.shrink();
+                                //   },
+                                // ),
                               ),
                               _buildNavItem(
                                 icon: Icons.person_outline,

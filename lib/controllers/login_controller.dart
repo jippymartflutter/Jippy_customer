@@ -395,7 +395,7 @@ class LoginController extends GetxController {
 
   Future<void> sendOtp() async {
     print(
-        '[DEBUG] sendOtp() called with phone: ${phoneEditingController.value.text.trim()}');
+        '[DEBUG] sendOtp() error:  ${phoneEditingController.value.text.trim()}');
     ShowToastDialog.showLoader("Please wait".tr);
     try {
       phoneNumber.value = phoneEditingController.value.text.trim();
@@ -489,33 +489,33 @@ class LoginController extends GetxController {
             userModel.active != true ||
             userModel.role?.toLowerCase() !=
                 Constant.userRoleCustomer.toLowerCase()) {
-          if (userModel?.role?.toLowerCase() == 'customer') {
-            // User not found, inactive, or not customer
-            UserModel newUser = UserModel();
-            newUser.phoneNumber = phone;
-            newUser.countryCode = countryCode.value;
-            newUser.email = response.data['user']?['email']?.toString();
-            ShowToastDialog.closeLoader();
-            Get.offAll(() => SignupScreen(),
-                arguments: {"userModel": newUser, "type": "mobileNumber"});
-            print(" user not exited ");
-            return;
-          } else {
-            print('[DEBUG] Firebase sign-in failed, forcing logout');
-
-            await FirebaseAuth.instance.signOut();
-            FireStoreUtils.backendUserId = null;
-            ShowToastDialog.closeLoader();
-            ShowToastDialog.showToast(
-              "${userModel?.role?.toUpperCase()} Account Already Exited",
-            );
-            Get.offAll(
-              () => const PhoneNumberScreen(),
-              transition: Transition.fadeIn,
-              duration: const Duration(milliseconds: 1200),
-            );
-            return;
-          }
+          // if (userModel?.role?.toLowerCase() == 'customer') {
+          // User not found, inactive, or not customer
+          UserModel newUser = UserModel();
+          newUser.phoneNumber = phone;
+          newUser.countryCode = countryCode.value;
+          newUser.email = response.data['user']?['email']?.toString();
+          ShowToastDialog.closeLoader();
+          Get.offAll(() => SignupScreen(),
+              arguments: {"userModel": newUser, "type": "mobileNumber"});
+          print(" user not exited ");
+          return;
+          // } else {
+          //   print('[DEBUG] Firebase sign-in failed, forcing logout');
+          //
+          //   await FirebaseAuth.instance.signOut();
+          //   FireStoreUtils.backendUserId = null;
+          //   ShowToastDialog.closeLoader();
+          //   ShowToastDialog.showToast(
+          //     "${userModel?.role?.toUpperCase()} Account Already Exited",
+          //   );
+          //   Get.offAll(
+          //     () => const PhoneNumberScreen(),
+          //     transition: Transition.fadeIn,
+          //     duration: const Duration(milliseconds: 1200),
+          //   );
+          //   return;
+          // }
         }
         if ((userModel.firstName == null || userModel.firstName!.isEmpty) ||
             (userModel.email == null || userModel.email!.isEmpty)) {

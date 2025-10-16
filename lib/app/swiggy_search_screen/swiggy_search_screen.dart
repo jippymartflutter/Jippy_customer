@@ -333,7 +333,65 @@ class _SwiggySearchScreenState extends State<SwiggySearchScreen> {
       ),
     );
   }
-
+// **CLEAR RECENT SEARCHES METHOD**
+  void _clearRecentSearches(themeChange) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            "Clear Recent Searches?",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+            ),
+          ),
+          content: Text(
+            "This will remove all your recent search history. This action cannot be undone.",
+            style: TextStyle(
+              color: AppThemeData.grey400,
+            ),
+          ),
+          backgroundColor: themeChange.getThem() ? AppThemeData.grey800 : AppThemeData.grey50,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                "Cancel",
+                style: TextStyle(
+                  color: AppThemeData.grey400,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                controller.clearRecentSearches();
+                Navigator.pop(context);
+                Get.snackbar(
+                  "Cleared",
+                  "Recent searches have been cleared",
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: AppThemeData.success500,
+                  colorText: AppThemeData.grey50,
+                );
+              },
+              child: Text(
+                "Clear",
+                style: TextStyle(
+                  color: AppThemeData.danger500,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
   Widget _buildInitialState(DarkThemeProvider themeChange) {
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -342,7 +400,7 @@ class _SwiggySearchScreenState extends State<SwiggySearchScreen> {
         children: [
           // Recent Searches
           if (controller.recentSearches.isNotEmpty) ...[
-            _buildSectionHeader("Recent Searches", themeChange),
+            _buildRecentSearchesHeader(themeChange), // Updated header with clear button
             const SizedBox(height: 16),
             _buildRecentSearches(themeChange),
             const SizedBox(height: 32),
@@ -359,6 +417,82 @@ class _SwiggySearchScreenState extends State<SwiggySearchScreen> {
       ),
     );
   }
+  // **RECENT SEARCHES HEADER WITH CLEAR BUTTON**
+  Widget _buildRecentSearchesHeader(DarkThemeProvider themeChange) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          "Recent Searches",
+          style: TextStyle(
+            fontFamily: AppThemeData.semiBold,
+            fontSize: 20,
+            color: themeChange.getThem()
+                ? AppThemeData.grey50
+                : AppThemeData.grey900,
+            letterSpacing: 0.3,
+          ),
+        ),
+        // **CLEAR BUTTON**
+        GestureDetector(
+          onTap:()=> _clearRecentSearches(themeChange),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: themeChange.getThem()
+                  ? AppThemeData.grey700
+                  : AppThemeData.grey200,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.clear_all,
+                  color: AppThemeData.grey500,
+                  size: 14,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  "Clear",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppThemeData.grey500,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+  // Widget _buildInitialState(DarkThemeProvider themeChange) {
+  //   return SingleChildScrollView(
+  //     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         // Recent Searches
+  //         if (controller.recentSearches.isNotEmpty) ...[
+  //           _buildSectionHeader("Recent Searches", themeChange),
+  //           const SizedBox(height: 16),
+  //           _buildRecentSearches(themeChange),
+  //           const SizedBox(height: 32),
+  //         ],
+  //
+  //         // Trending Searches
+  //         if (controller.trendingSearches.isNotEmpty) ...[
+  //           _buildSectionHeader("🔥 Trending Now", themeChange),
+  //           const SizedBox(height: 16),
+  //           _buildTrendingSearches(themeChange),
+  //           const SizedBox(height: 16),
+  //         ],
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildSuggestionsList(DarkThemeProvider themeChange) {
     return ListView.builder(

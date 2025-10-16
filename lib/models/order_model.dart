@@ -33,6 +33,7 @@ class OrderModel {
   bool? takeAway;
   List<dynamic>? rejectedByDrivers;
   double? toPayAmount;
+  String? surgeFee;
 
   OrderModel(
       {this.address,
@@ -62,7 +63,7 @@ class OrderModel {
       this.driver,
       this.takeAway,
       this.rejectedByDrivers,
-      this.toPayAmount});
+      this.toPayAmount,this.surgeFee});
 
   OrderModel.fromJson(Map<String, dynamic> json) {
     address = json['address'] != null ? ShippingAddress.fromJson(json['address']) : null;
@@ -103,6 +104,7 @@ class OrderModel {
     takeAway = json['takeAway'];
     rejectedByDrivers = json['rejectedByDrivers'] ?? [];
     toPayAmount = json['toPayAmount'] != null ? (json['toPayAmount'] as num).toDouble() : null;
+    surgeFee = json['surge_fee'];
   }
 
   Map<String, dynamic> toJson() {
@@ -147,6 +149,7 @@ class OrderModel {
     data['takeAway'] = takeAway;
     data['rejectedByDrivers'] = rejectedByDrivers;
     data['toPayAmount'] = toPayAmount;
+    data['surge_fee']= surgeFee ;
     return data;
   }
 }

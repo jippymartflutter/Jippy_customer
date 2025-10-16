@@ -902,8 +902,8 @@ Future<double?> fetchOrderSergeFee(String orderId) async {
       .collection('order_Billing')
       .doc(orderId)
       .get();
-  if (doc.exists && doc.data() != null && doc.data()!['serge_fee'] != null) {
-    return double.tryParse(doc.data()!['serge_fee'].toString());
+  if (doc.exists && doc.data() != null && doc.data()!['surge_fee'] != null) {
+    return double.tryParse(doc.data()!['surge_fee'].toString());
   }
   return null;
 }

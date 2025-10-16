@@ -11,6 +11,35 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SwiggySearchController extends GetxController {
+
+  /// **CLEAR RECENT SEARCHES**
+  void clearRecentSearches() {
+    try {
+      print("🗑️ Clearing recent searches...");
+
+      // Clear the observable list
+      recentSearches.clear();
+
+      // Clear from shared preferences
+      _clearRecentSearchesFromStorage();
+
+      print("✅ Recent searches cleared successfully");
+
+    } catch (e) {
+      print("❌ Error clearing recent searches: $e");
+    }
+  }
+
+  /// **CLEAR RECENT SEARCHES FROM STORAGE**
+  Future<void> _clearRecentSearchesFromStorage() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.remove('recent_searches');
+      print("✅ Recent searches cleared from storage");
+    } catch (e) {
+      print("❌ Error clearing recent searches from storage: $e");
+    }
+  }
   final TrieSearch trieSearch = TrieSearch();
 
   // **OBSERVABLE VARIABLES**
