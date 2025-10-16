@@ -144,7 +144,7 @@ class ReusableBannerWidget extends StatelessWidget {
               if (imageUrl != null && imageUrl.isNotEmpty)
                 Image.network(
                   imageUrl,
-                  fit: BoxFit.cover,
+                  fit: BoxFit.fill,
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
                       color: Colors.grey[100],

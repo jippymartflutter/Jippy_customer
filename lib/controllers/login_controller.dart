@@ -395,7 +395,7 @@ class LoginController extends GetxController {
 
   Future<void> sendOtp() async {
     print(
-        '[DEBUG] sendOtp() called with phone: ${phoneEditingController.value.text.trim()}');
+        '[DEBUG] sendOtp() error:  ${phoneEditingController.value.text.trim()}');
     ShowToastDialog.showLoader("Please wait".tr);
     try {
       phoneNumber.value = phoneEditingController.value.text.trim();

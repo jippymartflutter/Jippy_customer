@@ -52,8 +52,7 @@ class CartProvider with ChangeNotifier {
     print('DEBUG: Cart Provider - Price: ${product.price}');
     print('DEBUG: Cart Provider - DiscountPrice: ${product.discountPrice}');
     print('DEBUG: Cart Provider - PromoId: ${product.promoId}');
-    
-    // Save current location data for tax calculation
+
     await _saveLocationForTaxCalculation();
     
     _cartItems = await DatabaseHelper.instance.fetchCartProducts();
@@ -126,6 +125,7 @@ class CartProvider with ChangeNotifier {
     // Force refresh cart data and notify listeners
     await _initCart();
     print('DEBUG: CartProvider - Cart updated, total items: ${_cartItems.length}');
+    notifyListeners();
     return true;
   }
 

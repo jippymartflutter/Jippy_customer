@@ -99,6 +99,7 @@ class OrderController extends GetxController {
   final CartProvider cartProvider = CartProvider();
 
   addToCart({required CartProductModel cartProductModel}) {
+    print("addToCart");
     cartProvider.addToCart(
         Get.context!, cartProductModel, cartProductModel.quantity!);
     update();

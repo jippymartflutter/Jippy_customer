@@ -302,10 +302,16 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) {
-        return themeChangeProvider;
-      },
+    return
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => themeChangeProvider),
+          ChangeNotifierProvider(create: (_) => CartProvider()),
+        ],
+      // ChangeNotifierProvider(
+      // create: (_) {
+      //   return themeChangeProvider;
+      // },
       child: Consumer<DarkThemeProvider>(
         builder: (context, value, child) {
           // ✅ ENHANCED: Conditional Smartlook wrapping with error handling

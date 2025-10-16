@@ -346,6 +346,17 @@ Widget billCartWidget(DarkThemeProvider themeChange, CartController controller,
                       ),
                     ),
                     Text(
+                    'Free',
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                        fontFamily: AppThemeData.regular,
+                        color: AppThemeData.success400,
+                        fontSize: 16,
+                      ),
+                    ),    const SizedBox(
+                      width: 10,
+                    ),
+                    Text(
                       '15.00',
                       textAlign: TextAlign.start,
                       style: TextStyle(
@@ -378,17 +389,39 @@ Widget billCartWidget(DarkThemeProvider themeChange, CartController controller,
                       ),
                     ),
                     Obx(() {
-                      return Text(
-                        //changed here
-                        "₹${controller.surgePercent.value}",
+                      return  Row(
+                        children: [
+                        Text(
+                          controller.surgePercent.value<=0?'Free': "",
                         textAlign: TextAlign.start,
                         style: TextStyle(
                           fontFamily: AppThemeData.regular,
-                          color: themeChange.getThem()
-                              ? AppThemeData.grey50
-                              : AppThemeData.grey900,
+                          color: AppThemeData.success400,
                           fontSize: 16,
                         ),
+                      ), SizedBox(width: 10,),
+                          Text(
+                            controller.surgePercent.value<=0?"₹10": "₹${controller.surgePercent.value}",
+                            textAlign: TextAlign.start,
+                            style:controller.surgePercent.value<=0?
+                            TextStyle(
+                                  fontFamily: AppThemeData.regular,
+                                  color: AppThemeData.danger300,
+                                  fontSize: 16,
+                                  decoration:
+                                  TextDecoration.lineThrough,
+                                  decorationColor:
+                                  AppThemeData.danger300,
+                                )
+                                : TextStyle(
+                              fontFamily: AppThemeData.regular,
+                              color: themeChange.getThem()
+                                  ? AppThemeData.grey50
+                                  : AppThemeData.grey900,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
                       );
                     }),
                   ],

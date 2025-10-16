@@ -266,7 +266,6 @@ class HomeScreenTwo extends StatelessWidget {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        // Header Toggle for Food vs Mart
                                         Container(
                                           margin: const EdgeInsets.only(
                                               top: 16, bottom: 16),
@@ -312,7 +311,6 @@ class HomeScreenTwo extends StatelessWidget {
                                               Expanded(
                                                 child: GestureDetector(
                                                   onTap: () {
-                                                    // Check if mart is available in current zone
                                                     HomeScreenTwo
                                                         ._checkMartAvailability();
                                                   },
@@ -343,7 +341,6 @@ class HomeScreenTwo extends StatelessWidget {
                                             ],
                                           ),
                                         ),
-
                                         Row(
                                           children: [
                                             InkWell(
@@ -1378,7 +1375,7 @@ class BannerView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 150,
+      height: 170,
       child: GestureDetector(
         onPanStart: (_) => controller.stopBannerTimer(),
         onPanEnd: (_) => controller.startBannerTimer(),
@@ -1440,12 +1437,12 @@ class BannerView extends StatelessWidget {
                 }
               },
               child: Padding(
-                padding: const EdgeInsets.only(right: 14),
+                padding: const EdgeInsets.only(right: 0),
                 child: ClipRRect(
                   borderRadius: const BorderRadius.all(Radius.circular(12)),
                   child: NetworkImageWidget(
                     imageUrl: bannerModel.photo.toString(),
-                    fit: BoxFit.cover,
+                    fit: BoxFit.fill,
                   ),
                 ),
               ),
