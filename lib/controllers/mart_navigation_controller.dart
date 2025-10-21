@@ -1,7 +1,7 @@
 import 'package:customer/app/cart_screen/cart_screen.dart';
-import 'package:customer/app/mart/mart_categories_screen.dart';
+import 'package:customer/app/mart/screens/mart_categories_screen/mart_categories_screen.dart';
 import 'package:customer/app/mart/mart_home_screen/mart_home_screen.dart';
-import 'package:customer/app/mart/mart_profile_screen.dart';
+import 'package:customer/app/mart/screens/mart_profile_screen/mart_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

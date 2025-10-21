@@ -231,161 +231,199 @@ class RestaurantLoadingWidget extends StatelessWidget {
       themeChange = null;
     }
 
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-        // **ANIMATED RESTAURANT ICON WITH ROTATING PLATE**
-        TweenAnimationBuilder<double>(
-          duration: const Duration(milliseconds: 2000),
-          tween: Tween(begin: 0.0, end: 1.0),
-          builder: (context, value, child) {
-            return Opacity(
-              opacity: value,
-              child: Transform.scale(
-                scale: 0.8 + (0.2 * value),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    // Rotating plate background
-                    TweenAnimationBuilder<double>(
-                      duration: const Duration(seconds: 2),
-                      tween: Tween(begin: 0.0, end: 1.0),
-                      builder: (context, rotationValue, child) {
-                        return Transform.rotate(
-                          angle: rotationValue * 2 * 3.14159, // Full rotation
-                          child: Container(
-                            width: 90,
-                            height: 90,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFFF5201).withValues(alpha: 0.1),
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: const Color(0xFFFF5201).withValues(alpha: 0.3),
-                                width: 2,
-                              ),
-                            ),
-                            child: CustomPaint(
-                              painter: PlatePainter(),
-                            ),
-                          ),
-                        );
-                      },
-                      onEnd: () {
-                        // Restart rotation animation
-                      },
-                    ),
-                    // Main restaurant icon with rotation
-                    TweenAnimationBuilder<double>(
-                      duration: const Duration(seconds: 3),
-                      tween: Tween(begin: 0.0, end: 1.0),
-                      builder: (context, rotationValue, child) {
-                        return Transform.rotate(
-                          angle: rotationValue * 2 * 3.14159, // Full rotation
-                          child: Container(
-                            width: 80,
-                            height: 80,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFFF5201),
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(0xFFFF5201).withValues(alpha: 0.3),
-                                  blurRadius: 20,
-                                  spreadRadius: 5,
-                                ),
-                              ],
-                            ),
-                            child: const Icon(
-                              Icons.restaurant_menu,
-                              color: Colors.white,
-                              size: 40,
-                            ),
-                          ),
-                        );
-                      },
-                      onEnd: () {
-                        // Restart rotation animation
-                      },
-                    ),
-                  ],
-                ),
+    return Stack(
+      children: [
+        Positioned(
+          top: -100,
+          right: -100,
+          child: Container(
+            width: 300,
+            height: 300,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: [
+                  AppThemeData.primary300.withOpacity(0.1),
+                  AppThemeData.primary300.withOpacity(0.05),
+                ],
               ),
-            );
-          },
-          onEnd: () {
-            // Restart animation
-          },
-        ),
-          
-          const SizedBox(height: 24),
-          
-          // **LOADING TEXT WITH SAME ANIMATION**
-          TweenAnimationBuilder<double>(
-            duration: const Duration(milliseconds: 2000),
-            tween: Tween(begin: 0.0, end: 1.0),
-            builder: (context, value, child) {
-              return Opacity(
-                opacity: value,
-                child: Column(
-                  children: [
-                    Text(
-                      "🍽️ Preparing Your Food Journey",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: (themeChange?.getThem() ?? false)
-                            ? AppThemeData.grey50 
-                            : AppThemeData.grey900,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      "Loading delicious restaurants & dishes...",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppThemeData.grey400,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
+            ),
           ),
-          
-          const SizedBox(height: 20),
-          
-          // **ANIMATED DOTS**
-          Row(
+        ),
+        Positioned(
+          bottom: -150,
+          left: -100,
+          child: Container(
+            width: 350,
+            height: 350,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: [
+                  AppThemeData.primary300.withOpacity(0.08),
+                  AppThemeData.primary300.withOpacity(0.03),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Center(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(3, (index) {
-              return TweenAnimationBuilder<double>(
-                duration: Duration(milliseconds: 800 + (index * 300)),
+            children: [
+            // **ANIMATED RESTAURANT ICON WITH ROTATING PLATE**
+            TweenAnimationBuilder<double>(
+              duration: const Duration(milliseconds: 2000),
+              tween: Tween(begin: 0.0, end: 1.0),
+              builder: (context, value, child) {
+                return Opacity(
+                  opacity: value,
+                  child: Transform.scale(
+                    scale: 0.8 + (0.2 * value),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        // Rotating plate background
+                        TweenAnimationBuilder<double>(
+                          duration: const Duration(seconds: 2),
+                          tween: Tween(begin: 0.0, end: 1.0),
+                          builder: (context, rotationValue, child) {
+                            return Transform.rotate(
+                              angle: rotationValue * 2 * 3.14159, // Full rotation
+                              child: Container(
+                                width: 90,
+                                height: 90,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFFF5201).withValues(alpha: 0.1),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: const Color(0xFFFF5201).withValues(alpha: 0.3),
+                                    width: 2,
+                                  ),
+                                ),
+                                child: CustomPaint(
+                                  painter: PlatePainter(),
+                                ),
+                              ),
+                            );
+                          },
+                          onEnd: () {
+                            // Restart rotation animation
+                          },
+                        ),
+                        // Main restaurant icon with rotation
+                        TweenAnimationBuilder<double>(
+                          duration: const Duration(seconds: 3),
+                          tween: Tween(begin: 0.0, end: 1.0),
+                          builder: (context, rotationValue, child) {
+                            return Transform.rotate(
+                              angle: rotationValue * 2 * 3.14159, // Full rotation
+                              child: Container(
+                                width: 80,
+                                height: 80,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFFF5201),
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xFFFF5201).withValues(alpha: 0.3),
+                                      blurRadius: 20,
+                                      spreadRadius: 5,
+                                    ),
+                                  ],
+                                ),
+                                child: const Icon(
+                                  Icons.restaurant_menu,
+                                  color: Colors.white,
+                                  size: 40,
+                                ),
+                              ),
+                            );
+                          },
+                          onEnd: () {
+                            // Restart rotation animation
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+              onEnd: () {
+                // Restart animation
+              },
+            ),
+
+              const SizedBox(height: 24),
+
+              // **LOADING TEXT WITH SAME ANIMATION**
+              TweenAnimationBuilder<double>(
+                duration: const Duration(milliseconds: 2000),
                 tween: Tween(begin: 0.0, end: 1.0),
                 builder: (context, value, child) {
-                  return Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 3),
-                    width: 6,
-                    height: 6,
-                    decoration: BoxDecoration(
-                      color: Colors.orange.withValues(alpha: 0.3 + (0.7 * value)),
-                      shape: BoxShape.circle,
+                  return Opacity(
+                    opacity: value,
+                    child: Column(
+                      children: [
+                        Text(
+                          "🍽️ Preparing Your Food Journey",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: (themeChange?.getThem() ?? false)
+                                ? AppThemeData.grey50
+                                : AppThemeData.grey900,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "Loading delicious restaurants & dishes...",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppThemeData.grey400,
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 },
-                onEnd: () {
-                  // Restart animation
-                },
-              );
-            }),
+              ),
+
+              const SizedBox(height: 20),
+
+              // **ANIMATED DOTS**
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(3, (index) {
+                  return TweenAnimationBuilder<double>(
+                    duration: Duration(milliseconds: 800 + (index * 300)),
+                    tween: Tween(begin: 0.0, end: 1.0),
+                    builder: (context, value, child) {
+                      return Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                        width: 6,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: Colors.orange.withValues(alpha: 0.3 + (0.7 * value)),
+                          shape: BoxShape.circle,
+                        ),
+                      );
+                    },
+                    onEnd: () {
+                      // Restart animation
+                    },
+                  );
+                }),
+              ),
+
+              if (showFunFact) ...[
+                const SizedBox(height: 40),
+                _buildFunFact(themeChange),
+              ],
+            ],
           ),
-          
-          if (showFunFact) ...[
-            const SizedBox(height: 40),
-            _buildFunFact(themeChange),
-          ],
-        ],
-      ),
+        ),
+      ],
     );
   }
 

@@ -1,4 +1,6 @@
 import 'package:badges/badges.dart' as badges;
+import 'package:customer/app/dine_in_screeen/dine_in_screen.dart';
+import 'package:customer/app/home_screen/home_screen_two.dart' hide CategoryView, BannerView;
 import 'package:customer/app/scan_qrcode_screen/scan_qr_code_screen.dart';
 import 'package:customer/app/swiggy_search_screen/swiggy_search_screen.dart';
 import 'package:customer/widget/filter_bar.dart';
@@ -10,7 +12,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:customer/app/home_screen/home_screen.dart';
+import 'package:customer/app/home_screen/home_screen.dart' hide CategoryView, PopularRestaurant, NewArrival;
 import 'package:customer/main.dart' as app_main;
 import 'package:customer/utils/preferences.dart';
 

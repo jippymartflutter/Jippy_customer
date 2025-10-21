@@ -9,7 +9,7 @@ import 'package:customer/app/home_screen/restaurant_list_screen.dart';
 import 'package:customer/app/home_screen/story_view.dart';
 import 'package:customer/app/home_screen/view_all_category_screen.dart';
 import 'package:customer/app/location_permission_screen/location_permission_screen.dart';
-import 'package:customer/app/mart/mart_navigation_screen.dart';
+import 'package:customer/app/mart/screens/mart_navigation_screen/mart_navigation_screen.dart';
 import 'package:customer/app/profile_screen/profile_screen.dart';
 import 'package:customer/app/restaurant_details_screen/restaurant_details_screen.dart';
 import 'package:customer/app/swiggy_search_screen/swiggy_search_screen.dart';
@@ -133,14 +133,12 @@ class HomeScreenTwo extends StatelessWidget {
               : AppThemeData.surface,
           floatingActionButton: Stack(
             children: [
-              // Mini cart bar - full width
               const Positioned(
                 bottom: 0,
                 left: 16,
                 right: 0,
                 child: MiniCartBar(),
               ),
-              // WhatsApp floating button - positioned dynamically based on mini cart state
               Positioned(
                 bottom: cartItem.isNotEmpty
                     ? 100
@@ -748,24 +746,24 @@ class HomeScreenTwo extends StatelessWidget {
                                             child: CategoryView(
                                                 controller: controller),
                                           ),
-                                          controller
-                                                  .couponRestaurantList.isEmpty
-                                              ? const SizedBox()
-                                              : Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 16),
-                                                  child: Column(
-                                                    children: [
-                                                      const SizedBox(
-                                                        height: 20,
-                                                      ),
-                                                      OfferView(
-                                                          controller:
-                                                              controller),
-                                                    ],
-                                                  ),
-                                                ),
+                                          // controller
+                                          //         .couponRestaurantList.isEmpty
+                                          //     ? const SizedBox()
+                                          //     : Padding(
+                                          //         padding: const EdgeInsets
+                                          //             .symmetric(
+                                          //             horizontal: 16),
+                                          //         child: Column(
+                                          //           children: [
+                                          //             const SizedBox(
+                                          //               height: 20,
+                                          //             ),
+                                          //             OfferView(
+                                          //                 controller:
+                                          //                     controller),
+                                          //           ],
+                                          //         ),
+                                          //       ),
                                           controller.storyList.isEmpty ||
                                                   (Constant.storyEnable ==
                                                           false &&
@@ -825,12 +823,9 @@ class HomeScreenTwo extends StatelessWidget {
                                               : Padding(
                                                   padding: const EdgeInsets
                                                       .symmetric(
-                                                      horizontal: 16),
+                                                      horizontal: 0),
                                                   child: Column(
                                                     children: [
-                                                      const SizedBox(
-                                                        height: 20,
-                                                      ),
                                                       StoryView(
                                                           controller:
                                                               controller),
@@ -1008,7 +1003,166 @@ class HomeScreenTwo extends StatelessWidget {
     }
   }
 }
-
+// class CategoryView extends StatelessWidget {
+//   final HomeController controller;
+//
+//   const CategoryView({super.key, required this.controller});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final themeChange = Provider.of<DarkThemeProvider>(context);
+//     return Padding(
+//       padding: const EdgeInsets.symmetric(horizontal: 0),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           const SizedBox(
+//             height: 10,
+//           ),
+//           Padding(
+//             // padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+//             padding: EdgeInsets.all(0),
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 Row(
+//                   children: [
+//                     Expanded(
+//                       child: Text(
+//                         "Our Categories",
+//                         style: TextStyle(
+//                           fontFamily: AppThemeData.montserratRegular,
+//                           color: themeChange.getThem()
+//                               ? AppThemeData.grey50
+//                               : AppThemeData.grey900,
+//                           fontSize: 18,
+//                           fontWeight: FontWeight.w800,
+//                         ),
+//                       ),
+//                     ),
+//                     Padding(
+//                       padding: const EdgeInsets.only(left: 16),
+//                       child: InkWell(
+//                         onTap: () {
+//                           Get.to(const ViewAllCategoryScreen());
+//                         },
+//                         borderRadius: BorderRadius.circular(12),
+//                         child: Container(
+//                           padding: const EdgeInsets.symmetric(
+//                               horizontal: 12, vertical: 8),
+//                           child: Row(
+//                             mainAxisSize: MainAxisSize.min,
+//                             children: [
+//                               Text(
+//                                 "See all".tr,
+//                                 style: TextStyle(
+//                                   fontFamily: AppThemeData.semiBold,
+//                                   color: themeChange.getThem()
+//                                       ? AppThemeData.primary300
+//                                       : AppThemeData.primary300,
+//                                   fontSize: 14,
+//                                   fontWeight: FontWeight.w600,
+//                                 ),
+//                               ),
+//                               const SizedBox(width: 6),
+//                               Icon(
+//                                 Icons.arrow_forward_rounded,
+//                                 size: 16,
+//                                 color: themeChange.getThem()
+//                                     ? AppThemeData.primary300
+//                                     : AppThemeData.primary300,
+//                               ),
+//                             ],
+//                           ),
+//                         ),
+//                       ),
+//                     )
+//                     // Padding(
+//                     //   padding: const EdgeInsets.only(left: 16),
+//                     //   child: InkWell(
+//                     //     onTap: () {
+//                     //       Get.to(const ViewAllCategoryScreen());
+//                     //     },
+//                     //     child: Text(
+//                     //       "See all".tr,
+//                     //       textAlign: TextAlign.center,
+//                     //       style: TextStyle(
+//                     //         fontFamily: AppThemeData.medium,
+//                     //         color: themeChange.getThem()
+//                     //             ? AppThemeData.primary300
+//                     //             : AppThemeData.primary300,
+//                     //         fontSize: 14,
+//                     //       ),
+//                     //     ),
+//                     //   ),
+//                     // ),
+//                   ],
+//                 ),
+//                 Text(
+//                   "Best Serving Food".tr,
+//                   style: TextStyle(
+//                     fontSize: 16,
+//                     fontFamily: AppThemeData.montserrat,
+//                     // fontWeight: FontWeight.w800,
+//                   ),
+//                 )
+//               ],
+//             ),
+//           ),
+//           const SizedBox(
+//             height: 20,
+//           ),
+//           GridView.builder(
+//             padding: EdgeInsets.zero,
+//             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+//                 crossAxisCount: 4, childAspectRatio: 0.8),
+//             itemCount: controller.vendorCategoryModel.length >= 8
+//                 ? 8
+//                 : controller.vendorCategoryModel.length,
+//             physics: const NeverScrollableScrollPhysics(),
+//             shrinkWrap: true,
+//             itemBuilder: (context, index) {
+//               VendorCategoryModel vendorCategoryModel =
+//                   controller.vendorCategoryModel[index];
+//               return InkWell(
+//                 onTap: () {
+//                   Get.to(const CategoryRestaurantScreen(), arguments: {
+//                     "vendorCategoryModel": vendorCategoryModel,
+//                     "dineIn": false
+//                   });
+//                 },
+//                 child: Column(
+//                   children: [
+//                     ClipOval(
+//                       child: SizedBox(
+//                         width: 60,
+//                         height: 60,
+//                         child: NetworkImageWidget(
+//                             imageUrl: vendorCategoryModel.photo.toString(),
+//                             fit: BoxFit.cover),
+//                       ),
+//                     ),
+//                     Text(
+//                       "${vendorCategoryModel.title}",
+//                       textAlign: TextAlign.center,
+//                       style: TextStyle(
+//                         fontFamily: AppThemeData.medium,
+//                         color: themeChange.getThem()
+//                             ? AppThemeData.grey50
+//                             : AppThemeData.grey900,
+//                         fontSize: 12,
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               );
+//             },
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 class CategoryView extends StatelessWidget {
   final HomeController controller;
 
@@ -1118,51 +1272,58 @@ class CategoryView extends StatelessWidget {
           const SizedBox(
             height: 20,
           ),
-          GridView.builder(
-            padding: EdgeInsets.zero,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4, childAspectRatio: 0.8),
-            itemCount: controller.vendorCategoryModel.length >= 8
-                ? 8
-                : controller.vendorCategoryModel.length,
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              VendorCategoryModel vendorCategoryModel =
-                  controller.vendorCategoryModel[index];
-              return InkWell(
-                onTap: () {
-                  Get.to(const CategoryRestaurantScreen(), arguments: {
-                    "vendorCategoryModel": vendorCategoryModel,
-                    "dineIn": false
-                  });
-                },
-                child: Column(
-                  children: [
-                    ClipOval(
-                      child: SizedBox(
-                        width: 60,
-                        height: 60,
-                        child: NetworkImageWidget(
-                            imageUrl: vendorCategoryModel.photo.toString(),
-                            fit: BoxFit.cover),
-                      ),
+          SizedBox(
+            height: 100,
+            child: ListView.builder(
+              scrollDirection:  Axis.horizontal,
+              padding: EdgeInsets.zero,
+              // gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              //     crossAxisCount: 4, childAspectRatio: 0.8),
+              itemCount: controller.vendorCategoryModel.length >= 8
+                  ? 8
+                  : controller.vendorCategoryModel.length,
+              // physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                VendorCategoryModel vendorCategoryModel =
+                    controller.vendorCategoryModel[index];
+                return InkWell(
+                  onTap: () {
+                    Get.to(const CategoryRestaurantScreen(), arguments: {
+                      "vendorCategoryModel": vendorCategoryModel,
+                      "dineIn": false
+                    });
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 12),
+                    child: Column(
+                      children: [
+                        ClipOval(
+                          child: SizedBox(
+                            width: 60,
+                            height: 60,
+                            child: NetworkImageWidget(
+                                imageUrl: vendorCategoryModel.photo.toString(),
+                                fit: BoxFit.cover),
+                          ),
+                        ),
+                        Text(
+                          "${vendorCategoryModel.title}",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: AppThemeData.medium,
+                            color: themeChange.getThem()
+                                ? AppThemeData.grey50
+                                : AppThemeData.grey900,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
                     ),
-                    Text(
-                      "${vendorCategoryModel.title}",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: AppThemeData.medium,
-                        color: themeChange.getThem()
-                            ? AppThemeData.grey50
-                            : AppThemeData.grey900,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -1375,7 +1536,7 @@ class BannerView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 170,
+      height: 160,
       child: GestureDetector(
         onPanStart: (_) => controller.stopBannerTimer(),
         onPanEnd: (_) => controller.startBannerTimer(),
@@ -1466,9 +1627,10 @@ class StoryView extends StatelessWidget {
       height: Responsive.height(32, context),
       decoration: const BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(20)),
-          image: DecorationImage(
-              image: AssetImage("assets/images/story_bg.png"),
-              fit: BoxFit.cover)),
+          // image: DecorationImage(
+          //     image: AssetImage("assets/images/story_bg.png"),
+          //     fit: BoxFit.cover)
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1485,8 +1647,8 @@ class StoryView extends StatelessWidget {
                         style: TextStyle(
                             fontFamily: AppThemeData.googleSansCode,
                             color: themeChange.getThem()
-                                ? AppThemeData.grey50
-                                : AppThemeData.grey50,
+                                ? AppThemeData.success400
+                                : AppThemeData.success400,
                             fontSize: 18,
                             fontWeight: FontWeight.bold),
                       ),
@@ -1809,160 +1971,165 @@ class _BestRestaurantsSectionState extends State<BestRestaurantsSection> {
           child: LayoutBuilder(
             builder: (context, constraints) {
               return GridView.builder(
-                // ✅ Prevent vertical overflow safely
                 shrinkWrap: true,
                 primary: false,
                 padding: EdgeInsets.zero,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: filteredList.length,
-
-                // ✅ Responsive grid layout
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3, // 3 items per row
-                  crossAxisSpacing: 14,
-                  mainAxisSpacing: 20,
-                  childAspectRatio: 0.64, // Adjust to prevent height overflow
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 0.65,
                 ),
-
                 itemBuilder: (BuildContext context, int index) {
                   final vendorModel = filteredList[index];
+                  final isClosed = !RestaurantStatusUtils.canAcceptOrders(vendorModel);
 
                   return InkWell(
-                    onTap: () {
+                    onTap: isClosed ? null : () {
                       Get.to(
                         const RestaurantDetailsScreen(),
                         arguments: {"vendorModel": vendorModel},
                       );
                     },
-                    child: _buildRestaurantCardWithFilter(
-                      vendorModel: vendorModel,
-                      themeChange: themeChange,
-                      child: Container(
-                        decoration: ShapeDecoration(
-                          color: themeChange.getThem()
-                              ? AppThemeData.grey900
-                              : AppThemeData.grey50,
-                          // shape: RoundedRectangleBorder(
-                          //   borderRadius: BorderRadius.circular(16),
-                          // ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            side: BorderSide(
-                              color: AppThemeData.primary300, // 🔴 Border color
-                              width: 1.5, // Border thickness
-                            ),
-                          ),
+                    borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: themeChange.getThem()
+                            ? AppThemeData.grey900
+                            : AppThemeData.grey50,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: AppThemeData.primary300.withOpacity(0.3),
+                          width: 1,
                         ),
-                        padding: const EdgeInsets.all(8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // 🖼 Restaurant Image with Status
-                            AspectRatio(
-                              aspectRatio: 1, // Keeps square image in grid
-                              child: Stack(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: RestaurantImageWithStatus(
-                                      vendorModel: vendorModel,
-                                      height: double.infinity,
-                                      width: double.infinity,
-                                    ),
-                                  ),
-                                  Positioned(
-                                    left: 4,
-                                    top: 4,
-                                    child: _buildSmallStatusBadge(vendorModel),
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            const SizedBox(height: 8),
-
-                            // 🏷 Vendor Title
-                            Text(
-                              vendorModel.title ?? '',
-                              textAlign: TextAlign.start,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontFamily: AppThemeData.semiBold,
-                                color: themeChange.getThem()
-                                    ? AppThemeData.grey50
-                                    : AppThemeData.grey900,
-                              ),
-                            ),
-
-                            // 📍 Vendor Location
-                            // Text(
-                            //   vendorModel.location ?? '',
-                            //   textAlign: TextAlign.start,
-                            //   maxLines: 1,
-                            //   overflow: TextOverflow.ellipsis,
-                            //   style: TextStyle(
-                            //     fontFamily: AppThemeData.medium,
-                            //     fontWeight: FontWeight.w500,
-                            //     fontSize: 12,
-                            //     color: AppThemeData.grey400,
-                            //   ),
-                            // ),
-
-                            const Spacer(),
-
-                            // ⭐ Rating Row
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Stack(
+                        children: [
+                          // Main Content
+                          Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                SvgPicture.asset(
-                                  "assets/icons/ic_star.svg",
-                                  width: 14,
-                                  colorFilter: ColorFilter.mode(
-                                    AppThemeData.primary300,
-                                    BlendMode.srcIn,
-                                  ),
-                                ),
-                                const SizedBox(width: 4),
-                                Expanded(
-                                  child: Text(
-                                    "${Constant.calculateReview(
-                                      reviewCount:
-                                          vendorModel.reviewsCount.toString(),
-                                      reviewSum:
-                                          vendorModel.reviewsSum.toString(),
-                                    )} (${vendorModel.reviewsCount?.toStringAsFixed(0) ?? '0'})",
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontFamily: AppThemeData.medium,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 12,
-                                      color: AppThemeData.grey400,
+                                // 🖼 Image Section
+                                AspectRatio(
+                                  aspectRatio: 1,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      color: AppThemeData.grey200.withOpacity(0.5),
+                                    ),
+                                    child: Stack(
+                                      children: [
+                                        // Restaurant Image
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(12),
+                                          child: RestaurantImageWithStatus(
+                                            vendorModel: vendorModel,
+                                            height: double.infinity,
+                                            width: double.infinity,
+                                          ),
+                                        ),
+
+                                        // Status Badge
+                                        Positioned(
+                                          top: 6,
+                                          left: 6,
+                                          child: _buildEnhancedStatusBadge(vendorModel),
+                                        ),
+
+                                        // Rating Chip
+                                        // Positioned(
+                                        //   top: 6,
+                                        //   right: 6,
+                                        //   child: _buildRatingChip(vendorModel),
+                                        // ),
+                                      ],
                                     ),
                                   ),
                                 ),
+
+                                const SizedBox(height: 10),
+
+                                // 🏷 Restaurant Name
+                                Text(
+                                  vendorModel.title ?? 'Restaurant',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontFamily: AppThemeData.semiBold,
+                                    color: themeChange.getThem()
+                                        ? AppThemeData.grey50
+                                        : AppThemeData.grey900,
+                                    height: 1.2,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+
+                                const SizedBox(height: 4),
+
+                                // 📍 Category/Location
+                                // Text(
+                                //   vendorModel.category ?? vendorModel.location ?? 'Restaurant',
+                                //   style: TextStyle(
+                                //     fontSize: 11,
+                                //     fontFamily: AppThemeData.medium,
+                                //     color: AppThemeData.grey500,
+                                //   ),
+                                //   maxLines: 1,
+                                //   overflow: TextOverflow.ellipsis,
+                                // ),
+
+                                const Spacer(),
+
+                                // ⭐ Rating & Distance Row
+                                _buildBottomInfoRow(vendorModel, themeChange),
                               ],
                             ),
+                          ),
 
-                            // const SizedBox(height: 4),
-                            //
-                            // // 📏 Distance
-                            // Text(
-                            //   "${(vendorModel.distance ?? 0).toStringAsFixed(2)} km",
-                            //   textAlign: TextAlign.start,
-                            //   maxLines: 1,
-                            //   overflow: TextOverflow.ellipsis,
-                            //   style: TextStyle(
-                            //     fontFamily: AppThemeData.medium,
-                            //     fontWeight: FontWeight.w500,
-                            //     fontSize: 12,
-                            //     color: AppThemeData.grey400,
-                            //   ),
-                            // ),
+                          // Closed Overlay
+                          if (isClosed) ...[
+                            Positioned.fill(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.4),
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Center(
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black.withOpacity(0.7),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      'CLOSED',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                        fontFamily: AppThemeData.bold,
+                                        letterSpacing: 0.5,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
-                        ),
+                        ],
                       ),
                     ),
                   );
@@ -1971,6 +2138,167 @@ class _BestRestaurantsSectionState extends State<BestRestaurantsSection> {
             },
           ),
         ),
+        // Padding(
+        //   padding: const EdgeInsets.symmetric(horizontal: 16),
+        //   child: LayoutBuilder(
+        //     builder: (context, constraints) {
+        //       return GridView.builder(
+        //         // ✅ Prevent vertical overflow safely
+        //         shrinkWrap: true,
+        //         primary: false,
+        //         padding: EdgeInsets.zero,
+        //         physics: const NeverScrollableScrollPhysics(),
+        //         itemCount: filteredList.length,
+        //
+        //         // ✅ Responsive grid layout
+        //         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        //           crossAxisCount: 3, // 3 items per row
+        //           crossAxisSpacing: 14,
+        //           mainAxisSpacing: 20,
+        //           childAspectRatio: 0.64, // Adjust to prevent height overflow
+        //         ),
+        //
+        //         itemBuilder: (BuildContext context, int index) {
+        //           final vendorModel = filteredList[index];
+        //
+        //           return InkWell(
+        //             onTap: () {
+        //               Get.to(
+        //                 const RestaurantDetailsScreen(),
+        //                 arguments: {"vendorModel": vendorModel},
+        //               );
+        //             },
+        //             child: _buildRestaurantCardWithFilter(
+        //               vendorModel: vendorModel,
+        //               themeChange: themeChange,
+        //               child: Container(
+        //                 decoration: ShapeDecoration(
+        //                   color: themeChange.getThem()
+        //                       ? AppThemeData.grey900
+        //                       : AppThemeData.grey50,
+        //                   // shape: RoundedRectangleBorder(
+        //                   //   borderRadius: BorderRadius.circular(16),
+        //                   // ),
+        //                   shape: RoundedRectangleBorder(
+        //                     borderRadius: BorderRadius.circular(16),
+        //                     side: BorderSide(
+        //                       color: AppThemeData.primary300, // 🔴 Border color
+        //                       width: 0.8, // Border thickness
+        //                     ),
+        //                   ),
+        //                 ),
+        //                 padding: const EdgeInsets.all(8),
+        //                 child: Column(
+        //                   crossAxisAlignment: CrossAxisAlignment.start,
+        //                   children: [
+        //                     // 🖼 Restaurant Image with Status
+        //                     AspectRatio(
+        //                       aspectRatio: 1, // Keeps square image in grid
+        //                       child: Stack(
+        //                         children: [
+        //                           ClipRRect(
+        //                             borderRadius: BorderRadius.circular(8),
+        //                             child: RestaurantImageWithStatus(
+        //                               vendorModel: vendorModel,
+        //                               height: double.infinity,
+        //                               width: double.infinity,
+        //                             ),
+        //                           ),
+        //                           Positioned(
+        //                             left: 4,
+        //                             top: 4,
+        //                             child: _buildSmallStatusBadge(vendorModel),
+        //                           ),
+        //                         ],
+        //                       ),
+        //                     ),
+        //                     const SizedBox(height: 8),
+        //                     // 🏷 Vendor Title
+        //                     Text(
+        //                       vendorModel.title ?? '',
+        //                       textAlign: TextAlign.start,
+        //                       maxLines: 1,
+        //                       overflow: TextOverflow.ellipsis,
+        //                       style: TextStyle(
+        //                         fontSize: 14,
+        //                         fontFamily: AppThemeData.semiBold,
+        //                         color: themeChange.getThem()
+        //                             ? AppThemeData.grey50
+        //                             : AppThemeData.grey900,
+        //                       ),
+        //                     ),
+        //                     // 📍 Vendor Location
+        //                     // Text(
+        //                     //   vendorModel.location ?? '',
+        //                     //   textAlign: TextAlign.start,
+        //                     //   maxLines: 1,
+        //                     //   overflow: TextOverflow.ellipsis,
+        //                     //   style: TextStyle(
+        //                     //     fontFamily: AppThemeData.medium,
+        //                     //     fontWeight: FontWeight.w500,
+        //                     //     fontSize: 12,
+        //                     //     color: AppThemeData.grey400,
+        //                     //   ),
+        //                     // ),
+        //                     // ⭐ Rating Row
+        //                     Row(
+        //                       crossAxisAlignment: CrossAxisAlignment.center,
+        //                       children: [
+        //                         SvgPicture.asset(
+        //                           "assets/icons/ic_star.svg",
+        //                           width: 14,
+        //                           colorFilter: ColorFilter.mode(
+        //                             AppThemeData.primary300,
+        //                             BlendMode.srcIn,
+        //                           ),
+        //                         ),
+        //                         const SizedBox(width: 4),
+        //                         Expanded(
+        //                           child: Text(
+        //                             "${Constant.calculateReview(
+        //                               reviewCount:
+        //                                   vendorModel.reviewsCount.toString(),
+        //                               reviewSum:
+        //                                   vendorModel.reviewsSum.toString(),
+        //                             )} (${vendorModel.reviewsCount?.toStringAsFixed(0) ?? '0'})",
+        //                             maxLines: 1,
+        //                             overflow: TextOverflow.ellipsis,
+        //                             style: TextStyle(
+        //                               fontFamily: AppThemeData.medium,
+        //                               fontWeight: FontWeight.w500,
+        //                               fontSize: 12,
+        //                               color: AppThemeData.grey400,
+        //                             ),
+        //                           ),
+        //                         ),
+        //                       ],
+        //                     ),
+        //
+        //                     // const SizedBox(height: 4),
+        //                     //
+        //                     // // 📏 Distance
+        //                     Text(
+        //                       "${(vendorModel.distance ?? 0).toStringAsFixed(2)} km",
+        //                       textAlign: TextAlign.start,
+        //                       maxLines: 1,
+        //                       overflow: TextOverflow.ellipsis,
+        //                       style: TextStyle(
+        //                         fontFamily: AppThemeData.medium,
+        //                         fontWeight: FontWeight.w500,
+        //                         fontSize: 12,
+        //                         color: AppThemeData.grey400,
+        //                       ),
+        //                     ),
+        //                   ],
+        //                 ),
+        //               ),
+        //             ),
+        //           );
+        //         },
+        //       );
+        //     },
+        //   ),
+        // ),
         // Padding(
         //   padding: const EdgeInsets.symmetric(horizontal: 16),
         //   child: ListView.builder(
@@ -2177,6 +2505,146 @@ class _BestRestaurantsSectionState extends State<BestRestaurantsSection> {
   }
 }
 
+// Enhanced Status Badge
+Widget _buildEnhancedStatusBadge(VendorModel vendorModel) {
+  final isOpen = RestaurantStatusUtils.canAcceptOrders(vendorModel);
+
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+    decoration: BoxDecoration(
+      color: isOpen ? Colors.green.withOpacity(0.9) : Colors.red.withOpacity(0.9),
+      borderRadius: BorderRadius.circular(6),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.1),
+          blurRadius: 4,
+          offset: const Offset(0, 1),
+        ),
+      ],
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          isOpen ? Icons.circle : Icons.circle_outlined,
+          size: 6,
+          color: Colors.white,
+        ),
+        const SizedBox(width: 4),
+        Text(
+          isOpen ? 'OPEN' : 'CLOSED',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 8,
+            fontFamily: AppThemeData.bold,
+            height: 1,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+// Rating Chip
+Widget _buildRatingChip(VendorModel vendorModel) {
+  final rating = Constant.calculateReview(
+    reviewCount: vendorModel.reviewsCount.toString(),
+    reviewSum: vendorModel.reviewsSum.toString(),
+  );
+
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+    decoration: BoxDecoration(
+      color: Colors.black.withOpacity(0.7),
+      borderRadius: BorderRadius.circular(6),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          Icons.star,
+          size: 10,
+          color: AppThemeData.primary300,
+        ),
+        const SizedBox(width: 2),
+        Text(
+          rating,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 9,
+            fontFamily: AppThemeData.semiBold,
+            height: 1,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+// Bottom Info Row
+Widget _buildBottomInfoRow(VendorModel vendorModel, DarkThemeProvider themeChange) {
+  return Row(
+    children: [
+      // Rating
+      Expanded(
+        child: Row(
+          children: [
+            Icon(
+              Icons.star,
+              size: 12,
+              color: AppThemeData.primary300,
+            ),
+            const SizedBox(width: 2),
+            Expanded(
+              child: Text(
+                "${Constant.calculateReview(
+                  reviewCount: vendorModel.reviewsCount.toString(),
+                  reviewSum: vendorModel.reviewsSum.toString(),
+                )} (${vendorModel.reviewsCount?.toStringAsFixed(0) ?? '0'})",
+                style: TextStyle(
+                  fontSize: 10,
+                  fontFamily: AppThemeData.medium,
+                  color: AppThemeData.grey500,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+
+      // Distance (if available)
+      if (vendorModel.distance != null) ...[
+        const SizedBox(width: 4),
+        Expanded(
+          child: Row(
+            children: [
+              Icon(
+                Icons.location_on_outlined,
+                size: 10,
+                color: AppThemeData.grey400,
+              ),
+              const SizedBox(width: 2),
+              Expanded(
+                child: Text(
+                  "${(vendorModel.distance ?? 0).toStringAsFixed(1)} km",
+                  style: TextStyle(
+                    fontSize: 9,
+                    fontFamily: AppThemeData.medium,
+                    color: AppThemeData.grey500,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ],
+  );
+}
 /// **REUSABLE HELPER METHOD FOR WHOLE CARD BLACK & WHITE FILTER**
 Widget _buildRestaurantCardWithFilter({
   required VendorModel vendorModel,

@@ -1,4 +1,4 @@
-import 'package:customer/app/mart/mart_product_details_screen.dart';
+import 'package:customer/app/mart/screens/mart_product_details_screen/mart_product_details_screen.dart';
 import 'package:customer/controllers/cart_controller.dart';
 import 'package:customer/models/cart_product_model.dart';
 import 'package:customer/models/mart_item_model.dart';

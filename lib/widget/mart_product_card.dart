@@ -7,7 +7,7 @@ import 'package:customer/models/product_model.dart';
 import 'package:customer/services/cart_provider.dart';
 import 'package:customer/themes/app_them_data.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
-import 'package:customer/app/mart/mart_product_details_screen.dart';
+import 'package:customer/app/mart/screens/mart_product_details_screen/mart_product_details_screen.dart';
 
 import 'package:customer/widget/cart_animation_widget.dart';
 import 'package:provider/provider.dart';

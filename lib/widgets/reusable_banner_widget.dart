@@ -9,8 +9,8 @@ import 'package:customer/models/vendor_model.dart';
 import 'package:customer/models/product_model.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/app/restaurant_details_screen/restaurant_details_screen.dart';
-import 'package:customer/app/mart/mart_category_detail_screen.dart';
-import 'package:customer/app/mart/mart_product_details_screen.dart';
+import 'package:customer/app/mart/screens/mart_categorhy_details_screen/mart_category_detail_screen.dart';
+import 'package:customer/app/mart/screens/mart_product_details_screen/mart_product_details_screen.dart';
 import 'package:customer/models/mart_item_model.dart';
 import 'package:customer/services/mart_firestore_service.dart';
 

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:customer/app/cart_screen/cart_screen.dart';
-import 'package:customer/app/mart/mart_brand_products_screen.dart';
+import 'package:customer/app/mart/screens/mart_brand_products_screen/mart_brand_products_screen.dart';
 import 'package:customer/app/mart/mart_home_screen/controller/mart_controller.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/controllers/cart_controller.dart';

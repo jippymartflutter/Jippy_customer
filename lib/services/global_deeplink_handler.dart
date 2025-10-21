@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:customer/app/category_service/category__service_screen.dart';
-import 'package:customer/app/mart/mart_category_detail_screen.dart';
-import 'package:customer/app/mart/mart_navigation_screen.dart';
-import 'package:customer/app/mart/mart_product_details_screen.dart';
+import 'package:customer/app/mart/screens/mart_categorhy_details_screen/mart_category_detail_screen.dart';
+import 'package:customer/app/mart/screens/mart_navigation_screen/mart_navigation_screen.dart';
+import 'package:customer/app/mart/screens/mart_product_details_screen/mart_product_details_screen.dart';
 import 'package:customer/app/restaurant_details_screen/restaurant_details_screen.dart';
 import 'package:customer/controllers/cart_controller.dart';
 import 'package:customer/app/mart/mart_home_screen/controller/mart_controller.dart';

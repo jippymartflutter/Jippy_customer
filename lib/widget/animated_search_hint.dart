@@ -330,41 +330,62 @@ class _AnimatedSearchHintState extends State<AnimatedSearchHint>
         }
         return Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
+            color: Colors.white, // ✅ gives visible white background
+            borderRadius: BorderRadius.circular(25),
             boxShadow: [
+              // 👇 Soft base shadow for consistent elevation
               BoxShadow(
-                color: Colors.orange.withOpacity(0.1 * _glowAnimation.value),
-                blurRadius: 15 * _glowAnimation.value,
-                spreadRadius: 2 * _glowAnimation.value,
+                color: Colors.black.withOpacity(0.08),
+                blurRadius: 20,
+                offset: const Offset(0, 6),
+              ),
+              // 👇 Animated orange glow (gentle)
+              BoxShadow(
+                color: Colors.orange.withOpacity(0.15 * _glowAnimation.value),
+                blurRadius: 25 * _glowAnimation.value,
+                spreadRadius: 3 * _glowAnimation.value,
               ),
             ],
           ),
-          child: Stack(
-            children: [
-              TextFieldWidget(
-                key: ValueKey(_hints[_currentHint]),
-                hintText: "", // Empty hint text, we'll overlay our custom text
-                controller: widget.controller,
-                enable: widget.enable,
-                prefix: _buildAnimatedPrefix(),
-                suffix: _buildAnimatedSuffix(),
-                obscureText: widget.obscureText,
-                maxLine: widget.maxLine,
-                textInputType: widget.textInputType,
-                inputFormatters: widget.inputFormatters,
-                onchange: widget.onchange,
-                textInputAction: widget.textInputAction,
-                fontFamily: widget.fontFamily,
-                fillColor: widget.fillColor,
-                textStyle: widget.textStyle,
-                hintTextStyle: widget.hintTextStyle,
-              ),
-              // Custom animated hint text overlay
-              if (widget.controller?.text.isEmpty ?? true)
-                Positioned.fill(
-                  child: _buildAnimatedHintText(),
+          // decoration: BoxDecoration(
+          //   borderRadius: BorderRadius.circular(12),
+          //   boxShadow: [
+          //     BoxShadow(
+          //       color: Colors.orange.withOpacity(0.1 * _glowAnimation.value),
+          //       blurRadius: 15 * _glowAnimation.value,
+          //       spreadRadius: 2 * _glowAnimation.value,
+          //     ),
+          //   ],
+          // ),
+          child:  ClipRRect(
+            borderRadius: BorderRadius.circular(25),
+            child: Stack(
+              children: [
+                TextFieldWidget(
+                  key: ValueKey(_hints[_currentHint]),
+                  hintText: "", // Empty hint text, we'll overlay our custom text
+                  controller: widget.controller,
+                  enable: widget.enable,
+                  prefix: _buildAnimatedPrefix(),
+                  suffix: _buildAnimatedSuffix(),
+                  obscureText: widget.obscureText,
+                  maxLine: widget.maxLine,
+                  textInputType: widget.textInputType,
+                  inputFormatters: widget.inputFormatters,
+                  onchange: widget.onchange,
+                  textInputAction: widget.textInputAction,
+                  fontFamily: widget.fontFamily,
+                  fillColor: widget.fillColor,
+                  textStyle: widget.textStyle,
+                  hintTextStyle: widget.hintTextStyle,
                 ),
-            ],
+                // Custom animated hint text overlay
+                if (widget.controller?.text.isEmpty ?? true)
+                  Positioned.fill(
+                    child: _buildAnimatedHintText(),
+                  ),
+              ],
+            ),
           ),
         );
       },

@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:customer/controllers/category_detail_controller.dart';
@@ -5,7 +6,7 @@ import 'package:customer/controllers/cart_controller.dart';
 import 'package:customer/models/mart_item_model.dart';
 import 'package:customer/models/cart_product_model.dart';
 import 'package:customer/utils/network_image_widget.dart';
-import 'package:customer/app/mart/mart_product_details_screen.dart';
+import 'package:customer/app/mart/screens/mart_product_details_screen/mart_product_details_screen.dart';
 import 'package:customer/app/cart_screen/cart_screen.dart';
 
 class MartProductCard extends StatelessWidget {

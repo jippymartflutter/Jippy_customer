@@ -1,6 +1,6 @@
 import 'package:customer/app/auth_screen/phone_number_screen.dart';
-import 'package:customer/app/mart/mart_address_screen.dart';
-import 'package:customer/app/mart/mart_edit_profile_screen.dart';
+import 'package:customer/app/mart/screens/mart_address_screen/mart_address_screen.dart';
+import 'package:customer/app/mart/screens/mart_edit_profile_screen/mart_edit_profile_screen.dart';
 import 'package:customer/app/mart/mart_home_screen/controller/mart_controller.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/models/user_model.dart';
