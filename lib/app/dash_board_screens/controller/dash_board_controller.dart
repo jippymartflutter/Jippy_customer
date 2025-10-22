@@ -30,25 +30,64 @@ class DashBoardController extends GetxController {
   // Error recovery variables
   int _retryCount = 0;
   final int _maxRetries = 5;
-
   @override
   void onInit() {
     getTaxList();
     loadUserData();
-    // Initialize theme and page list
     currentTheme.value = Constant.theme;
     _updatePageList();
-
-    // Set up Firestore listener
     _setupThemeListener();
 
-    // Listen to local theme changes with proper disposal
+    // ✅ Theme change listener
     _themeListener = ever(currentTheme, (_) {
       print('[DEBUG] Theme changed to: ${currentTheme.value}');
       _updatePageList();
     });
 
+    // ✅ Listen for tab change
+    ever<int>(selectedIndex, (index) {
+      print('[DEBUG] Tab changed to index: $index');
+      _handleTabChange(index);
+    });
+
     super.onInit();
+  }
+
+  // @override
+  // void onInit() {
+  //   getTaxList();
+  //   loadUserData();
+  //   // Initialize theme and page list
+  //   currentTheme.value = Constant.theme;
+  //   _updatePageList();
+  //
+  //   // Set up Firestore listener
+  //   _setupThemeListener();
+  //
+  //   // Listen to local theme changes with proper disposal
+  //   _themeListener = ever(currentTheme, (_) {
+  //     print('[DEBUG] Theme changed to: ${currentTheme.value}');
+  //     _updatePageList();
+  //   });
+  //
+  //   super.onInit();
+  // }
+  void _handleTabChange(int index) {
+    // Assuming your page order: [Home, Favourite, Wallet?, Order, Profile]
+    // So OrderScreen index might be 3 if wallet enabled, or 2 if wallet disabled.
+
+    final bool walletEnabled = Constant.walletSetting ?? false;
+    final int orderTabIndex = walletEnabled ? 3 : 2;
+
+    if (index == orderTabIndex) {
+      print('[DASHBOARD] Order tab opened — refreshing orders...');
+      try {
+        final orderController = Get.find<OrderController>();
+        orderController.getOrder(); // ✅ Fetch orders automatically
+      } catch (e) {
+        print('[DASHBOARD] Could not refresh orders: $e');
+      }
+    }
   }
 
   void _setupThemeListener() {
@@ -577,9 +616,7 @@ class DashBoardController extends GetxController {
                         ],
                       ),
                     ),
-
                     const SizedBox(height: 24),
-
                     // Action button with elegant design
                     Padding(
                       padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),

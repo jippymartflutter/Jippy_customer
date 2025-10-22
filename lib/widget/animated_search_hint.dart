@@ -341,7 +341,7 @@ class _AnimatedSearchHintState extends State<AnimatedSearchHint>
               ),
               // 👇 Animated orange glow (gentle)
               BoxShadow(
-                color: Colors.orange.withOpacity(0.15 * _glowAnimation.value),
+                color: Colors.black.withOpacity(0.25 * _glowAnimation.value),
                 blurRadius: 25 * _glowAnimation.value,
                 spreadRadius: 3 * _glowAnimation.value,
               ),

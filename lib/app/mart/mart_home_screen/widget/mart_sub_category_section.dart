@@ -165,7 +165,7 @@ class MartSubcategoriesSection extends StatelessWidget {
                         crossAxisCount: 4,
                         crossAxisSpacing: 12,
                         mainAxisSpacing: 16,
-                        childAspectRatio: 0.7,
+                        childAspectRatio: 0.62,
                       ),
                       itemCount: homepageSubcategories.length,
                       itemBuilder: (context, index) {

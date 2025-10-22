@@ -3837,7 +3837,7 @@ class MartProductDealsSection extends StatelessWidget {
               // right: 16,
             ),
             child: SizedBox(
-              height: 200,
+              height: 215,
               child: StreamBuilder<List<MartItemModel>>(
                 stream: Get.isRegistered<MartController>()
                     ? Get.find<MartController>().streamProductDeals(limit: 10)

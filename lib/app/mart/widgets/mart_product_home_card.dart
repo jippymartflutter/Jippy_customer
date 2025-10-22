@@ -39,7 +39,6 @@ class MartProductCardHome extends StatelessWidget {
           .firstOrNull
           ?.title;
     }
-
     return subcategoryTitle ?? 'General';
   }
 
@@ -320,7 +319,7 @@ class MartProductCardHome extends StatelessWidget {
                         },
                         child: Container(
                           height: _getResponsiveImageHeight(screenWidth),
-                          width: 100,
+                          // width: 100,
                           decoration: BoxDecoration(
                             color: const Color(0xFFF8FAFC),
                             borderRadius: BorderRadius.circular(12),
@@ -381,77 +380,77 @@ class MartProductCardHome extends StatelessWidget {
                         ),
 
                       // Add to Cart Button - Enhanced Design
-                      Positioned(
-                        bottom: 8,
-                        right: 8,
-                        child: GestureDetector(
-                          onTap: () {
-                            if (product.has_options == true) {
-                              _showProductOptionsModal(context, product);
-                            } else {
-                              _handleAddToCart(context, product);
-                            }
-                          },
-                          child: Container(
-                            width: 68,
-                            height: 36,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [Colors.green.shade600, Colors.green.shade500],
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.green.withOpacity(0.3),
-                                  blurRadius: 6,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: product.has_options == true
-                                ? Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "ADD",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 10,
-                                    letterSpacing: 0.5,
-                                  ),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                                  height: 1,
-                                  color: Colors.white.withOpacity(0.3),
-                                ),
-                                Text(
-                                  "(${product.options_count ?? 0})",
-                                  style: TextStyle(
-                                    color: Colors.white.withOpacity(0.9),
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 8,
-                                  ),
-                                ),
-                              ],
-                            )
-                                : Center(
-                              child: Text(
-                                "ADD",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w800,
-                                  fontSize: 12,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                      // Positioned(
+                      //   bottom: 8,
+                      //   right: 8,
+                      //   child: GestureDetector(
+                      //     onTap: () {
+                      //       if (product.has_options == true) {
+                      //         _showProductOptionsModal(context, product);
+                      //       } else {
+                      //         _handleAddToCart(context, product);
+                      //       }
+                      //     },
+                      //     child: Container(
+                      //       width: 68,
+                      //       height: 36,
+                      //       decoration: BoxDecoration(
+                      //         gradient: LinearGradient(
+                      //           colors: [Colors.green.shade600, Colors.green.shade500],
+                      //           begin: Alignment.topCenter,
+                      //           end: Alignment.bottomCenter,
+                      //         ),
+                      //         borderRadius: BorderRadius.circular(10),
+                      //         boxShadow: [
+                      //           BoxShadow(
+                      //             color: Colors.green.withOpacity(0.3),
+                      //             blurRadius: 6,
+                      //             offset: const Offset(0, 3),
+                      //           ),
+                      //         ],
+                      //       ),
+                      //       child: product.has_options == true
+                      //           ? Column(
+                      //         mainAxisAlignment: MainAxisAlignment.center,
+                      //         children: [
+                      //           Text(
+                      //             "ADD",
+                      //             style: TextStyle(
+                      //               color: Colors.white,
+                      //               fontWeight: FontWeight.w800,
+                      //               fontSize: 10,
+                      //               letterSpacing: 0.5,
+                      //             ),
+                      //           ),
+                      //           Container(
+                      //             margin: const EdgeInsets.symmetric(horizontal: 4),
+                      //             height: 1,
+                      //             color: Colors.white.withOpacity(0.3),
+                      //           ),
+                      //           Text(
+                      //             "(${product.options_count ?? 0})",
+                      //             style: TextStyle(
+                      //               color: Colors.white.withOpacity(0.9),
+                      //               fontWeight: FontWeight.w700,
+                      //               fontSize: 8,
+                      //             ),
+                      //           ),
+                      //         ],
+                      //       )
+                      //           : Center(
+                      //         child: Text(
+                      //           "ADD",
+                      //           style: TextStyle(
+                      //             color: Colors.white,
+                      //             fontWeight: FontWeight.w800,
+                      //             fontSize: 12,
+                      //             letterSpacing: 0.5,
+                      //           ),
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -460,6 +459,7 @@ class MartProductCardHome extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       SizedBox(
+                        height: 25,
                         child: Text(
                           product.name ?? "Unknown Product",
                           style: TextStyle(
@@ -472,6 +472,56 @@ class MartProductCardHome extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
+                      const SizedBox(height: 6),
+                      if (_getDisplayRating() > 0 && _getDisplayReviewCount() > 0)
+                        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '20 mins',
+                              style: TextStyle(
+                                fontSize: _getResponsiveFontSize(screenWidth, 10.0),
+                                color: Colors.grey.shade600,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              // decoration: BoxDecoration(
+                              //   color: Colors.amber.shade50,
+                              //   borderRadius: BorderRadius.circular(8),
+                              //   border: Border.all(color: Colors.amber.shade100),
+                              // ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.star_rounded,
+                                    size: 14,
+                                    color: Colors.amber.shade700,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '${_getDisplayRating().toStringAsFixed(1)}',
+                                    style: TextStyle(
+                                      fontSize: _getResponsiveFontSize(screenWidth, 11.0),
+                                      color: Colors.amber.shade800,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  // const SizedBox(width: 4),
+                                  // Text(
+                                  //   '(${_getDisplayReviewCount()})',
+                                  //   style: TextStyle(
+                                  //     fontSize: _getResponsiveFontSize(screenWidth, 10.0),
+                                  //     color: Colors.grey.shade600,
+                                  //     fontWeight: FontWeight.w500,
+                                  //   ),
+                                  // ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       const SizedBox(height: 6),
                       // Price Section
                       Row(
@@ -496,6 +546,86 @@ class MartProductCardHome extends StatelessWidget {
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
+                          Spacer(),
+                          Positioned(
+                            bottom: 8,
+                            right: 8,
+                            child: GestureDetector(
+                              onTap: () {
+                                if (product.has_options == true) {
+                                  _showProductOptionsModal(context, product);
+                                } else {
+                                  _handleAddToCart(context, product);
+                                }
+                              },
+                              child: Container(
+                                // width: 68,
+                                // height: 36,
+                                // decoration: BoxDecoration(
+                                //   gradient: LinearGradient(
+                                //     colors: [Colors.green.shade600, Colors.green.shade500],
+                                //     begin: Alignment.topCenter,
+                                //     end: Alignment.bottomCenter,
+                                //   ),
+                                //   borderRadius: BorderRadius.circular(10),
+                                //   boxShadow: [
+                                //     BoxShadow(
+                                //       color: Colors.green.withOpacity(0.3),
+                                //       blurRadius: 6,
+                                //       offset: const Offset(0, 3),
+                                //     ),
+                                //   ],
+                                // ),
+                                child: product.has_options == true
+                                    ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    // Text(
+                                    //   "ADD",
+                                    //   style: TextStyle(
+                                    //     color: Colors.white,
+                                    //     fontWeight: FontWeight.w800,
+                                    //     fontSize: 10,
+                                    //     letterSpacing: 0.5,
+                                    //   ),
+                                    // ),
+                                    CircleAvatar(radius: 12,
+                                      child: Icon(Icons.add,),
+                                    ),
+                                    Container(
+                                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                                      height: 1,
+                                      color: Colors.white.withOpacity(0.3),
+                                    ),
+                                    Text(
+                                      "(${product.options_count ?? 0})",
+                                      style: TextStyle(
+                                        color: Colors.white.withOpacity(0.9),
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 8,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                                    : 
+                                
+                                CircleAvatar(radius: 12,
+                                  child: Icon(Icons.add,),
+                                )
+                                // Center(
+                                //   child: Text(
+                                //     "ADD",
+                                //     style: TextStyle(
+                                //       color: Colors.white,
+                                //       fontWeight: FontWeight.w800,
+                                //       fontSize: 12,
+                                //       letterSpacing: 0.5,
+                                //     ),
+                                //   ),
+                                // ),
+                              ),
+                            ),
+                          ),
                           // const Spacer(),
                           // if (hasDiscount)
                           //   Container(
@@ -583,43 +713,43 @@ class MartProductCardHome extends StatelessWidget {
                       ),
                       const SizedBox(height: 5),
                       // Ratings Section
-                      if (_getDisplayRating() > 0 && _getDisplayReviewCount() > 0)
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.amber.shade50,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.amber.shade100),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.star_rounded,
-                                size: 14,
-                                color: Colors.amber.shade700,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${_getDisplayRating().toStringAsFixed(1)}',
-                                style: TextStyle(
-                                  fontSize: _getResponsiveFontSize(screenWidth, 11.0),
-                                  color: Colors.amber.shade800,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '(${_getDisplayReviewCount()})',
-                                style: TextStyle(
-                                  fontSize: _getResponsiveFontSize(screenWidth, 10.0),
-                                  color: Colors.grey.shade600,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                      // if (_getDisplayRating() > 0 && _getDisplayReviewCount() > 0)
+                      //   Container(
+                      //     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      //     decoration: BoxDecoration(
+                      //       color: Colors.amber.shade50,
+                      //       borderRadius: BorderRadius.circular(8),
+                      //       border: Border.all(color: Colors.amber.shade100),
+                      //     ),
+                      //     child: Row(
+                      //       mainAxisSize: MainAxisSize.min,
+                      //       children: [
+                      //         Icon(
+                      //           Icons.star_rounded,
+                      //           size: 14,
+                      //           color: Colors.amber.shade700,
+                      //         ),
+                      //         const SizedBox(width: 4),
+                      //         Text(
+                      //           '${_getDisplayRating().toStringAsFixed(1)}',
+                      //           style: TextStyle(
+                      //             fontSize: _getResponsiveFontSize(screenWidth, 11.0),
+                      //             color: Colors.amber.shade800,
+                      //             fontWeight: FontWeight.w700,
+                      //           ),
+                      //         ),
+                      //         const SizedBox(width: 4),
+                      //         Text(
+                      //           '(${_getDisplayReviewCount()})',
+                      //           style: TextStyle(
+                      //             fontSize: _getResponsiveFontSize(screenWidth, 10.0),
+                      //             color: Colors.grey.shade600,
+                      //             fontWeight: FontWeight.w500,
+                      //           ),
+                      //         ),
+                      //       ],
+                      //     ),
+                      //   ),
                       const SizedBox(height: 5),
                     ],
                   ),
