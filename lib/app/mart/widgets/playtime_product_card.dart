@@ -1,4 +1,4 @@
-import 'package:customer/app/mart/mart_product_details_screen.dart';
+import 'package:customer/app/mart/screens/mart_product_details_screen/mart_product_details_screen.dart';
 import 'package:customer/controllers/cart_controller.dart';
 import 'package:customer/models/cart_product_model.dart';
 import 'package:customer/models/mart_item_model.dart';
@@ -106,23 +106,28 @@ class PlaytimeProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 101,
-      height: 215,
-      margin: const EdgeInsets.only(right: 16),
-      child: Stack(
-        children: [
-          // Product image
-          Positioned(
-            left: 0,
-            top: 0,
-            child: GestureDetector(
+    return Card(
+      elevation: 5, // Shadow depth
+      shadowColor: Colors.black26, // Optional: soft shadow
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      clipBehavior: Clip.antiAlias,
+      color: Colors.white, // Card background
+      child: Container(
+        width:140,
+        height: 235,
+        margin: const EdgeInsets.only(right: 16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            GestureDetector(
               onTap: () {
                 // Navigate to product details screen if product model is available
                 if (product != null) {
                   Get.to(() => MartProductDetailsScreen(
-                        product: product!,
-                      ));
+                    product: product!,
+                  ));
                 } else {
                   // Show message if product model is not available
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -135,7 +140,7 @@ class PlaytimeProductCard extends StatelessWidget {
                 }
               },
               child: Container(
-                width: 101,
+                width: 140,
                 height: 131,
                 decoration: BoxDecoration(
                   color: const Color(0xFFECEAFD),
@@ -145,174 +150,203 @@ class PlaytimeProductCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(9),
                   child: imageUrl != null && imageUrl!.isNotEmpty
                       ? NetworkImageWidget(
-                          imageUrl: imageUrl!,
-                          width: 101,
-                          height: 131,
-                          fit: BoxFit.cover,
-                          errorWidget: Container(
-                            width: 101,
-                            height: 131,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFFECEAFD),
-                            ),
-                            child: const Center(
-                              child: Icon(
-                                Icons.image_not_supported,
-                                color: Colors.grey,
-                                size: 24,
-                              ),
-                            ),
-                          ),
-                        )
-                      : Container(
-                          width: 101,
-                          height: 131,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFECEAFD),
-                          ),
-                          child: const Center(
-                            child: Icon(
-                              Icons.image_not_supported,
-                              color: Colors.grey,
-                              size: 24,
-                            ),
-                          ),
+                    imageUrl: imageUrl!,
+                    width: 140,
+                    height: 131,
+                    fit: BoxFit.fill,
+                    errorWidget: Container(
+                      width: 101,
+                      height: 131,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFECEAFD),
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.image_not_supported,
+                          color: Colors.grey,
+                          size: 24,
                         ),
-                ),
-              ),
-            ),
-          ),
-
-          // Volume text (600 ml)
-          // Positioned(
-          //   left: 26, // 42 - 16 (container left offset)
-          //   top: 8,
-          //   child: Text(
-          //     volume,
-          //     style: const TextStyle(
-          //       fontFamily: 'Montserrat',
-          //       fontSize: 12,
-          //       fontWeight: FontWeight.w500,
-          //       height: 15 / 12, // line-height: 15px
-          //       color: Color(0xFF1A1A1A),
-          //     ),
-          //   ),
-          // ),
-
-          // Add button with plus icon
-          Positioned(
-            left: 13, // 29 - 16 (container left offset)
-            top: 100, // Moved up by 2px to add bottom padding
-            child: Container(
-              width: 76,
-              height: 27,
-              decoration: BoxDecoration(
-                color: Colors.green,
-                // color: const Color(0xFF595BD4), // Solid purple background
-                borderRadius: BorderRadius.circular(7),
-              ),
-              child: GestureDetector(
-                onTap: () => _handleAddToCart(context),
-                child: const Center(
-                  child: Text(
-                    'Add',
-                    style: TextStyle(
-                      fontFamily: 'Montserrat',
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      height: 17 / 14, // line-height: 17px
-                      color: Colors.white, // White text on purple background
+                      ),
+                    ),
+                  )
+                      : Container(
+                    width: 101,
+                    height: 131,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFECEAFD),
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.image_not_supported,
+                        color: Colors.grey,
+                        size: 24,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-
-          // Product name
-          Positioned(
-            left: 0,
-            top: 143,
-            child: SizedBox(
-              width: 101,
-              height: 20,
-              child: Text(
-                productName,
-                style: const TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  height: 15 / 12, // line-height: 15px
-                  color: Color(0xFF000000),
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ),
-
-          // Current price and Original price side by side
-          Positioned(
-            left: 0,
-            top: 165,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Current price (in red)
-                Text(
-                  currentPrice,
-                  style: const TextStyle(
-                    fontFamily: 'Montserrat',
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    height: 15 / 12, // line-height: 15px
-                    color: Color(0xFFFF0000), // Red color
-                  ),
-                ),
-                const SizedBox(width: 8), // Space between prices
-                // Original price (struck through)
-                Text(
-                  originalPrice,
-                  style: const TextStyle(
-                    fontFamily: 'Montserrat',
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                    height: 15 / 12, // line-height: 15px
-                    color: Color(0xFF444343),
-                    decoration: TextDecoration.lineThrough,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Discount percentage
-          Positioned(
-            left: 0,
-            top: 185,
-            child: Text(
-              discount,
+Padding(
+  padding: const EdgeInsets.only(left: 5,right: 5),
+  child: Column(
+    mainAxisAlignment: MainAxisAlignment.start,crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SizedBox(height: 5,),
+    Text(
+      productName,
+      style: const TextStyle(
+        fontFamily: 'Montserrat',
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        height: 15 / 12, // line-height: 15px
+        color: Color(0xFF000000),
+      ),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+    ),
+    Positioned(
+      left: 0,
+      // top: 185,
+      top: 165,
+      child: Text(
+        discount,
+        style: const TextStyle(
+          fontFamily: 'Montserrat',
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+          height: 15 / 12, // line-height: 15px
+          color: Color(0xFF3C720E),
+        ),
+      ),
+    ),
+    // Current price and Original price side by side
+    Positioned(
+      left: 0,
+      // top: 165,
+      top: 180,
+      child: SizedBox(
+        width: 140,
+        child: Row(
+          // mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Current price (in red)
+            Text(
+              currentPrice,
               style: const TextStyle(
                 fontFamily: 'Montserrat',
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
                 height: 15 / 12, // line-height: 15px
-                color: Color(0xFF3C720E),
+                color: Color(0xFFFF0000), // Red color
               ),
             ),
-          ),
+            const SizedBox(width: 8), // Space between prices
+            // Original price (struck through)
+            // Text(
+            //   originalPrice,
+            //   style: const TextStyle(
+            //     fontFamily: 'Montserrat',
+            //     fontSize: 12,
+            //     fontWeight: FontWeight.w400,
+            //     height: 15 / 12, // line-height: 15px
+            //     color: Color(0xFF444343),
+            //     decoration: TextDecoration.lineThrough,
+            //   ),
+            // ),
+            Container(
+              height: 27,
+              // decoration: BoxDecoration(
+              //   color: Colors.green,
+              //   // color: const Color(0xFF595BD4), // Solid purple background
+              //   borderRadius: BorderRadius.circular(7),
+              // ),
+              child: GestureDetector(
+                onTap: () => _handleAddToCart(context),
+                child: CircleAvatar(radius: 12,
+                  child: Icon(Icons.add,),
+                ),
+                // child: const Center(
+                //   child: Text(
+                //     'Add',
+                //     style: TextStyle(
+                //       fontFamily: 'Montserrat',
+                //       fontSize: 14,
+                //       fontWeight: FontWeight.w700,
+                //       height: 17 / 14, // line-height: 17px
+                //       color: Colors.white, // White text on purple background
+                //     ),
+                //   ),
+                // ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  ],),
+)
+            // Volume text (600 ml)
+            // Positioned(
+            //   left: 26, // 42 - 16 (container left offset)
+            //   top: 8,
+            //   child: Text(
+            //     volume,
+            //     style: const TextStyle(
+            //       fontFamily: 'Montserrat',
+            //       fontSize: 12,
+            //       fontWeight: FontWeight.w500,
+            //       height: 15 / 12, // line-height: 15px
+            //       color: Color(0xFF1A1A1A),
+            //     ),
+            //   ),
+            // ),
 
-          // Line separator
-          // Positioned(
-          //   left: 0,
-          //   top: 194,
-          //   child: Container(
-          //     width: 44,
-          //     height: 1,
-          //     color: const Color(0xFF3B3B3B),
-          //   ),
-          // ),
-        ],
+            // Add button with plus icon
+            // Positioned(
+            //   left: 13, // 29 - 16 (container left offset)
+            //   top: 100, // Moved up by 2px to add bottom padding
+            //   child: Container(
+            //     width: 76,
+            //     height: 27,
+            //     decoration: BoxDecoration(
+            //       color: Colors.green,
+            //       // color: const Color(0xFF595BD4), // Solid purple background
+            //       borderRadius: BorderRadius.circular(7),
+            //     ),
+            //     child: GestureDetector(
+            //       onTap: () => _handleAddToCart(context),
+            //       child: const Center(
+            //         child: Text(
+            //           'Add',
+            //           style: TextStyle(
+            //             fontFamily: 'Montserrat',
+            //             fontSize: 14,
+            //             fontWeight: FontWeight.w700,
+            //             height: 17 / 14, // line-height: 17px
+            //             color: Colors.white, // White text on purple background
+            //           ),
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            // Product name
+
+            // Discount percentage
+
+            // Line separator
+            // Positioned(
+            //   left: 0,
+            //   top: 194,
+            //   child: Container(
+            //     width: 44,
+            //     height: 1,
+            //     color: const Color(0xFF3B3B3B),
+            //   ),
+            // ),
+          ],
+        ),
       ),
     );
   }

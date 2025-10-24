@@ -9,7 +9,7 @@ import 'package:customer/app/home_screen/restaurant_list_screen.dart';
 import 'package:customer/app/home_screen/story_view.dart';
 import 'package:customer/app/home_screen/view_all_category_screen.dart';
 import 'package:customer/app/location_permission_screen/location_permission_screen.dart';
-import 'package:customer/app/mart/mart_navigation_screen.dart';
+import 'package:customer/app/mart/screens/mart_navigation_screen/mart_navigation_screen.dart';
 import 'package:customer/app/profile_screen/profile_screen.dart';
 import 'package:customer/app/restaurant_details_screen/restaurant_details_screen.dart';
 import 'package:customer/app/swiggy_search_screen/swiggy_search_screen.dart';
@@ -32,6 +32,7 @@ import 'package:customer/utils/mart_zone_utils.dart';
 import 'package:customer/utils/network_image_widget.dart';
 import 'package:customer/utils/restaurant_sorting_utils.dart';
 import 'package:customer/utils/restaurant_status_utils.dart';
+import 'package:customer/utils/utils/color_const.dart';
 import 'package:customer/widget/animated_search_hint.dart';
 import 'package:customer/widget/filter_bar.dart';
 import 'package:customer/widget/gradiant_text.dart';
@@ -128,19 +129,17 @@ class HomeScreenTwo extends StatelessWidget {
       init: HomeController(),
       builder: (controller) {
         return Scaffold(
-          backgroundColor: themeChange.getThem()
-              ? AppThemeData.surfaceDark
-              : AppThemeData.surface,
+          // backgroundColor: themeChange.getThem()
+          //     ? AppThemeData.surfaceDark
+          //     : AppThemeData.surface,
           floatingActionButton: Stack(
             children: [
-              // Mini cart bar - full width
               const Positioned(
                 bottom: 0,
                 left: 16,
                 right: 0,
                 child: MiniCartBar(),
               ),
-              // WhatsApp floating button - positioned dynamically based on mini cart state
               Positioned(
                 bottom: cartItem.isNotEmpty
                     ? 100
@@ -190,145 +189,126 @@ class HomeScreenTwo extends StatelessWidget {
               ),
             ],
           ),
-          body: RefreshIndicator(
-            onRefresh: controller.getRefresh,
-            child: controller.isLoading.value
-                ? const RestaurantLoadingWidget()
-                : Constant.isZoneAvailable == false
-                    ? Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              "assets/images/location.gif",
-                              height: 120,
-                            ),
-                            const SizedBox(
-                              height: 12,
-                            ),
-                            Text(
-                              Constant.isZoneAvailable == false
-                                  ? "Service Not Available in Your Area".tr
-                                  : "No Restaurants Found in Your Area".tr,
-                              style: TextStyle(
-                                  color: themeChange.getThem()
-                                      ? AppThemeData.grey100
-                                      : AppThemeData.grey800,
-                                  fontSize: 22,
-                                  fontFamily: AppThemeData.semiBold),
-                            ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Text(
-                              Constant.isZoneAvailable == false
-                                  ? "We don't currently deliver to your location. Please try a different address within our service area."
-                                      .tr
-                                  : "Currently, there are no available restaurants in your zone. Try changing your location to find nearby options."
-                                      .tr,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  color: themeChange.getThem()
-                                      ? AppThemeData.grey50
-                                      : AppThemeData.grey500,
-                                  fontSize: 16,
-                                  fontFamily: AppThemeData.bold),
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            RoundedButtonFill(
-                              title: "Change Zone".tr,
-                              width: 55,
-                              height: 5.5,
-                              color: AppThemeData.primary300,
-                              textColor: AppThemeData.grey50,
-                              onPress: () async {
-                                Get.offAll(const LocationPermissionScreen());
-                              },
-                            ),
-                          ],
-                        ),
-                      )
-                    : Padding(
-                        padding: EdgeInsets.only(
-                            top: MediaQuery.of(context).viewPadding.top),
-                        child: controller.isListView.value == false
-                            ? const MapView()
-                            : Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          margin: const EdgeInsets.only(
-                                              top: 16, bottom: 16),
-                                          height: 48,
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(24),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.black
-                                                    .withOpacity(0.1),
-                                                blurRadius: 8,
-                                                offset: const Offset(0, 2),
-                                              ),
-                                            ],
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Expanded(
-                                                child: Container(
-                                                  margin:
-                                                      const EdgeInsets.all(4),
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.orange,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20),
-                                                  ),
-                                                  child: const Center(
-                                                    child: Text(
-                                                      'FOOD',
-                                                      style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        fontSize: 14,
-                                                      ),
-                                                    ),
-                                                  ),
+          body:Container(
+            decoration: BoxDecoration(
+              color: themeChange.getThem()
+                  ? AppThemeData.surfaceDark
+                  : AppThemeData.surface,
+              image: DecorationImage(
+                image: AssetImage('assets/images/homebackground.png'),
+                fit: BoxFit.cover, // can use contain, fill, repeat
+              ),
+            ),
+            child: RefreshIndicator(
+              onRefresh: controller.getRefresh,
+              child: controller.isLoading.value
+                  ? const RestaurantLoadingWidget()
+                  : Constant.isZoneAvailable == false
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                "assets/images/location.gif",
+                                height: 120,
+                              ),
+                              const SizedBox(
+                                height: 12,
+                              ),
+                              Text(
+                                Constant.isZoneAvailable == false
+                                    ? "Service Not Available in Your Area".tr
+                                    : "No Restaurants Found in Your Area".tr,
+                                style: TextStyle(
+                                    color: themeChange.getThem()
+                                        ? AppThemeData.grey100
+                                        : AppThemeData.grey800,
+                                    fontSize: 22,
+                                    fontFamily: AppThemeData.semiBold),
+                              ),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                Constant.isZoneAvailable == false
+                                    ? "We don't currently deliver to your location. Please try a different address within our service area."
+                                        .tr
+                                    : "Currently, there are no available restaurants in your zone. Try changing your location to find nearby options."
+                                        .tr,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    color: themeChange.getThem()
+                                        ? AppThemeData.grey50
+                                        : AppThemeData.grey500,
+                                    fontSize: 16,
+                                    fontFamily: AppThemeData.bold),
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              RoundedButtonFill(
+                                title: "Change Zone".tr,
+                                width: 55,
+                                height: 5.5,
+                                color: AppThemeData.primary300,
+                                textColor: AppThemeData.grey50,
+                                onPress: () async {
+                                  Get.offAll(const LocationPermissionScreen());
+                                },
+                              ),
+                            ],
+                          ),
+                        )
+                      : Padding(
+                          padding: EdgeInsets.only(
+                              top: MediaQuery.of(context).viewPadding.top),
+                          child: controller.isListView.value == false
+                              ? const MapView()
+                              : Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            margin: const EdgeInsets.only(
+                                                top: 16, bottom: 16),
+                                            height: 48,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(24),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black
+                                                      .withOpacity(0.1),
+                                                  blurRadius: 8,
+                                                  offset: const Offset(0, 2),
                                                 ),
-                                              ),
-                                              Expanded(
-                                                child: GestureDetector(
-                                                  onTap: () {
-                                                    HomeScreenTwo
-                                                        ._checkMartAvailability();
-                                                  },
+                                              ],
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                Expanded(
                                                   child: Container(
                                                     margin:
                                                         const EdgeInsets.all(4),
                                                     decoration: BoxDecoration(
-                                                      color: Colors.white,
+                                                      color: Colors.orange,
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               20),
                                                     ),
-                                                    child: Center(
+                                                    child: const Center(
                                                       child: Text(
-                                                        'MART',
+                                                        'FOOD',
                                                         style: TextStyle(
-                                                          color:
-                                                              Colors.grey[600],
+                                                          color: Colors.white,
                                                           fontWeight:
                                                               FontWeight.w600,
                                                           fontSize: 14,
@@ -337,38 +317,85 @@ class HomeScreenTwo extends StatelessWidget {
                                                     ),
                                                   ),
                                                 ),
-                                              ),
-                                            ],
+                                                Expanded(
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      HomeScreenTwo
+                                                          ._checkMartAvailability();
+                                                    },
+                                                    child: Container(
+                                                      margin:
+                                                          const EdgeInsets.all(4),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.white,
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                                20),
+                                                      ),
+                                                      child: Center(
+                                                        child: Text(
+                                                          'MART',
+                                                          style: TextStyle(
+                                                            color:
+                                                                Colors.grey[600],
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            fontSize: 14,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                        Row(
-                                          children: [
-                                            InkWell(
-                                              onTap: () {
-                                                Get.to(const ProfileScreen());
-                                              },
-                                              child: buildProfileAvatar(),
-                                            ),
-                                            const SizedBox(
-                                              width: 10,
-                                            ),
-                                            Expanded(
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Constant.userModel == null
-                                                      ? InkWell(
-                                                          onTap: () {
-                                                            Get.offAll(
-                                                                const LoginScreen());
-                                                          },
-                                                          child: Text(
-                                                            "Login".tr,
-                                                            textAlign: TextAlign
-                                                                .center,
+                                          Row(
+                                            children: [
+                                              InkWell(
+                                                onTap: () {
+                                                  Get.to(const ProfileScreen());
+                                                },
+                                                child: buildProfileAvatar(),
+                                              ),
+                                              const SizedBox(
+                                                width: 10,
+                                              ),
+                                              Expanded(
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Constant.userModel == null
+                                                        ? InkWell(
+                                                            onTap: () {
+                                                              Get.offAll(
+                                                                  const LoginScreen());
+                                                            },
+                                                            child: Text(
+                                                              "Login".tr,
+                                                              textAlign: TextAlign
+                                                                  .center,
+                                                              style: TextStyle(
+                                                                fontFamily:
+                                                                    AppThemeData
+                                                                        .medium,
+                                                                color: themeChange
+                                                                        .getThem()
+                                                                    ? AppThemeData
+                                                                        .grey50
+                                                                    : AppThemeData
+                                                                        .grey900,
+                                                                fontSize: 12,
+                                                              ),
+                                                            ),
+                                                          )
+                                                        : Text(
+                                                            "${Constant.userModel!.fullName()}",
+                                                            textAlign:
+                                                                TextAlign.center,
                                                             style: TextStyle(
                                                               fontFamily:
                                                                   AppThemeData
@@ -382,602 +409,582 @@ class HomeScreenTwo extends StatelessWidget {
                                                               fontSize: 12,
                                                             ),
                                                           ),
-                                                        )
-                                                      : Text(
-                                                          "${Constant.userModel!.fullName()}",
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                          style: TextStyle(
-                                                            fontFamily:
-                                                                AppThemeData
-                                                                    .medium,
-                                                            color: themeChange
-                                                                    .getThem()
-                                                                ? AppThemeData
-                                                                    .grey50
-                                                                : AppThemeData
-                                                                    .grey900,
-                                                            fontSize: 12,
-                                                          ),
-                                                        ),
-                                                  InkWell(
-                                                    onTap: () async {
-                                                      if (Constant.userModel !=
-                                                          null) {
-                                                        Get.to(const AddressListScreen())!
-                                                            .then(
-                                                          (value) {
-                                                            if (value != null) {
-                                                              ShippingAddress
-                                                                  addressModel =
-                                                                  value;
-                                                              Constant.selectedLocation =
-                                                                  addressModel;
-                                                              controller
-                                                                  .getData();
-                                                            }
-                                                          },
-                                                        );
-                                                      } else {
-                                                        Constant
-                                                            .checkPermission(
-                                                                onTap:
-                                                                    () async {
-                                                                  ShowToastDialog
-                                                                      .showLoader(
-                                                                          "Please wait"
-                                                                              .tr);
-                                                                  ShippingAddress
-                                                                      addressModel =
-                                                                      ShippingAddress();
-                                                                  try {
-                                                                    await Geolocator
-                                                                        .requestPermission();
-                                                                    await Geolocator
-                                                                        .getCurrentPosition();
+                                                    InkWell(
+                                                      onTap: () async {
+                                                        if (Constant.userModel !=
+                                                            null) {
+                                                          Get.to(const AddressListScreen())!
+                                                              .then(
+                                                            (value) {
+                                                              if (value != null) {
+                                                                ShippingAddress
+                                                                    addressModel =
+                                                                    value;
+                                                                Constant.selectedLocation =
+                                                                    addressModel;
+                                                                controller
+                                                                    .getData();
+                                                              }
+                                                            },
+                                                          );
+                                                        } else {
+                                                          Constant
+                                                              .checkPermission(
+                                                                  onTap:
+                                                                      () async {
                                                                     ShowToastDialog
-                                                                        .closeLoader();
-                                                                    if (Constant
-                                                                            .selectedMapType ==
-                                                                        'osm') {
-                                                                      final result =
-                                                                          await Get.to(() =>
-                                                                              MapPickerPage());
-                                                                      if (result !=
-                                                                          null) {
-                                                                        final firstPlace =
-                                                                            result;
-                                                                        final lat = firstPlace
-                                                                            .coordinates
-                                                                            .latitude;
-                                                                        final lng = firstPlace
-                                                                            .coordinates
-                                                                            .longitude;
-                                                                        final address =
-                                                                            firstPlace.address;
-
-                                                                        addressModel.addressAs =
+                                                                        .showLoader(
+                                                                            "Please wait"
+                                                                                .tr);
+                                                                    ShippingAddress
+                                                                        addressModel =
+                                                                        ShippingAddress();
+                                                                    try {
+                                                                      await Geolocator
+                                                                          .requestPermission();
+                                                                      await Geolocator
+                                                                          .getCurrentPosition();
+                                                                      ShowToastDialog
+                                                                          .closeLoader();
+                                                                      if (Constant
+                                                                              .selectedMapType ==
+                                                                          'osm') {
+                                                                        final result =
+                                                                            await Get.to(() =>
+                                                                                MapPickerPage());
+                                                                        if (result !=
+                                                                            null) {
+                                                                          final firstPlace =
+                                                                              result;
+                                                                          final lat = firstPlace
+                                                                              .coordinates
+                                                                              .latitude;
+                                                                          final lng = firstPlace
+                                                                              .coordinates
+                                                                              .longitude;
+                                                                          final address =
+                                                                              firstPlace.address;
+            
+                                                                          addressModel.addressAs =
+                                                                              "Home";
+                                                                          addressModel.locality =
+                                                                              address.toString();
+                                                                          addressModel.location = UserLocation(
+                                                                              latitude:
+                                                                                  lat,
+                                                                              longitude:
+                                                                                  lng);
+                                                                          Constant.selectedLocation =
+                                                                              addressModel;
+                                                                          controller
+                                                                              .getData();
+                                                                          Get.back();
+                                                                        }
+                                                                      } else {
+                                                                        Navigator
+                                                                            .push(
+                                                                          context,
+                                                                          MaterialPageRoute(
+                                                                            builder: (context) =>
+                                                                                PlacePicker(
+                                                                              apiKey:
+                                                                                  Constant.mapAPIKey,
+                                                                              onPlacePicked:
+                                                                                  (result) async {
+                                                                                ShippingAddress addressModel = ShippingAddress();
+                                                                                addressModel.addressAs = "Home";
+                                                                                addressModel.locality = result.formattedAddress!.toString();
+                                                                                addressModel.location = UserLocation(latitude: result.geometry!.location.lat, longitude: result.geometry!.location.lng);
+                                                                                Constant.selectedLocation = addressModel;
+                                                                                controller.getData();
+                                                                                Get.back();
+                                                                              },
+                                                                              initialPosition:
+                                                                                  const LatLng(-33.8567844, 151.213108),
+                                                                              useCurrentLocation:
+                                                                                  true,
+                                                                              selectInitialPosition:
+                                                                                  true,
+                                                                              usePinPointingSearch:
+                                                                                  true,
+                                                                              usePlaceDetailSearch:
+                                                                                  true,
+                                                                              zoomGesturesEnabled:
+                                                                                  true,
+                                                                              zoomControlsEnabled:
+                                                                                  true,
+                                                                              resizeToAvoidBottomInset:
+                                                                                  false, // only works in page mode, less flickery, remove if wrong offsets
+                                                                            ),
+                                                                          ),
+                                                                        );
+                                                                      }
+                                                                    } catch (e) {
+                                                                      await placemarkFromCoordinates(
+                                                                              19.228825,
+                                                                              72.854118)
+                                                                          .then(
+                                                                              (valuePlaceMaker) {
+                                                                        Placemark
+                                                                            placeMark =
+                                                                            valuePlaceMaker[
+                                                                                0];
+                                                                        addressModel
+                                                                                .addressAs =
                                                                             "Home";
-                                                                        addressModel.locality =
-                                                                            address.toString();
                                                                         addressModel.location = UserLocation(
                                                                             latitude:
-                                                                                lat,
+                                                                                19.228825,
                                                                             longitude:
-                                                                                lng);
-                                                                        Constant.selectedLocation =
-                                                                            addressModel;
-                                                                        controller
-                                                                            .getData();
-                                                                        Get.back();
-                                                                      }
-                                                                    } else {
-                                                                      Navigator
-                                                                          .push(
-                                                                        context,
-                                                                        MaterialPageRoute(
-                                                                          builder: (context) =>
-                                                                              PlacePicker(
-                                                                            apiKey:
-                                                                                Constant.mapAPIKey,
-                                                                            onPlacePicked:
-                                                                                (result) async {
-                                                                              ShippingAddress addressModel = ShippingAddress();
-                                                                              addressModel.addressAs = "Home";
-                                                                              addressModel.locality = result.formattedAddress!.toString();
-                                                                              addressModel.location = UserLocation(latitude: result.geometry!.location.lat, longitude: result.geometry!.location.lng);
-                                                                              Constant.selectedLocation = addressModel;
-                                                                              controller.getData();
-                                                                              Get.back();
-                                                                            },
-                                                                            initialPosition:
-                                                                                const LatLng(-33.8567844, 151.213108),
-                                                                            useCurrentLocation:
-                                                                                true,
-                                                                            selectInitialPosition:
-                                                                                true,
-                                                                            usePinPointingSearch:
-                                                                                true,
-                                                                            usePlaceDetailSearch:
-                                                                                true,
-                                                                            zoomGesturesEnabled:
-                                                                                true,
-                                                                            zoomControlsEnabled:
-                                                                                true,
-                                                                            resizeToAvoidBottomInset:
-                                                                                false, // only works in page mode, less flickery, remove if wrong offsets
-                                                                          ),
-                                                                        ),
-                                                                      );
+                                                                                72.854118);
+                                                                        String
+                                                                            currentLocation =
+                                                                            "${placeMark.name}, ${placeMark.subLocality}, ${placeMark.locality}, ${placeMark.administrativeArea}, ${placeMark.postalCode}, ${placeMark.country}";
+                                                                        addressModel
+                                                                                .locality =
+                                                                            currentLocation;
+                                                                      });
+            
+                                                                      Constant.selectedLocation =
+                                                                          addressModel;
+                                                                      ShowToastDialog
+                                                                          .closeLoader();
+                                                                      controller
+                                                                          .getData();
                                                                     }
-                                                                  } catch (e) {
-                                                                    await placemarkFromCoordinates(
-                                                                            19.228825,
-                                                                            72.854118)
-                                                                        .then(
-                                                                            (valuePlaceMaker) {
-                                                                      Placemark
-                                                                          placeMark =
-                                                                          valuePlaceMaker[
-                                                                              0];
-                                                                      addressModel
-                                                                              .addressAs =
-                                                                          "Home";
-                                                                      addressModel.location = UserLocation(
-                                                                          latitude:
-                                                                              19.228825,
-                                                                          longitude:
-                                                                              72.854118);
-                                                                      String
-                                                                          currentLocation =
-                                                                          "${placeMark.name}, ${placeMark.subLocality}, ${placeMark.locality}, ${placeMark.administrativeArea}, ${placeMark.postalCode}, ${placeMark.country}";
-                                                                      addressModel
-                                                                              .locality =
-                                                                          currentLocation;
-                                                                    });
-
-                                                                    Constant.selectedLocation =
-                                                                        addressModel;
-                                                                    ShowToastDialog
-                                                                        .closeLoader();
-                                                                    controller
-                                                                        .getData();
-                                                                  }
-                                                                },
-                                                                context:
-                                                                    context);
-                                                      }
-                                                    },
-                                                    child: Text.rich(
-                                                      maxLines: 1,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      TextSpan(
-                                                        children: [
-                                                          TextSpan(
-                                                            text: Constant
-                                                                .selectedLocation
-                                                                .getFullAddress(),
-                                                            style: TextStyle(
-                                                              fontFamily:
-                                                                  AppThemeData
-                                                                      .medium,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              color: themeChange
-                                                                      .getThem()
-                                                                  ? AppThemeData
-                                                                      .grey50
-                                                                  : AppThemeData
-                                                                      .grey900,
-                                                              fontSize: 14,
-                                                            ),
-                                                          ),
-                                                          WidgetSpan(
-                                                            child: SvgPicture.asset(
-                                                                "assets/icons/ic_down.svg"),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            const SizedBox(
-                                              width: 5,
-                                            ),
-                                            // InkWell(
-                                            //   onTap: () async {
-                                            //     (await Get.to(
-                                            //         const CartScreen()));
-                                            //     controller.getCartData();
-                                            //   },
-                                            //   child: ClipOval(
-                                            //     child: Container(
-                                            //         padding:
-                                            //             const EdgeInsets.all(8.0),
-                                            //         color: themeChange.getThem()
-                                            //             ? AppThemeData.grey900
-                                            //             : AppThemeData.grey50,
-                                            //         child: SvgPicture.asset(
-                                            //           "assets/icons/ic_shoping_cart.svg",
-                                            //           colorFilter:
-                                            //               ColorFilter.mode(
-                                            //                   themeChange
-                                            //                           .getThem()
-                                            //                       ? AppThemeData
-                                            //                           .grey50
-                                            //                       : AppThemeData
-                                            //                           .grey900,
-                                            //                   BlendMode.srcIn),
-                                            //         )),
-                                            //   ),
-                                            // )
-                                          ],
-                                        ),
-                                        const SizedBox(
-                                          height: 20,
-                                        ),
-                                        InkWell(
-                                          onTap: () {
-                                            Get.to(() =>
-                                                const SwiggySearchScreen());
-                                          },
-                                          child: AnimatedSearchHint(
-                                            controller: null,
-                                            enable: false,
-                                            fillColor: Colors.white,
-                                            fontFamily: 'Outfit-Bold',
-                                            textStyle: TextStyle(
-                                              fontFamily: 'Outfit-Bold',
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 12,
-                                              color: Colors.black,
-                                            ),
-                                            hintTextStyle: TextStyle(
-                                              fontFamily: 'Outfit-Bold',
-                                              fontWeight: FontWeight.w900,
-                                              fontSize: 15,
-                                              color: Colors.grey,
-                                            ),
-                                            suffix: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 16),
-                                              child: SvgPicture.asset(
-                                                "assets/icons/ic_search.svg",
-                                                color: Color(0xFFff5201),
-                                              ),
-                                            ),
-                                            hints: [
-                                              // Food items
-                                              "Search 'cake'",
-                                              "Search 'biryani'",
-                                              "Search 'ice cream'",
-                                              "Search 'pizza'",
-                                              "Search 'burger'",
-                                              "Search 'sushi'",
-                                              "Search 'restaurants'",
-                                              "Search 'curry'",
-                                              "Search 'noodles'",
-                                              "Search 'tacos'",
-                                              "Search 'chicken'",
-                                              "Search 'salad'",
-                                              "Search 'breakfast'",
-                                              "Search 'pasta'",
-                                              "Search 'soup'",
-                                              "Search 'wraps'",
-                                              "Search 'donuts'",
-                                              "Search 'coffee'",
-                                              "Search 'cookies'",
-                                              "Search 'drinks'",
-
-                                              // Motivational messages
-                                              "Search 'healthy food'",
-                                              "Search 'trending dishes'",
-                                              "Search 'popular items'",
-                                              "Search 'top rated'",
-                                              "Search 'new arrivals'",
-                                              "Search 'premium'",
-                                              "Search 'best deals'",
-                                              "Search 'award winning'",
-                                              "Search 'special offers'",
-                                              "Search 'today's special'",
-                                              "Search 'gift ideas'",
-                                              "Search 'late night'",
-                                              "Search 'morning'",
-                                              "Search 'evening'",
-                                              "Search 'dinner'",
-                                              "Search 'family meals'",
-                                              "Search 'group orders'",
-                                              "Search 'office lunch'",
-                                              "Search 'party food'",
-                                            ],
-                                            interval:
-                                                const Duration(seconds: 2),
-                                          ),
-                                        ),
-
-                                        //Old search bar
-                                        // InkWell(
-                                        //   onTap: () {
-                                        //     Get.to(const SwiggySearchScreen())
-                                        //         });
-                                        //   },
-                                        //   child: TextFieldWidget(
-                                        //     hintText:
-                                        //         'Search the dish, restaurant, food, meals'
-                                        //             .tr,
-                                        //     controller: null,
-                                        //     enable: false,
-                                        //     prefix: Padding(
-                                        //       padding: const EdgeInsets.symmetric(
-                                        //           horizontal: 16),
-                                        //       child: SvgPicture.asset(
-                                        //           "assets/icons/ic_search.svg"),
-                                        //     ),
-                                        //   ),
-                                        //  ),
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: SingleChildScrollView(
-                                      child: Column(
-                                        children: [
-                                          controller.bannerModel.isEmpty
-                                              ? const SizedBox()
-                                              : Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 16),
-                                                  child: BannerView(
-                                                      controller: controller),
-                                                ),
-                                          const SizedBox(
-                                            height: 20,
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 16),
-                                            child: CategoryView(
-                                                controller: controller),
-                                          ),
-                                          controller
-                                                  .couponRestaurantList.isEmpty
-                                              ? const SizedBox()
-                                              : Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 16),
-                                                  child: Column(
-                                                    children: [
-                                                      const SizedBox(
-                                                        height: 20,
-                                                      ),
-                                                      OfferView(
-                                                          controller:
-                                                              controller),
-                                                    ],
-                                                  ),
-                                                ),
-                                          controller.storyList.isEmpty ||
-                                                  (Constant.storyEnable ==
-                                                          false &&
-                                                      !kDebugMode)
-                                              ? Column(
-                                                  children: [
-                                                    // Debug information
-                                                    if (kDebugMode) ...[
-                                                      Container(
-                                                        margin: const EdgeInsets
-                                                            .all(16),
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(16),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: Colors.orange
-                                                              .withOpacity(0.1),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(8),
-                                                          border: Border.all(
-                                                              color: Colors
-                                                                  .orange),
-                                                        ),
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
+                                                                  },
+                                                                  context:
+                                                                      context);
+                                                        }
+                                                      },
+                                                      child: Text.rich(
+                                                        maxLines: 1,
+                                                        overflow:
+                                                            TextOverflow.ellipsis,
+                                                        TextSpan(
                                                           children: [
-                                                            Text(
-                                                              'Stories Debug Info:',
+                                                            TextSpan(
+                                                              text: Constant
+                                                                  .selectedLocation
+                                                                  .getFullAddress(),
                                                               style: TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                color: Colors
-                                                                    .orange,
+                                                                fontFamily:
+                                                                    AppThemeData
+                                                                        .medium,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                color: themeChange
+                                                                        .getThem()
+                                                                    ? AppThemeData
+                                                                        .grey50
+                                                                    : AppThemeData
+                                                                        .grey900,
+                                                                fontSize: 14,
                                                               ),
                                                             ),
-                                                            SizedBox(height: 8),
-                                                            Text(
-                                                                'Story List Empty: ${controller.storyList.isEmpty}'),
-                                                            Text(
-                                                                'Story Enable: ${Constant.storyEnable}'),
-                                                            Text(
-                                                                'Story Count: ${controller.storyList.length}'),
-                                                            Text(
-                                                                'Story Enable Value: ${Constant.storyEnable}'),
+                                                            WidgetSpan(
+                                                              child: SvgPicture.asset(
+                                                                  "assets/icons/ic_down.svg"),
+                                                            ),
                                                           ],
                                                         ),
                                                       ),
-                                                    ],
-                                                    const SizedBox(),
+                                                    ),
                                                   ],
-                                                )
-                                              : Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 16),
-                                                  child: Column(
-                                                    children: [
-                                                      const SizedBox(
-                                                        height: 20,
-                                                      ),
-                                                      StoryView(
-                                                          controller:
-                                                              controller),
-                                                    ],
-                                                  ),
                                                 ),
-                                          Visibility(
-                                            visible:
-                                                Constant.isEnableAdsFeature ==
-                                                    true,
-                                            child:
-                                                controller.advertisementList
-                                                        .isEmpty
-                                                    ? const SizedBox()
-                                                    : Column(
-                                                        children: [
-                                                          const SizedBox(
-                                                            height: 20,
-                                                          ),
-                                                          Container(
-                                                            margin:
-                                                                const EdgeInsets
-                                                                    .symmetric(
-                                                                    horizontal:
-                                                                        16),
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .symmetric(
-                                                                    horizontal:
-                                                                        16,
-                                                                    vertical:
-                                                                        16),
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          20),
-                                                              color: AppThemeData
-                                                                  .primary300
-                                                                  .withAlpha(
-                                                                      40),
-                                                            ),
-                                                            child: Column(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .start,
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      child:
-                                                                          Text(
-                                                                        "Highlights for you"
-                                                                            .tr,
-                                                                        textAlign:
-                                                                            TextAlign.start,
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontFamily:
-                                                                              AppThemeData.semiBold,
-                                                                          fontSize:
-                                                                              16,
-                                                                          color: themeChange.getThem()
-                                                                              ? AppThemeData.grey50
-                                                                              : AppThemeData.grey900,
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                    InkWell(
-                                                                      onTap:
-                                                                          () {
-                                                                        Get.to(AllAdvertisementScreen())
-                                                                            ?.then((value) {
-                                                                          controller
-                                                                              .getFavouriteRestaurant();
-                                                                        });
-                                                                      },
-                                                                      child:
-                                                                          Text(
-                                                                        "See all"
-                                                                            .tr,
-                                                                        textAlign:
-                                                                            TextAlign.center,
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontFamily:
-                                                                              AppThemeData.regular,
-                                                                          color: themeChange.getThem()
-                                                                              ? AppThemeData.primary300
-                                                                              : AppThemeData.primary300,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                                const SizedBox(
-                                                                  height: 16,
-                                                                ),
-                                                                SizedBox(
-                                                                  height: 220,
-                                                                  child: ListView
-                                                                      .builder(
-                                                                    physics:
-                                                                        const BouncingScrollPhysics(),
-                                                                    scrollDirection:
-                                                                        Axis.horizontal,
-                                                                    itemCount: controller.advertisementList.length >=
-                                                                            10
-                                                                        ? 10
-                                                                        : controller
-                                                                            .advertisementList
-                                                                            .length,
-                                                                    padding:
-                                                                        EdgeInsets
-                                                                            .all(0),
-                                                                    itemBuilder:
-                                                                        (BuildContext
-                                                                                context,
-                                                                            int index) {
-                                                                      return AdvertisementHomeCard(
-                                                                          controller:
-                                                                              controller,
-                                                                          model:
-                                                                              controller.advertisementList[index]);
-                                                                    },
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
+                                              ),
+                                              const SizedBox(
+                                                width: 5,
+                                              ),
+                                              // InkWell(
+                                              //   onTap: () async {
+                                              //     (await Get.to(
+                                              //         const CartScreen()));
+                                              //     controller.getCartData();
+                                              //   },
+                                              //   child: ClipOval(
+                                              //     child: Container(
+                                              //         padding:
+                                              //             const EdgeInsets.all(8.0),
+                                              //         color: themeChange.getThem()
+                                              //             ? AppThemeData.grey900
+                                              //             : AppThemeData.grey50,
+                                              //         child: SvgPicture.asset(
+                                              //           "assets/icons/ic_shoping_cart.svg",
+                                              //           colorFilter:
+                                              //               ColorFilter.mode(
+                                              //                   themeChange
+                                              //                           .getThem()
+                                              //                       ? AppThemeData
+                                              //                           .grey50
+                                              //                       : AppThemeData
+                                              //                           .grey900,
+                                              //                   BlendMode.srcIn),
+                                              //         )),
+                                              //   ),
+                                              // )
+                                            ],
                                           ),
-                                          BestRestaurantsSection(
-                                              restaurantList: controller
-                                                  .allNearestRestaurant),
+                                          const SizedBox(
+                                            height: 20,
+                                          ),
+                                          InkWell(
+                                            onTap: () {
+                                              Get.to(() =>
+                                                  const SwiggySearchScreen());
+                                            },
+                                            child: AnimatedSearchHint(
+                                              controller: null,
+                                              enable: false,
+                                              fillColor: Colors.white,
+                                              fontFamily: 'Outfit-Bold',
+                                              textStyle: TextStyle(
+                                                fontFamily: 'Outfit-Bold',
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 12,
+                                                color: Colors.black,
+                                              ),
+                                              hintTextStyle: TextStyle(
+                                                fontFamily: 'Outfit-Bold',
+                                                fontWeight: FontWeight.w900,
+                                                fontSize: 15,
+                                                color: Colors.grey,
+                                              ),
+                                              suffix: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 16),
+                                                child: SvgPicture.asset(
+                                                  "assets/icons/ic_search.svg",
+                                                  color: Color(0xFFff5201),
+                                                ),
+                                              ),
+                                              hints: [
+                                                // Food items
+                                                "Search 'cake'",
+                                                "Search 'biryani'",
+                                                "Search 'ice cream'",
+                                                "Search 'pizza'",
+                                                "Search 'burger'",
+                                                "Search 'sushi'",
+                                                "Search 'restaurants'",
+                                                "Search 'curry'",
+                                                "Search 'noodles'",
+                                                "Search 'tacos'",
+                                                "Search 'chicken'",
+                                                "Search 'salad'",
+                                                "Search 'breakfast'",
+                                                "Search 'pasta'",
+                                                "Search 'soup'",
+                                                "Search 'wraps'",
+                                                "Search 'donuts'",
+                                                "Search 'coffee'",
+                                                "Search 'cookies'",
+                                                "Search 'drinks'",
+            
+                                                // Motivational messages
+                                                "Search 'healthy food'",
+                                                "Search 'trending dishes'",
+                                                "Search 'popular items'",
+                                                "Search 'top rated'",
+                                                "Search 'new arrivals'",
+                                                "Search 'premium'",
+                                                "Search 'best deals'",
+                                                "Search 'award winning'",
+                                                "Search 'special offers'",
+                                                "Search 'today's special'",
+                                                "Search 'gift ideas'",
+                                                "Search 'late night'",
+                                                "Search 'morning'",
+                                                "Search 'evening'",
+                                                "Search 'dinner'",
+                                                "Search 'family meals'",
+                                                "Search 'group orders'",
+                                                "Search 'office lunch'",
+                                                "Search 'party food'",
+                                              ],
+                                              interval:
+                                                  const Duration(seconds: 2),
+                                            ),
+                                          ),
+            
+                                          //Old search bar
+                                          // InkWell(
+                                          //   onTap: () {
+                                          //     Get.to(const SwiggySearchScreen())
+                                          //         });
+                                          //   },
+                                          //   child: TextFieldWidget(
+                                          //     hintText:
+                                          //         'Search the dish, restaurant, food, meals'
+                                          //             .tr,
+                                          //     controller: null,
+                                          //     enable: false,
+                                          //     prefix: Padding(
+                                          //       padding: const EdgeInsets.symmetric(
+                                          //           horizontal: 16),
+                                          //       child: SvgPicture.asset(
+                                          //           "assets/icons/ic_search.svg"),
+                                          //     ),
+                                          //   ),
+                                          //  ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
                                         ],
                                       ),
                                     ),
-                                  )
-                                ],
-                              ),
-                      ),
+                                    Expanded(
+                                      child: SingleChildScrollView(
+                                        child: Column(
+                                          children: [
+                                            controller.bannerModel.isEmpty
+                                                ? const SizedBox()
+                                                : Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 16),
+                                                    child: BannerView(
+                                                        controller: controller),
+                                                  ),
+                                            const SizedBox(
+                                              height: 20,
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(
+                                                  horizontal: 16),
+                                              child: CategoryView(
+                                                  controller: controller),
+                                            ),
+                                            // controller
+                                            //         .couponRestaurantList.isEmpty
+                                            //     ? const SizedBox()
+                                            //     : Padding(
+                                            //         padding: const EdgeInsets
+                                            //             .symmetric(
+                                            //             horizontal: 16),
+                                            //         child: Column(
+                                            //           children: [
+                                            //             const SizedBox(
+                                            //               height: 20,
+                                            //             ),
+                                            //             OfferView(
+                                            //                 controller:
+                                            //                     controller),
+                                            //           ],
+                                            //         ),
+                                            //       ),
+                                            controller.storyList.isEmpty ||
+                                                    (Constant.storyEnable ==
+                                                            false &&
+                                                        !kDebugMode)
+                                                ? Column(
+                                                    children: [
+                                                      // Debug information
+                                                      if (kDebugMode) ...[
+                                                        Container(
+                                                          margin: const EdgeInsets
+                                                              .all(16),
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(16),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Colors.orange
+                                                                .withOpacity(0.1),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(8),
+                                                            border: Border.all(
+                                                                color: Colors
+                                                                    .orange),
+                                                          ),
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Text(
+                                                                'Stories Debug Info:',
+                                                                style: TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  color: Colors
+                                                                      .orange,
+                                                                ),
+                                                              ),
+                                                              SizedBox(height: 8),
+                                                              Text(
+                                                                  'Story List Empty: ${controller.storyList.isEmpty}'),
+                                                              Text(
+                                                                  'Story Enable: ${Constant.storyEnable}'),
+                                                              Text(
+                                                                  'Story Count: ${controller.storyList.length}'),
+                                                              Text(
+                                                                  'Story Enable Value: ${Constant.storyEnable}'),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ],
+                                                      const SizedBox(),
+                                                    ],
+                                                  )
+                                                : Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 0),
+                                                    child: Column(
+                                                      children: [
+                                                        StoryView(
+                                                            controller:
+                                                                controller),
+                                                      ],
+                                                    ),
+                                                  ),
+                                            Visibility(
+                                              visible:
+                                                  Constant.isEnableAdsFeature ==
+                                                      true,
+                                              child:
+                                                  controller.advertisementList
+                                                          .isEmpty
+                                                      ? const SizedBox()
+                                                      : Column(
+                                                          children: [
+                                                            const SizedBox(
+                                                              height: 20,
+                                                            ),
+                                                            Container(
+                                                              margin:
+                                                                  const EdgeInsets
+                                                                      .symmetric(
+                                                                      horizontal:
+                                                                          16),
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .symmetric(
+                                                                      horizontal:
+                                                                          16,
+                                                                      vertical:
+                                                                          16),
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            20),
+                                                                color: AppThemeData
+                                                                    .primary300
+                                                                    .withAlpha(
+                                                                        40),
+                                                              ),
+                                                              child: Column(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .start,
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Row(
+                                                                    children: [
+                                                                      Expanded(
+                                                                        child:
+                                                                            Text(
+                                                                          "Highlights for you"
+                                                                              .tr,
+                                                                          textAlign:
+                                                                              TextAlign.start,
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontFamily:
+                                                                                AppThemeData.semiBold,
+                                                                            fontSize:
+                                                                                16,
+                                                                            color: themeChange.getThem()
+                                                                                ? AppThemeData.grey50
+                                                                                : AppThemeData.grey900,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      InkWell(
+                                                                        onTap:
+                                                                            () {
+                                                                          Get.to(AllAdvertisementScreen())
+                                                                              ?.then((value) {
+                                                                            controller
+                                                                                .getFavouriteRestaurant();
+                                                                          });
+                                                                        },
+                                                                        child:
+                                                                            Text(
+                                                                          "See all"
+                                                                              .tr,
+                                                                          textAlign:
+                                                                              TextAlign.center,
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontFamily:
+                                                                                AppThemeData.regular,
+                                                                            color: themeChange.getThem()
+                                                                                ? AppThemeData.primary300
+                                                                                : AppThemeData.primary300,
+                                                                          ),
+                                                                        ),
+                                                                      )
+                                                                    ],
+                                                                  ),
+                                                                  const SizedBox(
+                                                                    height: 16,
+                                                                  ),
+                                                                  SizedBox(
+                                                                    height: 220,
+                                                                    child: ListView
+                                                                        .builder(
+                                                                      physics:
+                                                                          const BouncingScrollPhysics(),
+                                                                      scrollDirection:
+                                                                          Axis.horizontal,
+                                                                      itemCount: controller.advertisementList.length >=
+                                                                              10
+                                                                          ? 10
+                                                                          : controller
+                                                                              .advertisementList
+                                                                              .length,
+                                                                      padding:
+                                                                          EdgeInsets
+                                                                              .all(0),
+                                                                      itemBuilder:
+                                                                          (BuildContext
+                                                                                  context,
+                                                                              int index) {
+                                                                        return AdvertisementHomeCard(
+                                                                            controller:
+                                                                                controller,
+                                                                            model:
+                                                                                controller.advertisementList[index]);
+                                                                      },
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                            ),
+                                            BestRestaurantsSection(
+                                                restaurantList: controller
+                                                    .allNearestRestaurant),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                        ),
+            ),
           ),
         );
       },
@@ -1008,7 +1015,166 @@ class HomeScreenTwo extends StatelessWidget {
     }
   }
 }
-
+// class CategoryView extends StatelessWidget {
+//   final HomeController controller;
+//
+//   const CategoryView({super.key, required this.controller});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final themeChange = Provider.of<DarkThemeProvider>(context);
+//     return Padding(
+//       padding: const EdgeInsets.symmetric(horizontal: 0),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           const SizedBox(
+//             height: 10,
+//           ),
+//           Padding(
+//             // padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+//             padding: EdgeInsets.all(0),
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 Row(
+//                   children: [
+//                     Expanded(
+//                       child: Text(
+//                         "Our Categories",
+//                         style: TextStyle(
+//                           fontFamily: AppThemeData.montserratRegular,
+//                           color: themeChange.getThem()
+//                               ? AppThemeData.grey50
+//                               : AppThemeData.grey900,
+//                           fontSize: 18,
+//                           fontWeight: FontWeight.w800,
+//                         ),
+//                       ),
+//                     ),
+//                     Padding(
+//                       padding: const EdgeInsets.only(left: 16),
+//                       child: InkWell(
+//                         onTap: () {
+//                           Get.to(const ViewAllCategoryScreen());
+//                         },
+//                         borderRadius: BorderRadius.circular(12),
+//                         child: Container(
+//                           padding: const EdgeInsets.symmetric(
+//                               horizontal: 12, vertical: 8),
+//                           child: Row(
+//                             mainAxisSize: MainAxisSize.min,
+//                             children: [
+//                               Text(
+//                                 "See all".tr,
+//                                 style: TextStyle(
+//                                   fontFamily: AppThemeData.semiBold,
+//                                   color: themeChange.getThem()
+//                                       ? AppThemeData.primary300
+//                                       : AppThemeData.primary300,
+//                                   fontSize: 14,
+//                                   fontWeight: FontWeight.w600,
+//                                 ),
+//                               ),
+//                               const SizedBox(width: 6),
+//                               Icon(
+//                                 Icons.arrow_forward_rounded,
+//                                 size: 16,
+//                                 color: themeChange.getThem()
+//                                     ? AppThemeData.primary300
+//                                     : AppThemeData.primary300,
+//                               ),
+//                             ],
+//                           ),
+//                         ),
+//                       ),
+//                     )
+//                     // Padding(
+//                     //   padding: const EdgeInsets.only(left: 16),
+//                     //   child: InkWell(
+//                     //     onTap: () {
+//                     //       Get.to(const ViewAllCategoryScreen());
+//                     //     },
+//                     //     child: Text(
+//                     //       "See all".tr,
+//                     //       textAlign: TextAlign.center,
+//                     //       style: TextStyle(
+//                     //         fontFamily: AppThemeData.medium,
+//                     //         color: themeChange.getThem()
+//                     //             ? AppThemeData.primary300
+//                     //             : AppThemeData.primary300,
+//                     //         fontSize: 14,
+//                     //       ),
+//                     //     ),
+//                     //   ),
+//                     // ),
+//                   ],
+//                 ),
+//                 Text(
+//                   "Best Serving Food".tr,
+//                   style: TextStyle(
+//                     fontSize: 16,
+//                     fontFamily: AppThemeData.montserrat,
+//                     // fontWeight: FontWeight.w800,
+//                   ),
+//                 )
+//               ],
+//             ),
+//           ),
+//           const SizedBox(
+//             height: 20,
+//           ),
+//           GridView.builder(
+//             padding: EdgeInsets.zero,
+//             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+//                 crossAxisCount: 4, childAspectRatio: 0.8),
+//             itemCount: controller.vendorCategoryModel.length >= 8
+//                 ? 8
+//                 : controller.vendorCategoryModel.length,
+//             physics: const NeverScrollableScrollPhysics(),
+//             shrinkWrap: true,
+//             itemBuilder: (context, index) {
+//               VendorCategoryModel vendorCategoryModel =
+//                   controller.vendorCategoryModel[index];
+//               return InkWell(
+//                 onTap: () {
+//                   Get.to(const CategoryRestaurantScreen(), arguments: {
+//                     "vendorCategoryModel": vendorCategoryModel,
+//                     "dineIn": false
+//                   });
+//                 },
+//                 child: Column(
+//                   children: [
+//                     ClipOval(
+//                       child: SizedBox(
+//                         width: 60,
+//                         height: 60,
+//                         child: NetworkImageWidget(
+//                             imageUrl: vendorCategoryModel.photo.toString(),
+//                             fit: BoxFit.cover),
+//                       ),
+//                     ),
+//                     Text(
+//                       "${vendorCategoryModel.title}",
+//                       textAlign: TextAlign.center,
+//                       style: TextStyle(
+//                         fontFamily: AppThemeData.medium,
+//                         color: themeChange.getThem()
+//                             ? AppThemeData.grey50
+//                             : AppThemeData.grey900,
+//                         fontSize: 12,
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               );
+//             },
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 class CategoryView extends StatelessWidget {
   final HomeController controller;
 
@@ -1115,55 +1281,154 @@ class CategoryView extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(
-            height: 20,
-          ),
-          GridView.builder(
-            padding: EdgeInsets.zero,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4, childAspectRatio: 0.8),
-            itemCount: controller.vendorCategoryModel.length >= 8
-                ? 8
-                : controller.vendorCategoryModel.length,
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              VendorCategoryModel vendorCategoryModel =
-                  controller.vendorCategoryModel[index];
-              return InkWell(
-                onTap: () {
-                  Get.to(const CategoryRestaurantScreen(), arguments: {
-                    "vendorCategoryModel": vendorCategoryModel,
-                    "dineIn": false
-                  });
-                },
-                child: Column(
-                  children: [
-                    ClipOval(
-                      child: SizedBox(
-                        width: 60,
-                        height: 60,
-                        child: NetworkImageWidget(
-                            imageUrl: vendorCategoryModel.photo.toString(),
-                            fit: BoxFit.cover),
-                      ),
+          // const SizedBox(
+          //   height: 20,
+          // ),
+          // SizedBox(
+          //   height: 100,
+          //   child: ListView.builder(
+          //     scrollDirection:  Axis.horizontal,
+          //     padding: EdgeInsets.zero,
+          //     // gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          //     //     crossAxisCount: 4, childAspectRatio: 0.8),
+          //     itemCount: controller.vendorCategoryModel.length >= 8
+          //         ? 8
+          //         : controller.vendorCategoryModel.length,
+          //     // physics: const NeverScrollableScrollPhysics(),
+          //     shrinkWrap: true,
+          //     itemBuilder: (context, index) {
+          //       VendorCategoryModel vendorCategoryModel =
+          //           controller.vendorCategoryModel[index];
+          //       return InkWell(
+          //         onTap: () {
+          //           Get.to(const CategoryRestaurantScreen(), arguments: {
+          //             "vendorCategoryModel": vendorCategoryModel,
+          //             "dineIn": false
+          //           });
+          //         },
+          //         child: Padding(
+          //           padding: const EdgeInsets.only(left: 12),
+          //           child: Column(
+          //             children: [
+          //               ClipOval(
+          //                 child: SizedBox(
+          //                   width: 60,
+          //                   height: 60,
+          //                   child: NetworkImageWidget(
+          //                       imageUrl: vendorCategoryModel.photo.toString(),
+          //                       fit: BoxFit.cover),
+          //                 ),
+          //               ),
+          //               Text(
+          //                 "${vendorCategoryModel.title}",
+          //                 textAlign: TextAlign.center,
+          //                 style: TextStyle(
+          //                   fontFamily: AppThemeData.medium,
+          //                   color: themeChange.getThem()
+          //                       ? AppThemeData.grey50
+          //                       : AppThemeData.grey900,
+          //                   fontSize: 12,
+          //                 ),
+          //               ),
+          //             ],
+          //           ),
+          //         ),
+          //       );
+          //     },
+          //   ),
+          // ),
+          SizedBox(
+            height: 120,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+              itemCount: controller.vendorCategoryModel.length >= 8
+                  ? 8
+                  : controller.vendorCategoryModel.length,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                VendorCategoryModel vendorCategoryModel =
+                controller.vendorCategoryModel[index];
+
+                return GestureDetector(
+                  onTap: () {
+                    Get.to(const CategoryRestaurantScreen(), arguments: {
+                      "vendorCategoryModel": vendorCategoryModel,
+                      "dineIn": false
+                    });
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.only(right: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      // border: Border.all(
+                      //   color: Colors.greenAccent,
+                      //   width: 1.2,
+                      // ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.15),
+                          blurRadius: 6,
+                          spreadRadius: 2,
+                          offset: const Offset(2, 3),
+                        ),
+                      ],
                     ),
-                    Text(
-                      "${vendorCategoryModel.title}",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: AppThemeData.medium,
-                        color: themeChange.getThem()
-                            ? AppThemeData.grey50
-                            : AppThemeData.grey900,
-                        fontSize: 12,
-                      ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          // decoration: BoxDecoration(
+                          //   shape: BoxShape.circle,
+                          //   gradient: LinearGradient(
+                          //     colors: [
+                          //       const Color(0xFF81C784), // light green
+                          //       const Color(0xFFA5D6A7).withOpacity(0.8),
+                          //     ],
+                          //     begin: Alignment.topLeft,
+                          //     end: Alignment.bottomRight,
+                          //   ),
+                          // ),
+                          padding: const EdgeInsets.all(3),
+                          child: ClipOval(
+                            child: SizedBox(
+                              width: 55,
+                              height: 55,
+                              child: NetworkImageWidget(
+                                imageUrl: vendorCategoryModel.photo.toString(),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        SizedBox(
+                          width: 65,
+                          child: Text(
+                            vendorCategoryModel.title ?? '',
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontFamily: AppThemeData.medium,
+                              color: themeChange.getThem()
+                                  ? AppThemeData.grey50
+                                  : AppThemeData.grey900,
+                              fontSize: 12,
+                              height: 1.2,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              );
-            },
-          ),
+                  ),
+                );
+              },
+            ),
+          )
+
         ],
       ),
     );
@@ -1375,7 +1640,7 @@ class BannerView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 170,
+      height: 160,
       child: GestureDetector(
         onPanStart: (_) => controller.stopBannerTimer(),
         onPanEnd: (_) => controller.startBannerTimer(),
@@ -1466,9 +1731,10 @@ class StoryView extends StatelessWidget {
       height: Responsive.height(32, context),
       decoration: const BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(20)),
-          image: DecorationImage(
-              image: AssetImage("assets/images/story_bg.png"),
-              fit: BoxFit.cover)),
+          // image: DecorationImage(
+          //     image: AssetImage("assets/images/story_bg.png"),
+          //     fit: BoxFit.cover)
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1483,10 +1749,10 @@ class StoryView extends StatelessWidget {
                       child: Text(
                         "Stories".tr,
                         style: TextStyle(
-                            fontFamily: AppThemeData.googleSansCode,
+                            fontFamily: AppThemeData.montserrat,
                             color: themeChange.getThem()
-                                ? AppThemeData.grey50
-                                : AppThemeData.grey50,
+                                ? AppThemeData.success400
+                                : AppThemeData.success400,
                             fontSize: 18,
                             fontWeight: FontWeight.bold),
                       ),
@@ -1494,10 +1760,10 @@ class StoryView extends StatelessWidget {
                   ],
                 ),
                 GradientText(
-                  'Best Food Stories Ever'.tr,
+                  'Best deals only for you ${Constant.userModel?.firstName.toString()}'.tr,
                   style: TextStyle(
-                    fontSize: 20,
-                    fontFamily: AppThemeData.googleSansCode,
+                    fontSize: 18,
+                    fontFamily: AppThemeData.montserrat,
                     fontWeight: FontWeight.w800,
                   ),
                   gradient: LinearGradient(colors: [
@@ -1809,160 +2075,161 @@ class _BestRestaurantsSectionState extends State<BestRestaurantsSection> {
           child: LayoutBuilder(
             builder: (context, constraints) {
               return GridView.builder(
-                // ✅ Prevent vertical overflow safely
                 shrinkWrap: true,
                 primary: false,
                 padding: EdgeInsets.zero,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: filteredList.length,
-
-                // ✅ Responsive grid layout
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3, // 3 items per row
-                  crossAxisSpacing: 14,
-                  mainAxisSpacing: 20,
-                  childAspectRatio: 0.64, // Adjust to prevent height overflow
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 0.65,
                 ),
-
                 itemBuilder: (BuildContext context, int index) {
                   final vendorModel = filteredList[index];
+                  final isClosed = !RestaurantStatusUtils.canAcceptOrders(vendorModel);
 
                   return InkWell(
-                    onTap: () {
+                    onTap: isClosed ? null : () {
                       Get.to(
                         const RestaurantDetailsScreen(),
                         arguments: {"vendorModel": vendorModel},
                       );
                     },
-                    child: _buildRestaurantCardWithFilter(
-                      vendorModel: vendorModel,
-                      themeChange: themeChange,
-                      child: Container(
-                        decoration: ShapeDecoration(
-                          color: themeChange.getThem()
-                              ? AppThemeData.grey900
-                              : AppThemeData.grey50,
-                          // shape: RoundedRectangleBorder(
-                          //   borderRadius: BorderRadius.circular(16),
-                          // ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            side: BorderSide(
-                              color: AppThemeData.primary300, // 🔴 Border color
-                              width: 1.5, // Border thickness
-                            ),
+                    borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: themeChange.getThem()
+                            ? AppThemeData.grey900
+                            : AppThemeData.grey50,
+                        borderRadius: BorderRadius.circular(16),
+                        // border: Border.all(
+                        //   color: AppThemeData.primary300.withOpacity(0.3),
+                        //   width: 1,
+                        // ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
                           ),
-                        ),
-                        padding: const EdgeInsets.all(8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // 🖼 Restaurant Image with Status
-                            AspectRatio(
-                              aspectRatio: 1, // Keeps square image in grid
-                              child: Stack(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: RestaurantImageWithStatus(
-                                      vendorModel: vendorModel,
-                                      height: double.infinity,
-                                      width: double.infinity,
-                                    ),
-                                  ),
-                                  Positioned(
-                                    left: 4,
-                                    top: 4,
-                                    child: _buildSmallStatusBadge(vendorModel),
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            const SizedBox(height: 8),
-
-                            // 🏷 Vendor Title
-                            Text(
-                              vendorModel.title ?? '',
-                              textAlign: TextAlign.start,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontFamily: AppThemeData.semiBold,
-                                color: themeChange.getThem()
-                                    ? AppThemeData.grey50
-                                    : AppThemeData.grey900,
-                              ),
-                            ),
-
-                            // 📍 Vendor Location
-                            // Text(
-                            //   vendorModel.location ?? '',
-                            //   textAlign: TextAlign.start,
-                            //   maxLines: 1,
-                            //   overflow: TextOverflow.ellipsis,
-                            //   style: TextStyle(
-                            //     fontFamily: AppThemeData.medium,
-                            //     fontWeight: FontWeight.w500,
-                            //     fontSize: 12,
-                            //     color: AppThemeData.grey400,
-                            //   ),
-                            // ),
-
-                            const Spacer(),
-
-                            // ⭐ Rating Row
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                        ],
+                      ),
+                      child: Stack(
+                        children: [
+                          // Main Content
+                          Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                SvgPicture.asset(
-                                  "assets/icons/ic_star.svg",
-                                  width: 14,
-                                  colorFilter: ColorFilter.mode(
-                                    AppThemeData.primary300,
-                                    BlendMode.srcIn,
-                                  ),
-                                ),
-                                const SizedBox(width: 4),
-                                Expanded(
-                                  child: Text(
-                                    "${Constant.calculateReview(
-                                      reviewCount:
-                                          vendorModel.reviewsCount.toString(),
-                                      reviewSum:
-                                          vendorModel.reviewsSum.toString(),
-                                    )} (${vendorModel.reviewsCount?.toStringAsFixed(0) ?? '0'})",
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontFamily: AppThemeData.medium,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 12,
-                                      color: AppThemeData.grey400,
+                                // 🖼 Image Section
+                                AspectRatio(
+                                  aspectRatio: 1,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      color: AppThemeData.grey200.withOpacity(0.5),
+                                    ),
+                                    child: Stack(
+                                      children: [
+                                        // Restaurant Image
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(12),
+                                          child: RestaurantImageWithStatus(
+                                            vendorModel: vendorModel,
+                                            height: double.infinity,
+                                            width: double.infinity,
+                                          ),
+                                        ),
+
+                                        // Status Badge
+                                        Positioned(
+                                          top: 6,
+                                          left: 6,
+                                          child: _buildEnhancedStatusBadge(vendorModel),
+                                        ),
+
+                                        // Rating Chip
+                                        // Positioned(
+                                        //   top: 6,
+                                        //   right: 6,
+                                        //   child: _buildRatingChip(vendorModel),
+                                        // ),
+                                      ],
                                     ),
                                   ),
                                 ),
+
+                                const SizedBox(height: 10),
+
+                                // 🏷 Restaurant Name
+                                Text(
+                                  vendorModel.title ?? 'Restaurant',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontFamily: AppThemeData.semiBold,
+                                    color: themeChange.getThem()
+                                        ? AppThemeData.grey50
+                                        : AppThemeData.grey900,
+                                    height: 1.2,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 4),
+                                // 📍 Category/Location
+                                // Text(
+                                //   vendorModel.category ?? vendorModel.location ?? 'Restaurant',
+                                //   style: TextStyle(
+                                //     fontSize: 11,
+                                //     fontFamily: AppThemeData.medium,
+                                //     color: AppThemeData.grey500,
+                                //   ),
+                                //   maxLines: 1,
+                                //   overflow: TextOverflow.ellipsis,
+                                // ),
+                                const Spacer(),
+                                // ⭐ Rating & Distance Row
+                                _buildBottomInfoRow(vendorModel, themeChange),
                               ],
                             ),
+                          ),
 
-                            // const SizedBox(height: 4),
-                            //
-                            // // 📏 Distance
-                            // Text(
-                            //   "${(vendorModel.distance ?? 0).toStringAsFixed(2)} km",
-                            //   textAlign: TextAlign.start,
-                            //   maxLines: 1,
-                            //   overflow: TextOverflow.ellipsis,
-                            //   style: TextStyle(
-                            //     fontFamily: AppThemeData.medium,
-                            //     fontWeight: FontWeight.w500,
-                            //     fontSize: 12,
-                            //     color: AppThemeData.grey400,
-                            //   ),
-                            // ),
+                          // Closed Overlay
+                          if (isClosed) ...[
+                            Positioned.fill(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.4),
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Center(
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black.withOpacity(0.7),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      'CLOSED',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                        fontFamily: AppThemeData.bold,
+                                        letterSpacing: 0.5,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
-                        ),
+                        ],
                       ),
                     ),
                   );
@@ -1971,6 +2238,167 @@ class _BestRestaurantsSectionState extends State<BestRestaurantsSection> {
             },
           ),
         ),
+        // Padding(
+        //   padding: const EdgeInsets.symmetric(horizontal: 16),
+        //   child: LayoutBuilder(
+        //     builder: (context, constraints) {
+        //       return GridView.builder(
+        //         // ✅ Prevent vertical overflow safely
+        //         shrinkWrap: true,
+        //         primary: false,
+        //         padding: EdgeInsets.zero,
+        //         physics: const NeverScrollableScrollPhysics(),
+        //         itemCount: filteredList.length,
+        //
+        //         // ✅ Responsive grid layout
+        //         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        //           crossAxisCount: 3, // 3 items per row
+        //           crossAxisSpacing: 14,
+        //           mainAxisSpacing: 20,
+        //           childAspectRatio: 0.64, // Adjust to prevent height overflow
+        //         ),
+        //
+        //         itemBuilder: (BuildContext context, int index) {
+        //           final vendorModel = filteredList[index];
+        //
+        //           return InkWell(
+        //             onTap: () {
+        //               Get.to(
+        //                 const RestaurantDetailsScreen(),
+        //                 arguments: {"vendorModel": vendorModel},
+        //               );
+        //             },
+        //             child: _buildRestaurantCardWithFilter(
+        //               vendorModel: vendorModel,
+        //               themeChange: themeChange,
+        //               child: Container(
+        //                 decoration: ShapeDecoration(
+        //                   color: themeChange.getThem()
+        //                       ? AppThemeData.grey900
+        //                       : AppThemeData.grey50,
+        //                   // shape: RoundedRectangleBorder(
+        //                   //   borderRadius: BorderRadius.circular(16),
+        //                   // ),
+        //                   shape: RoundedRectangleBorder(
+        //                     borderRadius: BorderRadius.circular(16),
+        //                     side: BorderSide(
+        //                       color: AppThemeData.primary300, // 🔴 Border color
+        //                       width: 0.8, // Border thickness
+        //                     ),
+        //                   ),
+        //                 ),
+        //                 padding: const EdgeInsets.all(8),
+        //                 child: Column(
+        //                   crossAxisAlignment: CrossAxisAlignment.start,
+        //                   children: [
+        //                     // 🖼 Restaurant Image with Status
+        //                     AspectRatio(
+        //                       aspectRatio: 1, // Keeps square image in grid
+        //                       child: Stack(
+        //                         children: [
+        //                           ClipRRect(
+        //                             borderRadius: BorderRadius.circular(8),
+        //                             child: RestaurantImageWithStatus(
+        //                               vendorModel: vendorModel,
+        //                               height: double.infinity,
+        //                               width: double.infinity,
+        //                             ),
+        //                           ),
+        //                           Positioned(
+        //                             left: 4,
+        //                             top: 4,
+        //                             child: _buildSmallStatusBadge(vendorModel),
+        //                           ),
+        //                         ],
+        //                       ),
+        //                     ),
+        //                     const SizedBox(height: 8),
+        //                     // 🏷 Vendor Title
+        //                     Text(
+        //                       vendorModel.title ?? '',
+        //                       textAlign: TextAlign.start,
+        //                       maxLines: 1,
+        //                       overflow: TextOverflow.ellipsis,
+        //                       style: TextStyle(
+        //                         fontSize: 14,
+        //                         fontFamily: AppThemeData.semiBold,
+        //                         color: themeChange.getThem()
+        //                             ? AppThemeData.grey50
+        //                             : AppThemeData.grey900,
+        //                       ),
+        //                     ),
+        //                     // 📍 Vendor Location
+        //                     // Text(
+        //                     //   vendorModel.location ?? '',
+        //                     //   textAlign: TextAlign.start,
+        //                     //   maxLines: 1,
+        //                     //   overflow: TextOverflow.ellipsis,
+        //                     //   style: TextStyle(
+        //                     //     fontFamily: AppThemeData.medium,
+        //                     //     fontWeight: FontWeight.w500,
+        //                     //     fontSize: 12,
+        //                     //     color: AppThemeData.grey400,
+        //                     //   ),
+        //                     // ),
+        //                     // ⭐ Rating Row
+        //                     Row(
+        //                       crossAxisAlignment: CrossAxisAlignment.center,
+        //                       children: [
+        //                         SvgPicture.asset(
+        //                           "assets/icons/ic_star.svg",
+        //                           width: 14,
+        //                           colorFilter: ColorFilter.mode(
+        //                             AppThemeData.primary300,
+        //                             BlendMode.srcIn,
+        //                           ),
+        //                         ),
+        //                         const SizedBox(width: 4),
+        //                         Expanded(
+        //                           child: Text(
+        //                             "${Constant.calculateReview(
+        //                               reviewCount:
+        //                                   vendorModel.reviewsCount.toString(),
+        //                               reviewSum:
+        //                                   vendorModel.reviewsSum.toString(),
+        //                             )} (${vendorModel.reviewsCount?.toStringAsFixed(0) ?? '0'})",
+        //                             maxLines: 1,
+        //                             overflow: TextOverflow.ellipsis,
+        //                             style: TextStyle(
+        //                               fontFamily: AppThemeData.medium,
+        //                               fontWeight: FontWeight.w500,
+        //                               fontSize: 12,
+        //                               color: AppThemeData.grey400,
+        //                             ),
+        //                           ),
+        //                         ),
+        //                       ],
+        //                     ),
+        //
+        //                     // const SizedBox(height: 4),
+        //                     //
+        //                     // // 📏 Distance
+        //                     Text(
+        //                       "${(vendorModel.distance ?? 0).toStringAsFixed(2)} km",
+        //                       textAlign: TextAlign.start,
+        //                       maxLines: 1,
+        //                       overflow: TextOverflow.ellipsis,
+        //                       style: TextStyle(
+        //                         fontFamily: AppThemeData.medium,
+        //                         fontWeight: FontWeight.w500,
+        //                         fontSize: 12,
+        //                         color: AppThemeData.grey400,
+        //                       ),
+        //                     ),
+        //                   ],
+        //                 ),
+        //               ),
+        //             ),
+        //           );
+        //         },
+        //       );
+        //     },
+        //   ),
+        // ),
         // Padding(
         //   padding: const EdgeInsets.symmetric(horizontal: 16),
         //   child: ListView.builder(
@@ -2177,6 +2605,146 @@ class _BestRestaurantsSectionState extends State<BestRestaurantsSection> {
   }
 }
 
+// Enhanced Status Badge
+Widget _buildEnhancedStatusBadge(VendorModel vendorModel) {
+  final isOpen = RestaurantStatusUtils.canAcceptOrders(vendorModel);
+
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+    decoration: BoxDecoration(
+      color: isOpen ? Colors.green.withOpacity(0.9) : Colors.red.withOpacity(0.9),
+      borderRadius: BorderRadius.circular(6),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.1),
+          blurRadius: 4,
+          offset: const Offset(0, 1),
+        ),
+      ],
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          isOpen ? Icons.circle : Icons.circle_outlined,
+          size: 6,
+          color: Colors.white,
+        ),
+        const SizedBox(width: 4),
+        Text(
+          isOpen ? 'OPEN' : 'CLOSED',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 8,
+            fontFamily: AppThemeData.bold,
+            height: 1,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+// Rating Chip
+Widget _buildRatingChip(VendorModel vendorModel) {
+  final rating = Constant.calculateReview(
+    reviewCount: vendorModel.reviewsCount.toString(),
+    reviewSum: vendorModel.reviewsSum.toString(),
+  );
+
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+    decoration: BoxDecoration(
+      color: Colors.black.withOpacity(0.7),
+      borderRadius: BorderRadius.circular(6),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          Icons.star,
+          size: 10,
+          color: AppThemeData.primary300,
+        ),
+        const SizedBox(width: 2),
+        Text(
+          rating,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 9,
+            fontFamily: AppThemeData.semiBold,
+            height: 1,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+// Bottom Info Row
+Widget _buildBottomInfoRow(VendorModel vendorModel, DarkThemeProvider themeChange) {
+  return Row(
+    children: [
+      // Rating
+      Expanded(
+        child: Row(
+          children: [
+            Icon(
+              Icons.star,
+              size: 12,
+              color: AppThemeData.primary300,
+            ),
+            const SizedBox(width: 2),
+            Expanded(
+              child: Text(
+                "${Constant.calculateReview(
+                  reviewCount: vendorModel.reviewsCount.toString(),
+                  reviewSum: vendorModel.reviewsSum.toString(),
+                )} (${vendorModel.reviewsCount?.toStringAsFixed(0) ?? '0'})",
+                style: TextStyle(
+                  fontSize: 10,
+                  fontFamily: AppThemeData.medium,
+                  color: AppThemeData.grey500,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+
+      // Distance (if available)
+      if (vendorModel.distance != null) ...[
+        const SizedBox(width: 4),
+        Expanded(
+          child: Row(
+            children: [
+              Icon(
+                Icons.location_on_outlined,
+                size: 10,
+                color: AppThemeData.grey400,
+              ),
+              const SizedBox(width: 2),
+              Expanded(
+                child: Text(
+                  "${(vendorModel.distance ?? 0).toStringAsFixed(1)} km",
+                  style: TextStyle(
+                    fontSize: 9,
+                    fontFamily: AppThemeData.medium,
+                    color: AppThemeData.grey500,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ],
+  );
+}
 /// **REUSABLE HELPER METHOD FOR WHOLE CARD BLACK & WHITE FILTER**
 Widget _buildRestaurantCardWithFilter({
   required VendorModel vendorModel,

@@ -30,12 +30,12 @@ class OrderController extends GetxController {
   }
 
   getOrder() async {
+    print(' [OrderController] getOrder called ');
     // Debug logging (will be optimized out in release builds)
     if (kDebugMode) {
       log('[OrderController] getOrder called');
       log('[OrderController] Constant.userModel: ${Constant.userModel != null ? "EXISTS" : "NULL"}');
     }
-
     // Ensure backendUserId is set if user model exists
     if (Constant.userModel != null) {
       // Always use the correct user ID from Constant.userModel

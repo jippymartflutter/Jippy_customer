@@ -204,8 +204,6 @@ class MartController extends GetxController {
       (banners) {
         print('[MART CONTROLLER] Lazy load - Top banners: ${banners.length}');
         martTopBanners.value = banners;
-
-        // Initialize controllers if banners are available
         if (banners.isNotEmpty) {
           _initializeBannerControllers();
         }

@@ -1,3 +1,4 @@
+import 'package:customer/utils/utils/color_const.dart';
 import 'package:flutter/material.dart';
 
 String capitalize(String s) =>
@@ -25,7 +26,7 @@ class FilterBar extends StatelessWidget {
           final isSelected = selectedFilters.contains(filter);
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4.0),
-            child: ChoiceChip(
+            child: ChoiceChip(backgroundColor: ColorConst.white,
               label: Text(
                 capitalize(filter.toString().split('.').last),
                 style: TextStyle(
@@ -36,7 +37,11 @@ class FilterBar extends StatelessWidget {
               ),
               selected: isSelected,
               selectedColor: theme.primaryColor,
-              onSelected: (_) => onFilterToggled(filter),
+              onSelected: (_) => onFilterToggled(filter), // 🔹 Remove border completely
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: BorderSide(color: Colors.transparent), // removes border
+              ),
             ),
           );
         }).toList(),

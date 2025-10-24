@@ -53,6 +53,17 @@ class SendNotification {
                 'body': notificationModel?.message ?? '',
                 'title': notificationModel?.subject ?? ''
               },
+              'android': {
+                'priority': 'high',
+                'notification': {
+                  'channel_id': 'order_channel', // ✅ must match your local channel ID
+                  'sound': 'order_ringtone', // ✅ custom sound file in res/raw
+                  'default_sound': false,
+                  'default_vibrate_timings': true,
+                  'default_light_settings': true,
+                  'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+                },
+              },
               'data': payload,
             }
           },
